@@ -73,6 +73,30 @@ class page_action extends tform_actions {
 		parent::onShowNew();
 	}
 
+	function onShowEdit() {
+		global $app, $conf;
+		chdir('../dashboard');
+
+		$dashlet_list = array();
+		$dashlets = array('databasequota.php', 'limits.php', 'mailquota.php', 'quota.php');
+		$current_client_id = $this->id;
+
+		foreach ($dashlets as $file) {
+			if ($file != '.' && $file != '..' && !is_dir(ISPC_WEB_PATH.'/dashboard/dashlets/'.$file)) {
+				$dashlet_name = substr($file, 0, -4);
+				$dashlet_class = 'dashlet_'.$dashlet_name;
+				include_once ISPC_WEB_PATH.'/dashboard/dashlets/'.$file;
+				$dashlet_list[$dashlet_name] = new $dashlet_class;
+				$dashlets_html .= $dashlet_list[$dashlet_name]->show($current_client_id);
+			}
+		}
+		$app->tpl->setVar('dashlets', $dashlets_html);
+
+		chdir('../client');
+
+		parent::onShowEdit();
+	}
+
 
 	function onSubmit() {
 		global $app, $conf;
