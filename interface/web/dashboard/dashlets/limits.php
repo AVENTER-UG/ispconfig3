@@ -2,7 +2,7 @@
 
 class dashlet_limits {
 
-	function show() {
+       function show($limit_to_client_id = 0) {
 		global $app, $conf;
 
 		$limits = array();
@@ -148,6 +148,12 @@ class dashlet_limits {
 			$client = $app->db->queryOneRecord("SELECT * FROM sys_group, client WHERE sys_group.client_id = client.client_id and sys_group.groupid = ?", $client_group_id);
 		}
 
+               if ($limit_to_client_id == 0 || !$app->auth->is_admin()) {
+                       $client_id = $_SESSION['s']['user']['client_id'];
+               } else {
+                       $client_id = $limit_to_client_id;
+               }
+
 		$rows = array();
 		foreach($limits as $limit) {
 			$field = $limit['field'];
@@ -159,10 +165,10 @@ class dashlet_limits {
 			if($value != 0 || $value == $wb['unlimited_txt']) {
 				$value_formatted = ($value == '-1')?$wb['unlimited_txt']:$value;
 				if($limit['q_type']!=''){
-					$usage = $this->_get_assigned_quota($limit) . " MB";
+                                       $usage = $this->_get_assigned_quota($limit, $client_id) . " MB";
 					$value_formatted = ($value == '-1')?$wb['unlimited_txt']:$value . " MB";
 				}
-				else $usage = $this->_get_limit_usage($limit);
+                               else $usage = $this->_get_limit_usage($limit, $client_id);
 				$percentage = ($value == '-1' || $value == 0 ? 0 : round(100 * $usage / $value));
 				$rows[] = array('field' => $field,
 					'field_txt' => $wb[$field.'_txt'],
@@ -181,23 +187,26 @@ class dashlet_limits {
 
 	}
 
-	function _get_limit_usage($limit) {
+       function _get_limit_usage($limit, $limit_to_client_id) {
 		global $app;
 
 		$sql = "SELECT count(sys_userid) as number FROM ?? WHERE ";
 		if($limit['db_where'] != '') $sql .= $limit['db_where']." AND ";
-		$sql .= $app->tform->getAuthSQL('r');
+               $sql .= $app->tform->getAuthSQL('r', '', $limit_to_client_id);
+               // TEST to show reseller data.
+               //$sql .= $app->tform->getAuthSQL('r', '', 0, '3,28,39');
+               //echo $sql;
 		$rec = $app->db->queryOneRecord($sql, $limit['db_table']);
 		return $rec['number'];
 
 	}
 	
-	function _get_assigned_quota($limit) {
+       function _get_assigned_quota($limit, $limit_to_client_id) {
 		global $app;
 
 		$sql = "SELECT sum(??) as number FROM ?? WHERE ";
 		if($limit['db_where'] != '') $sql .= $limit['db_where']." AND ";
-		$sql .= $app->tform->getAuthSQL('r');
+               $sql .= $app->tform->getAuthSQL('r', '', $limit_to_client_id);
 		$rec = $app->db->queryOneRecord($sql, $limit['q_type'], $limit['db_table']);
 		if($limit['db_table']=='mail_user') $quotaMB = $rec['number'] / 1048576; // Mail quota is in bytes, must be converted to MB
 		else $quotaMB = $rec['number'];
