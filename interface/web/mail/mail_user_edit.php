@@ -135,6 +135,10 @@ class page_action extends tform_actions {
 			$app->tpl->setVar("enable_custom_login", 0);
 		}
 
+		$csrf_token = $app->auth->csrf_token_get('mail_alias_del');
+		$app->tpl->setVar('_csrf_id', $csrf_token['csrf_id']);
+		$app->tpl->setVar('_csrf_key', $csrf_token['csrf_key']);
+
 		parent::onShowEnd();
 	}
 
