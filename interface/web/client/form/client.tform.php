@@ -632,6 +632,18 @@ $form["tabs"]['address'] = array (
 			'cols'  => '',
 			'searchable' => 2
 		),
+		'agb' => array (
+			'datatype' => 'VARCHAR',
+			'formtype' => 'CHECKBOX',
+			'default' => 'n',
+			'value'  => array(0 => 'n', 1 => 'y')
+		),
+		'dsgvo' => array (
+			'datatype' => 'VARCHAR',
+			'formtype' => 'CHECKBOX',
+			'default' => 'n',
+			'value'  => array(0 => 'n', 1 => 'y')
+		),
 		'locked' => array (
 			'datatype' => 'VARCHAR',
 			'formtype' => 'CHECKBOX',
