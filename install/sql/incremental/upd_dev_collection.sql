@@ -6,3 +6,8 @@ ALTER TABLE `server_php` ADD `php_fpm_socket_dir` varchar(255) DEFAULT NULL AFTE
 
 -- fix #5939
 UPDATE `ftp_user` SET `expires` = NULL WHERE `expires` = '0000-00-00 00:00:00';
+
+-- add dsgvo and agb support
+ALTER TABLE `client` ADD `agb` enum('n','y') NOT NULL default 'n';
+ALTER TABLE `client` ADD `dsgvo` enum('n','y') NOT NULL default 'n';
+
