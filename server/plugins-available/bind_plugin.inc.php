@@ -87,7 +87,7 @@ class bind_plugin {
 		$dns_config = $app->getconf->get_server_config($conf["server_id"], 'dns');
 
 		$domain = substr($data['new']['origin'], 0, strlen($data['new']['origin'])-1);
-		if (!file_exists($dns_config['bind_zonefiles_dir'].'/'.$this->zone_file_prefix().$domain)) return false;
+		if (!file_exists($dns_config['bind_zonefiles_dir'].'/'.$dns_config['bind_zonefiles_masterprefix'].$domain)) return false;
 
 		//* Check Entropy
 		if (file_get_contents('/proc/sys/kernel/random/entropy_avail') < 400) {
@@ -136,7 +136,7 @@ class bind_plugin {
 		//* load the server configuration options
 		$dns_config = $app->getconf->get_server_config($conf["server_id"], 'dns');
 
-		$filespre = $this->zone_file_prefix();
+		$filespre = $dns_config['bind_zonefiles_masterprefix'];
 		$domain = substr($data['new']['origin'], 0, strlen($data['new']['origin'])-1);
 		if (!file_exists($dns_config['bind_zonefiles_dir'].'/'.$filespre.$domain)) return false;
 
@@ -202,7 +202,7 @@ class bind_plugin {
 		//* load the server configuration options
 		$dns_config = $app->getconf->get_server_config($conf["server_id"], 'dns');
 
-		$filespre = $this->zone_file_prefix();
+		$filespre = $dns_config['bind_zonefiles_masterprefix'];
 		$domain = substr($data['new']['origin'], 0, strlen($data['new']['origin'])-1);
 		if (!file_exists($dns_config['bind_zonefiles_dir'].'/'.$filespre.$domain)) return false;
 
@@ -241,7 +241,7 @@ class bind_plugin {
 		foreach($key_files as $file) {
 			unlink($file);
 		}
-		unlink($dns_config['bind_zonefiles_dir'].'/'.$this->zone_file_prefix().$domain.'.signed');
+		unlink($dns_config['bind_zonefiles_dir'].'/'.$dns_config['bind_zonefiles_masterprefix'].$domain.'.signed');
 		unlink($dns_config['bind_keyfiles_dir'].'/dsset-'.$domain.'.');
 
 		if ($app->dbmaster !== $app->db) $app->dbmaster->query('UPDATE dns_soa SET dnssec_info=\'\', dnssec_initialized=\'N\' WHERE id=?', intval($data['new']['id']));
@@ -325,7 +325,7 @@ class bind_plugin {
 			}
 			$tpl->setLoop('zones', $records);
 
-			$filename = $dns_config['bind_zonefiles_dir'].'/' . $this->zone_file_prefix() . str_replace("/", "_", substr($zone['origin'], 0, -1));
+			$filename = $dns_config['bind_zonefiles_dir'].'/' . $dns_config['bind_zonefiles_masterprefix'] . str_replace("/", "_", substr($zone['origin'], 0, -1));
 
 			$old_zonefile = @file_get_contents($filename);
 			file_put_contents($filename, $tpl->grab());
@@ -371,7 +371,7 @@ class bind_plugin {
 		} elseif ($data['new']['dnssec_wanted'] == 'Y' && $data['old']['dnssec_initialized'] == 'N') {
 			$this->soa_dnssec_create($data);
 		} elseif ($data['new']['dnssec_wanted'] == 'N' && $data['old']['dnssec_initialized'] == 'Y') {	//delete old signed file if dnssec is no longer wanted
-			$filename = $dns_config['bind_zonefiles_dir'].'/' . $this->zone_file_prefix() . str_replace("/", "_", substr($data['old']['origin'], 0, -1));
+			$filename = $dns_config['bind_zonefiles_dir'].'/' . $dns_config['bind_zonefiles_masterprefix'] . str_replace("/", "_", substr($data['old']['origin'], 0, -1));
 			if(is_file($filename.'.signed')) unlink($filename.'.signed');
  		} elseif ($data['new']['dnssec_wanted'] == 'Y') {
 			$this->soa_dnssec_update($data);
@@ -385,7 +385,7 @@ class bind_plugin {
 
 		//* Delete old domain file, if domain name has been changed
 		if($data['old']['origin'] != $data['new']['origin']) {
-			$filename = $dns_config['bind_zonefiles_dir'].'/' . $this->zone_file_prefix() . str_replace("/", "_", substr($data['old']['origin'], 0, -1));
+			$filename = $dns_config['bind_zonefiles_dir'].'/' . $dns_config['bind_zonefiles_masterprefix'] . str_replace("/", "_", substr($data['old']['origin'], 0, -1));
 
 			if(is_file($filename)) unlink($filename);
 			if(is_file($filename.'.err')) unlink($filename.'.err');
@@ -412,7 +412,7 @@ class bind_plugin {
 		$this->write_named_conf($data, $dns_config);
 
 		//* Delete the domain file
-		$zone_file_name = $dns_config['bind_zonefiles_dir'].'/' . $this->zone_file_prefix() . str_replace("/", "_", substr($data['old']['origin'], 0, -1));
+		$zone_file_name = $dns_config['bind_zonefiles_dir'].'/' . $dns_config['bind_zonefiles_masterprefix'] . str_replace("/", "_", substr($data['old']['origin'], 0, -1));
 		if(is_file($zone_file_name)) unlink($zone_file_name);
 		if(is_file($zone_file_name.'.err')) unlink($zone_file_name.'.err');
 		$app->log("Deleting BIND domain file: ".$zone_file_name, LOGLEVEL_DEBUG);
@@ -452,12 +452,12 @@ class bind_plugin {
 
 		//* Delete old domain file, if domain name has been changed
 		if($data['old']['origin'] != $data['new']['origin']) {
-			$filename = $dns_config['bind_zonefiles_dir'].'/' . $this->zone_file_prefix() . str_replace("/", "_", substr($data['old']['origin'], 0, -1));
+			$filename = $dns_config['bind_zonefiles_dir'].'/' . $dns_config['bind_zonefiles_masterprefix'] . str_replace("/", "_", substr($data['old']['origin'], 0, -1));
 			if(is_file($filename)) unset($filename);
 		}
 
 		//* Ensure that the named slave directory is writable by the named user
-		$slave_record_dir = $dns_config['bind_zonefiles_dir'].'/'.$this->slave_zone_file_prefix();
+		$slave_record_dir = $dns_config['bind_zonefiles_dir'].'/'.$dns_config['bind_zonefiles_slaveprefix'];
 		if(!@is_dir($slave_record_dir)) mkdir($slave_record_dir, 0770);
 		chown($slave_record_dir, $dns_config['bind_user']);
 		chgrp($slave_record_dir, $dns_config['bind_group']);
@@ -479,7 +479,7 @@ class bind_plugin {
 		$this->write_named_conf($data, $dns_config);
 
 		//* Delete the domain file
-		$zone_file_name = $dns_config['bind_zonefiles_dir'].'/' . $this->slave_zone_file_prefix() . str_replace("/", "_", substr($data['old']['origin'], 0, -1));
+		$zone_file_name = $dns_config['bind_zonefiles_dir'].'/' . $dns_config['bind_zonefiles_slaveprefix'] . str_replace("/", "_", substr($data['old']['origin'], 0, -1));
 		if(is_file($zone_file_name)) unlink($zone_file_name);
 		$app->log("Deleting BIND domain file for secondary zone: ".$zone_file_name, LOGLEVEL_DEBUG);
 
@@ -536,8 +536,8 @@ class bind_plugin {
 
 		//* Check if the current zone that triggered this function has at least one NS record
 
-		$pri_zonefiles_path = $dns_config['bind_zonefiles_dir'].'/'.$this->zone_file_prefix();
-		$sec_zonefiles_path = $dns_config['bind_zonefiles_dir'].'/'.$this->slave_zone_file_prefix();
+		$pri_zonefiles_path = $dns_config['bind_zonefiles_dir'].'/'.$dns_config['bind_zonefiles_masterprefix'];
+		$sec_zonefiles_path = $dns_config['bind_zonefiles_dir'].'/'.$dns_config['bind_zonefiles_slaveprefix'];
 
 		//* Loop trough zones
 		foreach($tmps as $tmp) {
@@ -600,20 +600,6 @@ class bind_plugin {
 		unset($tmps);
 
 	}
-
-
-	function zone_file_prefix() {
-		//TODO : change this when distribution information has been integrated into server record
-		return	(file_exists('/etc/gentoo-release')) ? 'pri/' : 'pri.';
-	}
-	function slave_zone_file_prefix() {
-		//TODO : change this when distribution information has been integrated into server record
-		return	(file_exists('/etc/gentoo-release')) ? 'sec/' : 'slave/sec.';
-	}
-
-
-
-
 } // end class
 
 ?>
