@@ -234,6 +234,9 @@ class page_action extends tform_actions {
 		$app->tpl->setVar('dkim_public', $rec['dkim_public'], true);
 		if (!empty($rec['dkim_public'])) $app->tpl->setVar('dns_record', $dns_record, true);
 
+		$global_config = $app->getconf->get_global_config();
+		$app->tpl->setVar('show_delete_on_forms', $global_config['misc']['show_delete_on_forms']);
+
 		parent::onShowEnd();
 	}
 
