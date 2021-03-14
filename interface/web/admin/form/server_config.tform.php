@@ -34,7 +34,7 @@
  */
 
 $form["title"] = "server_config";
-$form["description"] = "";
+//$form["description"] = "";
 $form["name"] = "server_config";
 $form["action"] = "server_config_edit.php";
 $form["db_table"] = "server";
@@ -716,6 +716,18 @@ $form["tabs"]['mail'] = array(
 			'formtype' => 'CHECKBOX',
 			'default' => 'n',
 			'value' => array(0 => 'n', 1 => 'y')
+		),
+		'rspamd_url' => array(
+			'datatype' => 'VARCHAR',
+			'formtype' => 'TEXT',
+			'default' => '',
+			'filters'   => array(
+				0 => array( 'event' => 'SAVE', 'type' => 'IDNTOASCII'),
+				1 => array( 'event' => 'SHOW', 'type' => 'IDNTOUTF8')
+			),
+			'value' => '',
+			'width' => '40',
+			'maxlength' => '255'
 		),
 		//#################################
 		// END Datatable fields
