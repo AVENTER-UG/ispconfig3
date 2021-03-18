@@ -480,8 +480,15 @@ class mail_plugin {
 		//* Delete maildomain path
 		$old_maildomain_path = $mail_config['homedir_path'].'/'.$data['old']['domain'];
 		if($old_maildomain_path != $mail_config['homedir_path'] && !stristr($old_maildomain_path, '//') && !stristr($old_maildomain_path, '..') && !stristr($old_maildomain_path, '*') && !stristr($old_maildomain_path, '&') && strlen($old_maildomain_path) >= 10  && !empty($data['old']['domain'])) {
-			$app->system->exec_safe('rm -rf ?', $old_maildomain_path);
-			$app->log('Deleted the mail domain directory: '.$old_maildomain_path, LOGLEVEL_DEBUG);
+			if ($mail_config['mailbox_safe_delete'] == 'n') {
+				$app->system->exec_safe('rm -rf ?', $old_maildomain_path);
+				$app->log('Deleted the mail domain directory: '.$old_maildomain_path, LOGLEVEL_DEBUG);
+			} else  {
+				// Move it, adding a date based suffix. A cronjob should purge or archive.
+				$thrash_maildomain_path = $old_maildomain_path . '-' . date("YmdHis");
+				$app->system->exec_safe('mv ? ?', $old_maildomain_path, $thrash_maildomain_path);
+				$app->log('Renamed the mail domain directory: ' . $old_maildomain_path . ' to ' . $thrash_maildomain_path, LOGLEVEL_DEBUG);
+			}
 			$maildomain_path_deleted = true;
 		} else {
 			$app->log('Possible security violation when deleting the mail domain directory: '.$old_maildomain_path, LOGLEVEL_ERROR);
