@@ -429,8 +429,15 @@ class mail_plugin {
 		$maildir_path_deleted = false;
 		$old_maildir_path = $data['old']['maildir'];
 		if($old_maildir_path != $mail_config['homedir_path'] && strlen($old_maildir_path) > strlen($mail_config['homedir_path']) && !stristr($old_maildir_path, '//') && !stristr($old_maildir_path, '..') && !stristr($old_maildir_path, '*') && strlen($old_maildir_path) >= 10) {
-			$app->system->exec_safe('rm -rf ?', $old_maildir_path);
-			$app->log('Deleted the Maildir: '.$data['old']['maildir'], LOGLEVEL_DEBUG);
+			if ($mail_config['mailbox_safe_delete'] == 'n') {
+				$app->system->exec_safe('rm -rf ?', $old_maildir_path);
+				$app->log('Deleted the Maildir: '.$data['old']['maildir'], LOGLEVEL_DEBUG);
+			} else  {
+				// Move it, adding a date based suffix. A cronjob should purge or archive.
+				$thrash_maildir_path = $old_maildir_path . '-' . date("YmdHis");
+				$app->system->exec_safe('mv ? ?', $old_maildir_path, $thrash_maildir_path);
+				$app->log('Renamed the Maildir: ' . $data['old']['maildir'] . ' to ' . $thrash_maildir_path, LOGLEVEL_DEBUG);
+			}
 			$maildir_path_deleted = true;
 		} else {
 			$app->log('Possible security violation when deleting the maildir: '.$data['old']['maildir'], LOGLEVEL_ERROR);
