@@ -96,7 +96,11 @@ require_once 'lib/classes/tpl.inc.php';
 
 //** Check for ISPConfig 2.x versions
 if(is_dir('/root/ispconfig') || is_dir('/home/admispconfig')) {
-	die('This software cannot be installed on a server wich runs ISPConfig 2.x.');
+	if(is_dir('/home/admispconfig')) {
+		die('This software cannot be installed on a server which runs ISPConfig 2.x.');
+	} else {
+		die('This software cannot be installed on a server which runs ISPConfig 2.x; the presence of the /root/ispconfig/ directory may indicate an ISPConfig 2.x installation, otherwise you can remove or rename it to continue.');
+	}
 }
 
 // Patch is required to reapir latest amavis versions
@@ -565,6 +569,9 @@ if(!$issue_asked) {
         swriteln('Certificate exists. Not creating a new one.');
     }
 }
+
+// update acme.sh if installed
+$inst->update_acme();
 
 $inst->install_ispconfig();
 

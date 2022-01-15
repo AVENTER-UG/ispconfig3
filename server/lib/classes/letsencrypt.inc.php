@@ -44,7 +44,7 @@ class letsencrypt {
 	}
 
 	public function get_acme_script() {
-		$acme = explode("\n", shell_exec('which /usr/local/ispconfig/server/scripts/acme.sh /root/.acme.sh/acme.sh'));
+		$acme = explode("\n", shell_exec('which acme.sh /usr/local/ispconfig/server/scripts/acme.sh /root/.acme.sh/acme.sh'));
 		$acme = reset($acme);
 		if(is_executable($acme)) {
 			return $acme;
@@ -80,7 +80,7 @@ class letsencrypt {
 	}
 
 	public function get_certbot_script() {
-		$letsencrypt = explode("\n", shell_exec('which letsencrypt certbot /root/.local/share/letsencrypt/bin/letsencrypt /opt/eff.org/certbot/venv/bin/certbot'));
+		$letsencrypt = explode("\n", shell_exec('which certbot /root/.local/share/letsencrypt/bin/letsencrypt /opt/eff.org/certbot/venv/bin/certbot letsencrypt'));
 		$letsencrypt = reset($letsencrypt);
 		if(is_executable($letsencrypt)) {
 			return $letsencrypt;

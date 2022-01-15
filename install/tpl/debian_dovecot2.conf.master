@@ -65,21 +65,21 @@ service imap-login {
   process_limit = 512
 }
 protocol imap {
-  mail_plugins = quota imap_quota
+  mail_plugins = $mail_plugins quota imap_quota
   auth_verbose = yes
 }
 protocol pop3 {
   pop3_uidl_format = %08Xu%08Xv
-  mail_plugins = quota
+  mail_plugins = $mail_plugins quota
   auth_verbose = yes
 }
 protocol lda {
   postmaster_address = webmaster@localhost
-  mail_plugins = sieve quota
+  mail_plugins = $mail_plugins sieve quota
 }
 protocol lmtp {
   postmaster_address = webmaster@localhost
-  mail_plugins = quota sieve
+  mail_plugins = $mail_plugins quota sieve
 }
 
 
@@ -111,4 +111,5 @@ plugin {
   quota_status_nouser = DUNNO
   quota_status_overquota = "552 5.2.2 Mailbox is full"
 }
+
 !include_try conf.d/99-ispconfig-custom-config.conf
