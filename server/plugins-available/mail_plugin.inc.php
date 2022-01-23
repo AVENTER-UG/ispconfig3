@@ -433,6 +433,10 @@ class mail_plugin {
 				// Move it, adding a date based suffix. A cronjob should purge or archive.
 				$thrash_maildir_path = $old_maildir_path . '-' . date("YmdHis");
 				$app->system->exec_safe('mv ? ?', $old_maildir_path, $thrash_maildir_path);
+
+				// Update the dir's timestamp to make filtering on age easier in any cleanup cronjob.
+				$app->system->exec_safe('touch ?', $thrash_maildir_path);
+
 				$app->log('Renamed the Maildir: ' . $data['old']['maildir'] . ' to ' . $thrash_maildir_path, LOGLEVEL_DEBUG);
 			} else  {
 				$app->system->exec_safe('rm -rf ?', $old_maildir_path);
@@ -484,6 +488,10 @@ class mail_plugin {
 				// Move it, adding a date based suffix. A cronjob should purge or archive.
 				$thrash_maildomain_path = $old_maildomain_path . '-' . date("YmdHis");
 				$app->system->exec_safe('mv ? ?', $old_maildomain_path, $thrash_maildomain_path);
+
+				// Update the dir's timestamp to make filtering on age easier in any cleanup cronjob.
+				$app->system->exec_safe('touch ?', $thrash_maildomain_path);
+
 				$app->log('Renamed the mail domain directory: ' . $old_maildomain_path . ' to ' . $thrash_maildomain_path, LOGLEVEL_DEBUG);
 			} else  {
 				$app->system->exec_safe('rm -rf ?', $old_maildomain_path);
