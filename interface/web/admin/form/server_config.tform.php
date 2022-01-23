@@ -685,7 +685,7 @@ $form["tabs"]['mail'] = array(
 			'default' => 'y',
 			'value' => array(0 => 'n', 1 => 'y')
 		),
-		'mailbox_safe_delete' => array (
+		'mailbox_soft_delete' => array (
 			'datatype' => 'VARCHAR',
 			'formtype' => 'CHECKBOX',
 			'default' => 'y',
