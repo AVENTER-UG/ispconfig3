@@ -33,7 +33,7 @@ echo    tar cvfj "$backupfile" --remove-files "$dir" 2> >( grep -v "tar: Removin
 }
 
 # List deleted mailboxs to archive
-# -mtime +7 ===> Only mailboxes deleted more then 7 days ago 
+# -mtime +7 ===> Only mailboxes deleted more then 7 days ago
 # Test that the last dir component matches e.g. xxx-20220101094242 (14 digits)
 # command: xxx-`date "+%Y%m%d%H%M%S"`
 find /var/vmail/*/[a-z0-9.-]*-[0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9]  -maxdepth 0 -type d -mtime +$delay_days | while read line; do
