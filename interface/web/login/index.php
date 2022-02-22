@@ -279,8 +279,27 @@ if(count($_POST) > 0) {
 							echo 'LOGIN_REDIRECT:'.$_SESSION['s']['module']['startpage'];
 							exit;
 						} else {
-							header('Location: ../index.php');
-							die();
+							
+							//* Do 2FA authentication
+							if($user['otp_enabled'] != 'n') {
+								
+								//* Save session in pending state and destroy original session
+								$_SESSION['s_pending'] = $_SESSION['s'];
+								unset($_SESSION['s']);
+								
+								//* Create OTP session
+								$_SESSION['otp']['session_attempts'] = 0;
+								$_SESSION['otp']['type'] = $user['otp_type'];
+								$_SESSION['otp']['data'] = $user['otp_data'];
+								$_SESSION['otp']['recovery'] = $user['otp_recovery'];
+								
+								//* Redirect to otp script
+								header('Location: otp.php');
+								die();
+							} else {
+								header('Location: ../index.php');
+								die();
+							}
 						}
 					}
 				} else {

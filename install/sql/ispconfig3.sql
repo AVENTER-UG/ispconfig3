@@ -1820,6 +1820,11 @@ CREATE TABLE `sys_user` (
   `lost_password_function` tinyint(1) NOT NULL default '1',
   `lost_password_hash` VARCHAR(50) NOT NULL default '',
   `lost_password_reqtime` DATETIME NULL default NULL,
+  `otp_enabled` set('n','y','v') NOT NULL DEFAULT 'n',
+  `otp_type` set('email') NOT NULL DEFAULT 'email',
+  `otp_data` varchar(255) DEFAULT NULL,
+  `otp_recovery` varchar(64) DEFAULT NULL,
+  `otp_attempts` tinyint(4) NOT NULL DEFAULT 0,
   PRIMARY KEY  (`userid`)
 ) DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
 
