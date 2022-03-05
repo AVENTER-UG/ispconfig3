@@ -32,4 +32,8 @@ $wb['lost_password_function_disabled_txt'] = 'The lost password function is not 
 $wb['lost_password_function_wait_txt'] = 'You cannot request a new password yet. Please wait a few minutes.';
 $wb['lost_password_function_expired_txt'] = 'This activation link has expired. Please request a new one.';
 $wb['lost_password_function_denied_txt'] = 'This activation link is not valid.';
+$wb['otp_code_txt'] = '2-Factor Authentication';
+$wb['otp_code_desc_txt'] = 'Enter the code you got from your authenticator app or via email.';
+$wb['otp_code_placeholder_txt'] = 'OTP code';
+$wb['otp_code_reset_txt'] = 'Request new code';
 ?>
