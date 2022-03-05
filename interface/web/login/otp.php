@@ -55,8 +55,13 @@ if(count($_POST) >= 1) {
 	$app->auth->csrf_token_check();
 }
 
+
+// FIXME What's the deal with otp_enabled=v ??
+
+
+
 //* Handle recovery code
-if(isset($_POST['code']) && strlen($_POST['code']) == 32 && $_SESSION['otp']['recovery'])) {
+if(isset($_POST['code']) && strlen($_POST['code']) == 32 && $_SESSION['otp']['recovery']) {
 	//* TODO Recovery code handling
 	
 	$user = $app->db->queryOneRecord('SELECT otp_attempts FROM sys_user WHERE userid = ?',$_SESSION['s_pending']['user']['userid']);
@@ -66,6 +71,7 @@ if(isset($_POST['code']) && strlen($_POST['code']) == 32 && $_SESSION['otp']['re
 		
 	}
 	
+	// show reset form to create a new 2fa secret?
 	
 	die('Handle recovery code');
 }
@@ -104,8 +110,8 @@ if($_SESSION['otp']['type'] == 'email') {
 								die();
 		} else {
 			//* 2fa wrong code
-			$_SESSION['otp']['session_attempts']++;
-			$app->db->query()
+			$_SESSION['otp']['session_attempts']++; // FIXME can't we skip this and rely on the DB only?
+			$app->db->query('UPDATE `sys_user` SET otp_attempts=otp_attempts + 1 WHERE userid = ?', $_SESSION['s_pending']['user']['userid']);
 		}
 	}
 	
@@ -125,12 +131,16 @@ if($_SESSION['otp']['type'] == 'email') {
 		}
 		
 		$app->uses('functions');
-		
+		$app->uses('getconf');
+		$system_config = $app->getconf->get_global_config();
+		$from = $system_config['mail']['admin_mail'];
+
+
 		//* send email
 		$email_to = $_SESSION['otp']['data'];
 		$subject = 'ISPConfig Login authentication';
-		$text = '';
-		$from = 'root@localhost';
+		$text = 'Your One time login code is ' . $_SESSION['otp']['code'] . PHP_EOL
+			. 'This code is valid for 10 minutes' .  PHP_EOL;
 		
 		$app->functions->mail($email_to, $subject, $text, $from);
 		
@@ -144,7 +154,7 @@ if($_SESSION['otp']['type'] == 'email') {
 	}
 	
 	//* Show form to enter email code
-	
+	// ... below
 	
 
 } else {
@@ -153,7 +163,15 @@ if($_SESSION['otp']['type'] == 'email') {
 }
 
 
+$logo = $app->db->queryOneRecord("SELECT * FROM sys_ini WHERE sysini_id = 1");
+if($logo['custom_logo'] != ''){
+    $base64_logo_txt = $logo['custom_logo'];
+} else {
+    $base64_logo_txt = $logo['default_logo'];
+}
+$app->tpl->setVar('base64_logo_txt', $base64_logo_txt);
 
+$app->tpl->setVar('current_theme', isset($_SESSION['s']['theme']) ? $_SESSION['s']['theme'] : 'default', true);
 
 
 //* Load templating system and lang file
@@ -168,7 +186,8 @@ $app->tpl->setVar('_csrf_id',$csrf_token['csrf_id']);
 $app->tpl->setVar('_csrf_key',$csrf_token['csrf_key']);
 
 
-$app->load_language_file('web/login/lib/lang/'.$conf["language"].'.lng');
+require ISPC_ROOT_PATH.'/web/login/lib/lang/'.$app->functions->check_language($conf['language']).'.lng';
+$app->tpl->setVar($wb);
 
 
 
