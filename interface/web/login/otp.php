@@ -93,9 +93,10 @@ if($_SESSION['otp']['type'] == 'email') {
 		
 		//* Check if we reached limits
 		if($_SESSION['otp']['sent'] > $max_code_resend
-		|| $_SESSION['otp']['session_attempts'] > $max_session_code_retry
-		|| $user['otp_attempts'] > $max_global_code_retry
-		|| time() > $_SESSION['otp']['starttime'] + $max_time) {
+			|| $_SESSION['otp']['session_attempts'] > $max_session_code_retry
+			|| $user['otp_attempts'] > $max_global_code_retry
+			|| time() > $_SESSION['otp']['starttime'] + $max_time
+			) {
 			unset($_SESSION['otp']);
 			unset($_SESSION['s_pending']);
 			$app->error('2FA failed','index.php');
@@ -107,7 +108,7 @@ if($_SESSION['otp']['type'] == 'email') {
 			unset($_SESSION['s_pending']);
 			unset($_SESSION['otp']);
 			header('Location: ../index.php');
-								die();
+			die();
 		} else {
 			//* 2fa wrong code
 			$_SESSION['otp']['session_attempts']++; // FIXME can't we skip this and rely on the DB only?
