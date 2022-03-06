@@ -105,6 +105,8 @@ if($_SESSION['otp']['type'] == 'email') {
 		//* 2fa success
 		if($_POST['code'] == $_SESSION['otp']['code']) {
 			$_SESSION['s'] = $_SESSION['s_pending'];
+			// Reset the attempt counter.
+			$app->db->query('UPDATE `sys_user` SET otp_attempts=0 WHERE userid = ?', $_SESSION['s']['user']['userid']);
 			unset($_SESSION['s_pending']);
 			unset($_SESSION['otp']);
 			header('Location: ../index.php');
@@ -185,6 +187,7 @@ $app->tpl->setInclude('content_tpl', 'templates/otp.htm');
 $csrf_token = $app->auth->csrf_token_get('language_edit');
 $app->tpl->setVar('_csrf_id',$csrf_token['csrf_id']);
 $app->tpl->setVar('_csrf_key',$csrf_token['csrf_key']);
+#$app->tpl->setVar('msg', print_r($_SESSION['otp'], 1));
 
 
 require ISPC_ROOT_PATH.'/web/login/lib/lang/'.$app->functions->check_language($conf['language']).'.lng';
