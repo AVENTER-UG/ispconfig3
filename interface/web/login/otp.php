@@ -118,8 +118,8 @@ if($_SESSION['otp']['type'] == 'email') {
 	
 	//* set code
 	if(!isset($_SESSION['otp']['code']) || empty($_SESSION['otp']['code'])) {
-		// TODO Code generator
-		$_SESSION['otp']['code'] = 123456;
+		// Random int between 10^($code_length-1) and 10^$code_length
+		$_SESSION['otp']['code'] = rand(pow(10, $code_length - 1), pow(10, $code_length) - 1);
 		$_SESSION['otp']['starttime'] = time();
 	}
 	
