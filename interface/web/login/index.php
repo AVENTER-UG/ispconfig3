@@ -281,7 +281,7 @@ if(count($_POST) > 0) {
 						} else {
 							
 							//* Do 2FA authentication
-							if($user['otp_enabled'] != 'n') {
+							if(!empty($user['otp_type']) && $user['otp_type'] != 'none') {
 								
 								//* Save session in pending state and destroy original session
 								$_SESSION['s_pending'] = $_SESSION['s'];
