@@ -171,7 +171,7 @@ $form['tabs']['users'] = array (
 			'datatype' => 'VARCHAR',
 			'formtype' => 'SELECT',
 			'validators' => array (  0 => array (    'type' => 'NOTEMPTY',
-			'errmsg'=> 'oth_auth_empty'),
+			'errmsg'=> 'otp_auth_empty'),
 			1 => array (    'type' => 'REGEX',
 			'regex' => '/^[a-z0-9\_]{0,64}$/',
 			'errmsg'=> 'otp_auth_regex'),
