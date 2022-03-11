@@ -129,8 +129,7 @@ if($_SESSION['otp']['type'] == 'email') {
 
 	//* set code
 	if(!isset($_SESSION['otp']['code']) || empty($_SESSION['otp']['code'])) {
-		// Random int between 10^($code_length-1) and 10^$code_length
-		$_SESSION['otp']['code'] = rand(pow(10, $code_length - 1), pow(10, $code_length) - 1);
+		$_SESSION['otp']['code'] = random_int(100000, 999999);
 		$_SESSION['otp']['starttime'] = time();
 	}
 
