@@ -78,14 +78,14 @@ function finish_2fa_success($msg = '') {
 //* Handle recovery code
 if(isset($_POST['code']) && strlen($_POST['code']) == $otp_recovery_code_length && $_SESSION['otp']['recovery']) {
 	//* TODO Recovery code handling
-	
+
 	$user = $app->db->queryOneRecord('SELECT otp_attempts FROM sys_user WHERE userid = ?',$_SESSION['s_pending']['user']['userid']);
-	
+
 	//* We allow one more try to enter recovery code
 	if($user['otp_attempts'] > $max_global_code_retry + 1) {
 		die("Sorry, contact your administrator.");
 	}
-	
+
 	if ($_SESSION['otp']['recovery'] == $_POST['code']) {
 		finish_2fa_success('via 2fa recovery code');
 	}
@@ -99,13 +99,13 @@ if($_SESSION['otp']['type'] == 'email') {
 	$max_code_resend = 3;
 	$max_time = 600; // time in seconds until the code gets invalidated
 	$code_length = 6;
-	
+
 	if(isset($_POST['code']) && strlen($_POST['code']) == $code_length && isset($_SESSION['otp']['code'])) {
-		
+
 		if(strlen($_SESSION['otp']['code']) != $code_length) die(); // wrong code lenght, this should never happen
 		
 		$user = $app->db->queryOneRecord('SELECT otp_attempts FROM sys_user WHERE userid = ?',$_SESSION['s_pending']['user']['userid']);
-		
+
 		//* Check if we reached limits
 		if($_SESSION['otp']['sent'] > $max_code_resend
 			|| $_SESSION['otp']['session_attempts'] > $max_session_code_retry
@@ -116,7 +116,7 @@ if($_SESSION['otp']['type'] == 'email') {
 			unset($_SESSION['s_pending']);
 			$app->error('2FA failed','index.php');
 		}
-		
+
 		//* 2fa success
 		if($_POST['code'] == $_SESSION['otp']['code']) {
 			finish_2fa_success();
@@ -126,36 +126,35 @@ if($_SESSION['otp']['type'] == 'email') {
 			$app->db->query('UPDATE `sys_user` SET otp_attempts=otp_attempts + 1 WHERE userid = ?', $_SESSION['s_pending']['user']['userid']);
 		}
 	}
-	
+
 	//* set code
 	if(!isset($_SESSION['otp']['code']) || empty($_SESSION['otp']['code'])) {
 		// Random int between 10^($code_length-1) and 10^$code_length
 		$_SESSION['otp']['code'] = rand(pow(10, $code_length - 1), pow(10, $code_length) - 1);
 		$_SESSION['otp']['starttime'] = time();
 	}
-	
+
 	//* Send code via email
 	if(!isset($_SESSION['otp']['sent']) || $_GET['action'] == 'resend') {
-		
+
 		//* Ensure that code is not sent too often
 		if(isset($_SESSION['otp']['sent']) && $_SESSION['otp']['sent'] > $max_code_resend) {
 			$app->error('Code resend limit reached','index.php');
 		}
-		
+
 		$app->uses('functions');
 		$app->uses('getconf');
 		$system_config = $app->getconf->get_global_config();
 		$from = $system_config['mail']['admin_mail'];
-
 
 		//* send email
 		$email_to = $_SESSION['otp']['data'];
 		$subject = 'ISPConfig Login authentication';
 		$text = 'Your One time login code is ' . $_SESSION['otp']['code'] . PHP_EOL
 			. 'This code is valid for 10 minutes' .  PHP_EOL;
-		
+
 		$app->functions->mail($email_to, $subject, $text, $from);
-		
+
 		//* increase sent counter
 		if(!isset($_SESSION['otp']['sent'])) {
 			$_SESSION['otp']['sent'] = 1;
@@ -164,10 +163,9 @@ if($_SESSION['otp']['type'] == 'email') {
 		}
 		
 	}
-	
+
 	//* Show form to enter email code
 	// ... below
-	
 
 } else {
 	//* unsupported 2fa type
@@ -191,20 +189,15 @@ $app->uses('tpl');
 $app->tpl->newTemplate('main_login.tpl.htm');
 $app->tpl->setInclude('content_tpl', 'templates/otp.htm');
 
-	
+
 //* SET csrf token
 $csrf_token = $app->auth->csrf_token_get('language_edit');
 $app->tpl->setVar('_csrf_id',$csrf_token['csrf_id']);
 $app->tpl->setVar('_csrf_key',$csrf_token['csrf_key']);
 #$app->tpl->setVar('msg', print_r($_SESSION['otp'], 1));
 
-
 require ISPC_ROOT_PATH.'/web/login/lib/lang/'.$app->functions->check_language($conf['language']).'.lng';
 $app->tpl->setVar($wb);
-
-
-
-
 
 $app->tpl_defaults();
 $app->tpl->pparse();
