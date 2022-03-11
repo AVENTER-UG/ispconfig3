@@ -89,6 +89,9 @@ if(isset($_POST['code']) && strlen($_POST['code']) == $otp_recovery_code_length 
 	if ($_SESSION['otp']['recovery'] == $_POST['code']) {
 		finish_2fa_success('via 2fa recovery code');
 	}
+	else {
+		$app->db->query('UPDATE `sys_user` SET otp_attempts=otp_attempts + 1 WHERE userid = ?', $_SESSION['s_pending']['user']['userid']);
+	}
 }
 
 
