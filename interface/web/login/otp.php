@@ -190,7 +190,7 @@ $app->tpl->setInclude('content_tpl', 'templates/otp.htm');
 
 
 //* SET csrf token
-$csrf_token = $app->auth->csrf_token_get('language_edit');
+$csrf_token = $app->auth->csrf_token_get('otp');
 $app->tpl->setVar('_csrf_id',$csrf_token['csrf_id']);
 $app->tpl->setVar('_csrf_key',$csrf_token['csrf_key']);
 #$app->tpl->setVar('msg', print_r($_SESSION['otp'], 1));
