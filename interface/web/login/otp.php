@@ -48,7 +48,7 @@ $error = '';
 $msg = '';
 $max_session_code_retry = 3;
 $max_global_code_retry = 10;
-
+$otp_recovery_code_length = 32;
 
 //* CSRF Check if we got POST data
 if(count($_POST) >= 1) {
@@ -61,7 +61,7 @@ if(count($_POST) >= 1) {
 
 
 //* Handle recovery code
-if(isset($_POST['code']) && strlen($_POST['code']) == 32 && $_SESSION['otp']['recovery']) {
+if(isset($_POST['code']) && strlen($_POST['code']) == $otp_recovery_code_length && $_SESSION['otp']['recovery']) {
 	//* TODO Recovery code handling
 	
 	$user = $app->db->queryOneRecord('SELECT otp_attempts FROM sys_user WHERE userid = ?',$_SESSION['s_pending']['user']['userid']);
