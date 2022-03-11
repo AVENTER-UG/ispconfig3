@@ -76,10 +76,10 @@ function finish_2fa_success($msg = '') {
 }
 
 //* Handle recovery code
-if(isset($_POST['code']) && strlen($_POST['code']) == $otp_recovery_code_length && $_SESSION['otp']['recovery']) {
+if(isset($_POST['code']) && strlen($_POST['code']) == $otp_recovery_code_length) {
 	//* TODO Recovery code handling
 
-	$user = $app->db->queryOneRecord('SELECT otp_attempts FROM sys_user WHERE userid = ?',$_SESSION['s_pending']['user']['userid']);
+	$user = $app->db->queryOneRecord('SELECT otp_attempts, otp_recovery FROM sys_user WHERE userid = ?',$_SESSION['s_pending']['user']['userid']);
 
 	//* We allow one more try to enter recovery code
 	if($user['otp_attempts'] > $max_global_code_retry + 1) {
