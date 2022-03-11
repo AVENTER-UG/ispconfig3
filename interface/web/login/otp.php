@@ -135,7 +135,7 @@ if($_SESSION['otp']['type'] == 'email') {
 	}
 
 	//* Send code via email
-	if(!isset($_SESSION['otp']['sent']) || $_GET['action'] == 'resend') {
+       if(!isset($_SESSION['otp']['sent']) || $_GET['action'] == 'resent') {
 
 		//* Ensure that code is not sent too often
 		if(isset($_SESSION['otp']['sent']) && $_SESSION['otp']['sent'] > $max_code_resend) {
