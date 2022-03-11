@@ -87,7 +87,7 @@ paths = awk, bzip2, bunzip2, ldd, less, clear, cut, du, find, head, less, md5sum
 includesections = basicshell, midnightcommander, editors
 
 [terminfo]
-comment = terminfo databases, required for example for ncurses or vim 
+comment = terminfo databases, required for example for ncurses or vim
 paths = /etc/terminfo, /usr/share/terminfo, /lib/terminfo
 
 [editors]
@@ -96,8 +96,8 @@ includesections = terminfo
 paths = joe, nano, vi, vim, /etc/vimrc, /etc/joe, /usr/share/vim
 
 [netutils]
-comment = several internet utilities like wget, ftp, rsync, scp, ssh
-paths = wget, lynx, ftp, host, rsync, smbclient
+comment = several internet utilities like curl, wget, ftp, rsync, scp, ssh
+paths = curl, wget, lynx, ftp, host, rsync, smbclient
 includesections = netbasics, ssh, sftp, scp
 
 [apacheutils]
@@ -160,7 +160,7 @@ paths = cat, chgrp, chmod, chown, cp, date, dd, df, dir, echo, false, ln, ls, mk
 
 [wp]
 comment = WordPress Command Line
-paths = wp, /usr/local/bin/php
+paths = wp, which, mysqlcheck, tput, unrar, /usr/local/bin/php
 includesections = php, mysql-client
 
 [mysql-client]
@@ -175,7 +175,7 @@ includesections = php, uidbasics, netbasics
 
 [node]
 comment = NodeJS
-paths = npm, node, nodejs, /usr/lib/nodejs, /usr/share/npm, /usr/share/node-mime, /usr/lib/node_modules, /usr/local/lib/nodejs, /usr/local/lib/node_modules, elmi-to-json, /usr/local/bin/elmi-to-json
+paths = npm, npx, node, nodejs, semver, /usr/lib/nodejs, /usr/share/nodejs, /usr/share/npm, /usr/share/node-mime, /usr/lib/node_modules, /usr/local/lib/nodejs, /usr/local/lib/node_modules, /etc/npmrc, /etc/npmignore, elmi-to-json, /usr/local/bin/elmi-to-json
 
 [env]
 comment = /usr/bin/env for environment variables
@@ -231,6 +231,16 @@ includesections = php_common
 [php8_0]
 comment = php version 8.0
 paths = /usr/bin/php8.0, /usr/lib/php/8.0/, /usr/lib/php/20200930/, /usr/share/php/8.0/, /etc/php/8.0/cli/, /etc/php/8.0/mods-available/
+includesections = php_common
+
+[php8_1]
+comment = php version 8.1
+paths = /usr/bin/php8.1, /usr/lib/php/8.1/, /usr/lib/php/20210902/, /usr/share/php/8.1/, /etc/php/8.1/cli/, /etc/php/8.1/mods-available/
+includesections = php_common
+
+[php8_2]
+comment = php version 8.2
+paths = /usr/bin/php8.2, /usr/lib/php/8.2/, /usr/lib/php/20210902/, /usr/share/php/8.2/, /etc/php/8.2/cli/, /etc/php/8.2/mods-available/
 includesections = php_common
 
 [imagemagick]
