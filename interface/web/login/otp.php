@@ -163,7 +163,7 @@ if($_SESSION['otp']['type'] == 'email') {
 		} else {
 			$_SESSION['otp']['sent']++;
 		}
-		
+
 	}
 
 	//* Show form to enter email code
