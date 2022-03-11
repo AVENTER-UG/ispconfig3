@@ -94,7 +94,7 @@ if(isset($_POST['code']) && strlen($_POST['code']) == $otp_recovery_code_length 
 
 //* Begin 2fa via Email
 if($_SESSION['otp']['type'] == 'email') {
-	
+
 	//* Email 2fa handler settings
 	$max_code_resend = 3;
 	$max_time = 600; // time in seconds until the code gets invalidated
@@ -103,7 +103,7 @@ if($_SESSION['otp']['type'] == 'email') {
 	if(isset($_POST['code']) && strlen($_POST['code']) == $code_length && isset($_SESSION['otp']['code'])) {
 
 		if(strlen($_SESSION['otp']['code']) != $code_length) die(); // wrong code lenght, this should never happen
-		
+
 		$user = $app->db->queryOneRecord('SELECT otp_attempts FROM sys_user WHERE userid = ?',$_SESSION['s_pending']['user']['userid']);
 
 		//* Check if we reached limits
