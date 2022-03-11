@@ -59,6 +59,21 @@ if(count($_POST) >= 1) {
 // FIXME What's the deal with otp_enabled=v ??
 
 
+function finish_2fa_success($msg = '') {
+	global $app;
+	$_SESSION['s'] = $_SESSION['s_pending'];
+	unset($_SESSION['s_pending']);
+	unset($_SESSION['otp']);
+	$username = $_SESSION['s']['user']['username'];
+	if (!empty($msg)) {
+		$msg = ' ' . $msg;
+	}
+	$app->auth_log('Successful login for user \''. $username .'\' ' . $msg . ' from '. $_SERVER['REMOTE_ADDR'] .' at '. date('Y-m-d H:i:s') . ' with session ID ' .session_id());
+	$app->db->query('UPDATE `sys_user` SET otp_attempts=0 WHERE userid = ?', $_SESSION['s']['user']['userid']);
+	session_write_close();
+	header('Location: ../index.php');
+	die();
+}
 
 //* Handle recovery code
 if(isset($_POST['code']) && strlen($_POST['code']) == $otp_recovery_code_length && $_SESSION['otp']['recovery']) {
@@ -68,12 +83,12 @@ if(isset($_POST['code']) && strlen($_POST['code']) == $otp_recovery_code_length 
 	
 	//* We allow one more try to enter recovery code
 	if($user['otp_attempts'] > $max_global_code_retry + 1) {
-		
+		die("Sorry, contact your administrator.");
 	}
 	
-	// show reset form to create a new 2fa secret?
-	
-	die('Handle recovery code');
+	if ($_SESSION['otp']['recovery'] == $_POST['code']) {
+		finish_2fa_success('via 2fa recovery code');
+	}
 }
 
 
@@ -104,13 +119,7 @@ if($_SESSION['otp']['type'] == 'email') {
 		
 		//* 2fa success
 		if($_POST['code'] == $_SESSION['otp']['code']) {
-			$_SESSION['s'] = $_SESSION['s_pending'];
-			// Reset the attempt counter.
-			$app->db->query('UPDATE `sys_user` SET otp_attempts=0 WHERE userid = ?', $_SESSION['s']['user']['userid']);
-			unset($_SESSION['s_pending']);
-			unset($_SESSION['otp']);
-			header('Location: ../index.php');
-			die();
+			finish_2fa_success();
 		} else {
 			//* 2fa wrong code
 			$_SESSION['otp']['session_attempts']++; // FIXME can't we skip this and rely on the DB only?
