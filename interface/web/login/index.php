@@ -175,11 +175,7 @@ function process_login_request(app $app, &$error, $conf, $module)
 		if ($app->db->errorMessage != '') $error .= '<br />'.$app->db->errorMessage != '';
 
 		$app->plugin->raiseEvent('login_failed', $username);
-		//* Save failed login message to var
-		$authlog = 'Failed login for user \''.$username.'\' from '.$_SERVER['REMOTE_ADDR'].' at '.date('Y-m-d H:i:s');
-		$authlog_handle = fopen($conf['ispconfig_log_dir'].'/auth.log', 'a');
-		fwrite($authlog_handle, $authlog."\n");
-		fclose($authlog_handle);
+		$app->auth_log('Failed login for user \''. $username .'\ from '. $_SERVER['REMOTE_ADDR'] .' at '. date('Y-m-d H:i:s');
 	}
 }
 
