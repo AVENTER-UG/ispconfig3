@@ -121,7 +121,7 @@ if($_SESSION['otp']['type'] == 'email') {
 		}
 
 		//* 2fa success
-		if($_POST['code'] == $_SESSION['otp']['code']) {
+		if(password_verify($_POST['code'], $_SESSION['otp']['code_hash'])) {
 			finish_2fa_success();
 		} else {
 			//* 2fa wrong code
@@ -132,7 +132,8 @@ if($_SESSION['otp']['type'] == 'email') {
 
 	//* set code
 	if(!isset($_SESSION['otp']['code']) || empty($_SESSION['otp']['code'])) {
-		$_SESSION['otp']['code'] = random_int(100000, 999999);
+		$new_otp_code = random_int(100000, 999999);
+		$_SESSION['otp']['code_hash'] = password_hash($new_otp_code, PASSWORD_DEFAULT);
 		$_SESSION['otp']['starttime'] = time();
 	}
 
@@ -152,7 +153,7 @@ if($_SESSION['otp']['type'] == 'email') {
 		//* send email
 		$email_to = $_SESSION['otp']['data'];
 		$subject = 'ISPConfig Login authentication';
-		$text = 'Your One time login code is ' . $_SESSION['otp']['code'] . PHP_EOL
+		$text = 'Your One time login code is ' . $new_otp_code . PHP_EOL
 			. 'This code is valid for 10 minutes' .  PHP_EOL;
 
 		$app->functions->mail($email_to, $subject, $text, $from);
