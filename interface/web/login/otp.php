@@ -125,7 +125,7 @@ if($_SESSION['otp']['type'] == 'email') {
 			finish_2fa_success();
 		} else {
 			//* 2fa wrong code
-			$_SESSION['otp']['session_attempts']++; // FIXME can't we skip this and rely on the DB only?
+			$_SESSION['otp']['session_attempts']++;
 			$app->db->query('UPDATE `sys_user` SET otp_attempts=otp_attempts + 1 WHERE userid = ?', $_SESSION['s_pending']['user']['userid']);
 		}
 	}
