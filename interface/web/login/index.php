@@ -126,13 +126,6 @@ function process_login_request(app $app, &$error, $conf, $module)
 			}
 		}
 
-		$app->plugin->raiseEvent('login', $username);
-
-		//* Save successful login message to var
-		$authlog = 'Successful login for user \''.$username.'\' from '.$_SERVER['REMOTE_ADDR'].' at '.date('Y-m-d H:i:s').' with session ID '.session_id();
-		$authlog_handle = fopen($conf['ispconfig_log_dir'].'/auth.log', 'a');
-		fwrite($authlog_handle, $authlog."\n");
-		fclose($authlog_handle);
 
 		/*
 		* We need LOGIN_REDIRECT instead of HEADER_REDIRECT to load the
@@ -161,6 +154,8 @@ function process_login_request(app $app, &$error, $conf, $module)
 				header('Location: otp.php');
 				die();
 			} else {
+				$app->plugin->raiseEvent('login', $username);
+				$app->auth_log('Successful login for user \''. $username .'\' ' . $msg . ' from '. $_SERVER['REMOTE_ADDR'] .' at '. date('Y-m-d H:i:s') . ' with session ID ' .session_id());
 				header('Location: ../index.php');
 				die();
 			}
