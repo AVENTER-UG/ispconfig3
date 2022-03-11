@@ -292,6 +292,7 @@ if(count($_POST) > 0) {
 								header('Location: otp.php');
 								die();
 							} else {
+								$app->auth_log('Successful login for user \''. $username .'\' from '. $_SERVER['REMOTE_ADDR'] .' at '. date('Y-m-d H:i:s') . ' with session ID ' .session_id());
 								header('Location: ../index.php');
 								die();
 							}
