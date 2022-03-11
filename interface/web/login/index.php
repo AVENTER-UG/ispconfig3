@@ -264,11 +264,6 @@ if(count($_POST) > 0) {
 
 						$app->plugin->raiseEvent('login', $username);
 
-						//* Save successfull login message to var
-						$authlog = 'Successful login for user \''. $username .'\' from '. $_SERVER['REMOTE_ADDR'] .' at '. date('Y-m-d H:i:s') . ' with session ID ' .session_id();
-						$authlog_handle = fopen($conf['ispconfig_log_dir'].'/auth.log', 'a');
-						fwrite($authlog_handle, $authlog ."\n");
-						fclose($authlog_handle);
 
 						/*
 						* We need LOGIN_REDIRECT instead of HEADER_REDIRECT to load the
@@ -321,11 +316,7 @@ if(count($_POST) > 0) {
 				if($app->db->errorMessage != '') $error .= '<br />'.$app->db->errorMessage != '';
 
 				$app->plugin->raiseEvent('login_failed', $username);
-				//* Save failed login message to var
-				$authlog = 'Failed login for user \''. $username .'\' from '. $_SERVER['REMOTE_ADDR'] .' at '. date('Y-m-d H:i:s');
-				$authlog_handle = fopen($conf['ispconfig_log_dir'].'/auth.log', 'a');
-				fwrite($authlog_handle, $authlog ."\n");
-				fclose($authlog_handle);
+				$app->auth_log('Failed login for user \''. $username .'\' from '. $_SERVER['REMOTE_ADDR'] .' at '. date('Y-m-d H:i:s'));
 			}
 		}
 		} else {
