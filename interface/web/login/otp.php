@@ -86,7 +86,7 @@ if(isset($_POST['code']) && strlen($_POST['code']) == $otp_recovery_code_length 
 		die("Sorry, contact your administrator.");
 	}
 
-	if ($_SESSION['otp']['recovery'] == $_POST['code']) {
+	if (password_verify($_POST['code'], $user['otp_recovery'])) {
 		finish_2fa_success('via 2fa recovery code');
 	}
 	else {
