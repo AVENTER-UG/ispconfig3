@@ -148,6 +148,7 @@ function process_login_request(app $app, &$error, $conf, $module)
 				$_SESSION['otp']['session_attempts'] = 0;
 				$_SESSION['otp']['type'] = $user['otp_type'];
 				$_SESSION['otp']['data'] = $user['otp_data'];
+				//$_SESSION['otp']['recovery_debug'] = $user['otp_recovery']; // For DEBUG only.
 
 				//* Redirect to otp script
 				header('Location: otp.php');

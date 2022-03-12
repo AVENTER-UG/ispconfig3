@@ -134,6 +134,7 @@ if($_SESSION['otp']['type'] == 'email') {
 	if(!isset($_SESSION['otp']['code']) || empty($_SESSION['otp']['code'])) {
 		$new_otp_code = random_int(100000, 999999);
 		$_SESSION['otp']['code_hash'] = password_hash($new_otp_code, PASSWORD_DEFAULT);
+		//$_SESSION['otp']['code_debug'] = $new_otp_code; # for DEBUG only.
 		$_SESSION['otp']['starttime'] = time();
 	}
 
@@ -197,7 +198,7 @@ $app->tpl->setInclude('content_tpl', 'templates/otp.htm');
 $csrf_token = $app->auth->csrf_token_get('otp');
 $app->tpl->setVar('_csrf_id',$csrf_token['csrf_id']);
 $app->tpl->setVar('_csrf_key',$csrf_token['csrf_key']);
-#$app->tpl->setVar('msg', print_r($_SESSION['otp'], 1));
+//$app->tpl->setVar('msg', print_r($_SESSION['otp'], 1)); // For DEBUG only.
 
 require ISPC_ROOT_PATH.'/web/login/lib/lang/'.$app->functions->check_language($conf['language']).'.lng';
 $app->tpl->setVar($wb);
