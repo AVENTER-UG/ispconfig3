@@ -56,9 +56,6 @@ if(count($_POST) >= 1) {
 }
 
 
-// FIXME What's the deal with otp_enabled=v ??
-
-
 function finish_2fa_success($msg = '') {
 	global $app;
 	$_SESSION['s'] = $_SESSION['s_pending'];
