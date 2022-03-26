@@ -1,15 +1,15 @@
 <?php
-$wb['list_head_txt'] = 'XMPP User Accounts';
+$wb['list_head_txt'] = 'Profilo utente XMPP';
 $wb['jid_txt'] = 'Jabber ID';
-$wb['active_txt'] = 'Active';
+$wb['active_txt'] = 'Attivo';
 $wb['cryptpwd_txt'] = 'Password';
-$wb['password_strength_txt'] = 'Password strength';
-$wb['error_no_pwd'] = 'Password is empty.';
+$wb['password_strength_txt'] = 'Forza della Password';
+$wb['error_no_pwd'] = 'Password è vuota.';
 $wb['password_txt'] = 'Password';
-$wb['generate_password_txt'] = 'Generate Password';
-$wb['repeat_password_txt'] = 'Repeat Password';
-$wb['password_mismatch_txt'] = 'The passwords do not match.';
-$wb['password_match_txt'] = 'The passwords do match.';
-$wb['no_domain_perm'] = 'You have no permission for this domain.';
-$wb['limit_xmpp_user_txt'] = 'The max. number of xmpp accounts for your account is reached.';
+$wb['generate_password_txt'] = 'Genera Password';
+$wb['repeat_password_txt'] = 'Ripeti Password';
+$wb['password_mismatch_txt'] = 'Le password sono diverse.';
+$wb['password_match_txt'] = 'Le password coincidono.';
+$wb['no_domain_perm'] = 'Non hai i permessi per questo dominio.';
+$wb['limit_xmpp_user_txt'] = 'Hai raggiunto il massimo numero di utenti XMPP per il tuo profilo.';
 ?>
