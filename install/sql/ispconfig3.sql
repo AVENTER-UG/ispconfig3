@@ -1842,7 +1842,7 @@ CREATE TABLE `sys_user` (
   `lost_password_function` tinyint(1) NOT NULL default '1',
   `lost_password_hash` VARCHAR(50) NOT NULL default '',
   `lost_password_reqtime` DATETIME NULL default NULL,
-  `otp_type` set('email') NOT NULL DEFAULT 'email',
+  `otp_type` set('none', 'email') NOT NULL DEFAULT 'none',
   `otp_data` varchar(255) DEFAULT NULL,
   `otp_recovery` varchar(64) DEFAULT NULL,
   `otp_attempts` tinyint(4) NOT NULL DEFAULT 0,
