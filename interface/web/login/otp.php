@@ -66,7 +66,7 @@ function finish_2fa_success($msg = '') {
 	if (!empty($msg)) {
 		$msg = ' ' . $msg;
 	}
-	$app->auth_log('Successful login for user \''. $username .'\' ' . $msg . ' from '. $_SERVER['REMOTE_ADDR'] .' at '. date('Y-m-d H:i:s') . ' with session ID ' .session_id());
+	$app->auth_log('Successful login for user \''. $username .'\'' . $msg . ' from '. $_SERVER['REMOTE_ADDR'] .' at '. date('Y-m-d H:i:s') . ' with session ID ' .session_id());
 	$app->db->query('UPDATE `sys_user` SET otp_attempts=0 WHERE userid = ?', $_SESSION['s']['user']['userid']);
 	session_write_close();
 	header('Location: ../index.php');
