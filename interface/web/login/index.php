@@ -138,7 +138,7 @@ function process_login_request(app $app, &$error, $conf, $module)
 		} else {
 
 			//* Do 2FA authentication
-			if($user['otp_enabled'] == 'y') {
+			if($user['otp_type'] != 'none') {
 
 				//* Save session in pending state and destroy original session
 				$_SESSION['s_pending'] = $_SESSION['s'];
