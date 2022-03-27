@@ -118,7 +118,7 @@ if($_SESSION['otp']['type'] == 'email') {
 
 		//* 2fa success
 		if(password_verify($_POST['code'], $_SESSION['otp']['code_hash'])) {
-			finish_2fa_success();
+			finish_2fa_success('with 2fa');
 		} else {
 			//* 2fa wrong code
 			$_SESSION['otp']['session_attempts']++;
