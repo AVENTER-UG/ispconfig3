@@ -31,26 +31,26 @@ EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 require_once '../../lib/config.inc.php';
 require_once '../../lib/app.inc.php';
 
-//* Check if we have an active users ession
+// Check if we have an active users ession.
 if($_SESSION['s']['user']['active'] == 1) {
 	header('Location: /index.php');
 	die();
 }
 
-//* If we don't have a 2fa session go back to login page
+// If we don't have a 2fa session go back to login page.
 if(!isset($_SESSION['otp'])) {
 	header('Location: index.php');
 	die();
 }
 
-//* Variables and settings
+// Variables and settings.
 $error = '';
 $msg = '';
 $max_session_code_retry = 3;
 $max_global_code_retry = 10;
 $otp_recovery_code_length = 32;
 
-//* CSRF Check if we got POST data
+// CSRF Check if we got POST data.
 if(count($_POST) >= 1) {
 	$app->auth->csrf_token_check();
 }
@@ -73,7 +73,7 @@ function finish_2fa_success($msg = '') {
 	die();
 }
 
-//* Handle recovery code
+// Handle recovery code
 if(isset($_POST['code']) && strlen($_POST['code']) == $otp_recovery_code_length) {
 	//* TODO Recovery code handling
 
@@ -93,7 +93,7 @@ if(isset($_POST['code']) && strlen($_POST['code']) == $otp_recovery_code_length)
 }
 
 
-//* Begin 2fa via Email
+// Begin 2fa via Email.
 if($_SESSION['otp']['type'] == 'email') {
 
 	//* Email 2fa handler settings
@@ -102,7 +102,6 @@ if($_SESSION['otp']['type'] == 'email') {
 	$code_length = 6;
 
 	if(isset($_POST['code']) && strlen($_POST['code']) == $code_length && isset($_SESSION['otp']['code_hash'])) {
-
 
 		$user = $app->db->queryOneRecord('SELECT otp_attempts FROM sys_user WHERE userid = ?',$_SESSION['s_pending']['user']['userid']);
 
@@ -127,7 +126,7 @@ if($_SESSION['otp']['type'] == 'email') {
 		}
 	}
 
-	//* Send code via email
+	// Send code via email.
 	if(!isset($_SESSION['otp']['sent']) || $_GET['action'] == 'resend') {
 		// Generate new code
 		$new_otp_code = random_int(100000, 999999);
@@ -135,9 +134,9 @@ if($_SESSION['otp']['type'] == 'email') {
 		//$_SESSION['otp']['code_debug'] = $new_otp_code; # for DEBUG only.
 		$_SESSION['otp']['starttime'] = time();
 
-		//* Ensure that code is not sent too often
+		// Ensure that code is not sent too often
 		if(isset($_SESSION['otp']['sent']) && $_SESSION['otp']['sent'] > $max_code_resend) {
-			$app->error('Code resend limit reached','index.php');
+			$app->error('Code resend limit reached', 'index.php');
 		}
 
 		$app->uses('functions');
@@ -158,7 +157,7 @@ if($_SESSION['otp']['type'] == 'email') {
 		$app->ispcmail->finish();
 
 
-		//* increase sent counter
+		// Increase sent counter.
 		if(!isset($_SESSION['otp']['sent'])) {
 			$_SESSION['otp']['sent'] = 1;
 		} else {
@@ -168,12 +167,11 @@ if($_SESSION['otp']['type'] == 'email') {
 
 	}
 
-	//* Show form to enter email code
+	// Show form to enter email code
 	// ... below
 
 } else {
-	//* unsupported 2fa type
-	$app->error('Code resend limit reached','index.php');
+	$app->error('Otp method unknown', 'index.php');
 }
 
 
@@ -190,13 +188,13 @@ if (!empty($token_sent_message)) {
   $app->tpl->setVar('token_sent_message', $token_sent_message);
 }
 
-//* Load templating system and lang file
+// Load templating system and lang file.
 $app->uses('tpl');
 $app->tpl->newTemplate('main_login.tpl.htm');
 $app->tpl->setInclude('content_tpl', 'templates/otp.htm');
 
 
-//* SET csrf token
+// SET csrf token.
 $csrf_token = $app->auth->csrf_token_get('otp');
 $app->tpl->setVar('_csrf_id',$csrf_token['csrf_id']);
 $app->tpl->setVar('_csrf_key',$csrf_token['csrf_key']);
