@@ -142,16 +142,21 @@ if($_SESSION['otp']['type'] == 'email') {
 
 		$app->uses('functions');
 		$app->uses('getconf');
-		$system_config = $app->getconf->get_global_config();
-		$from = $system_config['mail']['admin_mail'];
+		$server_config_array = $app->getconf->get_global_config();
 
-		//* send email
+		$app->uses('getconf,ispcmail');
+		$mail_config = $server_config_array['mail'];
+		if($mail_config['smtp_enabled'] == 'y') {
+			$mail_config['use_smtp'] = true;
+			$app->ispcmail->setOptions($mail_config);
+		}
 		$email_to = $_SESSION['otp']['data'];
-		$subject = 'ISPConfig Login authentication';
-		$text = 'Your One time login code is ' . $new_otp_code . PHP_EOL
-			. 'This code is valid for 10 minutes' .  PHP_EOL;
+		$app->ispcmail->setSender($mail_config['admin_mail'], $mail_config['admin_name']);
+		$app->ispcmail->setSubject($wb['otp_code_email_subject_txt']);
+		$app->ispcmail->setMailText(sprintf($wb['otp_code_email_template_txt'], $new_otp_code));
+		$send_result = $app->ispcmail->send($email_to);
+		$app->ispcmail->finish();
 
-		$app->functions->mail($email_to, $subject, $text, $from);
 
 		//* increase sent counter
 		if(!isset($_SESSION['otp']['sent'])) {
