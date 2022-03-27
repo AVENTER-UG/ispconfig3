@@ -55,6 +55,7 @@ if(count($_POST) >= 1) {
 	$app->auth->csrf_token_check();
 }
 
+require ISPC_ROOT_PATH.'/web/login/lib/lang/'.$app->functions->check_language($conf['language']).'.lng';
 
 function finish_2fa_success($msg = '') {
 	global $app;
@@ -162,6 +163,7 @@ if($_SESSION['otp']['type'] == 'email') {
 		} else {
 			$_SESSION['otp']['sent']++;
 		}
+		$token_sent_message = $wb['otp_code_email_sent_txt'] . ' ' . $email_to;
 
 	}
 
@@ -183,7 +185,9 @@ if($logo['custom_logo'] != ''){
 $app->tpl->setVar('base64_logo_txt', $base64_logo_txt);
 
 $app->tpl->setVar('current_theme', isset($_SESSION['s']['theme']) ? $_SESSION['s']['theme'] : 'default', true);
-
+if (!empty($token_sent_message)) {
+  $app->tpl->setVar('token_sent_message', $token_sent_message);
+}
 
 //* Load templating system and lang file
 $app->uses('tpl');
@@ -197,7 +201,6 @@ $app->tpl->setVar('_csrf_id',$csrf_token['csrf_id']);
 $app->tpl->setVar('_csrf_key',$csrf_token['csrf_key']);
 //$app->tpl->setVar('msg', print_r($_SESSION['otp'], 1)); // For DEBUG only.
 
-require ISPC_ROOT_PATH.'/web/login/lib/lang/'.$app->functions->check_language($conf['language']).'.lng';
 $app->tpl->setVar($wb);
 
 $app->tpl_defaults();

@@ -35,5 +35,6 @@ $wb['lost_password_function_denied_txt'] = 'This activation link is not valid.';
 $wb['otp_code_txt'] = 'Two Factor Authentication';
 $wb['otp_code_desc_txt'] = 'Enter the code you got from your authenticator app or via email.';
 $wb['otp_code_placeholder_txt'] = 'OTP code';
+$wb['otp_code_email_sent_txt'] = 'An email was sent to';
 $wb['otp_code_resend_txt'] = 'Request new code';
 ?>

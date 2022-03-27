@@ -14,6 +14,7 @@
 	<div class="right">
 			<input class="btn btn-default formbutton-default" type="submit" value="{tmpl_var name='login_button_txt'}">
 	</div>
+	<tmpl_if name="token_sent_message">{tmpl_var name='token_sent_message'}<br /></tmpl_if>
 	<a href="otp.php?action=resend">{tmpl_var name='otp_code_resend_txt'}</a>
 
 
