@@ -101,9 +101,8 @@ if($_SESSION['otp']['type'] == 'email') {
 	$max_time = 600; // time in seconds until the code gets invalidated
 	$code_length = 6;
 
-	if(isset($_POST['code']) && strlen($_POST['code']) == $code_length && isset($_SESSION['otp']['code'])) {
+	if(isset($_POST['code']) && strlen($_POST['code']) == $code_length && isset($_SESSION['otp']['code_hash'])) {
 
-		if(strlen($_SESSION['otp']['code']) != $code_length) die(); // wrong code lenght, this should never happen
 
 		$user = $app->db->queryOneRecord('SELECT otp_attempts FROM sys_user WHERE userid = ?',$_SESSION['s_pending']['user']['userid']);
 
@@ -128,16 +127,13 @@ if($_SESSION['otp']['type'] == 'email') {
 		}
 	}
 
-	//* set code
-	if(!isset($_SESSION['otp']['code']) || empty($_SESSION['otp']['code'])) {
+	//* Send code via email
+	if(!isset($_SESSION['otp']['sent']) || $_GET['action'] == 'resend') {
+		// Generate new code
 		$new_otp_code = random_int(100000, 999999);
 		$_SESSION['otp']['code_hash'] = password_hash($new_otp_code, PASSWORD_DEFAULT);
 		//$_SESSION['otp']['code_debug'] = $new_otp_code; # for DEBUG only.
 		$_SESSION['otp']['starttime'] = time();
-	}
-
-	//* Send code via email
-	if(!isset($_SESSION['otp']['sent']) || $_GET['action'] == 'resend') {
 
 		//* Ensure that code is not sent too often
 		if(isset($_SESSION['otp']['sent']) && $_SESSION['otp']['sent'] > $max_code_resend) {
