@@ -151,7 +151,13 @@ if($_SESSION['otp']['type'] == 'email') {
 		}
 
 		$clientuser = $app->db->queryOneRecord('SELECT email FROM sys_user u LEFT JOIN client c ON (u.client_id=c.client_id) WHERE u.userid = ?', $_SESSION['s_pending']['user']['userid']);
-		$email_to = $clientuser['email'];
+		if (!empty($clientuser['email'])) {
+		  $email_to = $clientuser['email'];
+		}
+		else {
+		  // Admin users are not related to a client, thus use the globally configured email address.
+		  $email_to = $mail_config['admin_mail'];
+		}
 
 		$app->ispcmail->setSender($mail_config['admin_mail'], $mail_config['admin_name']);
 		$app->ispcmail->setSubject($wb['otp_code_email_subject_txt']);
