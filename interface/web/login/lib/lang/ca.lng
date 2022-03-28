@@ -39,4 +39,5 @@ $wb['otp_code_email_sent_txt'] = 'An email was sent to';
 $wb['otp_code_email_subject_txt'] = 'ISPConfig Login authentication';
 $wb['otp_code_email_template_txt'] = 'Your One time login code is %s' . PHP_EOL . 'This code is valid for 10 minutes.' . PHP_EOL;
 $wb['otp_code_resend_txt'] = 'Request new code';
+$wb['otp_code_email_sent_failed_txt'] = 'Failed sending an email to %s';
 ?>

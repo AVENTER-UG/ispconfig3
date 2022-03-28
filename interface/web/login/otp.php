@@ -149,22 +149,30 @@ if($_SESSION['otp']['type'] == 'email') {
 			$mail_config['use_smtp'] = true;
 			$app->ispcmail->setOptions($mail_config);
 		}
-		$email_to = $_SESSION['otp']['data'];
+
+		$clientuser = $app->db->queryOneRecord('SELECT email FROM sys_user u LEFT JOIN client c ON (u.client_id=c.client_id) WHERE u.userid = ?', $_SESSION['s_pending']['user']['userid']);
+		$email_to = $clientuser['email'];
+
 		$app->ispcmail->setSender($mail_config['admin_mail'], $mail_config['admin_name']);
 		$app->ispcmail->setSubject($wb['otp_code_email_subject_txt']);
 		$app->ispcmail->setMailText(sprintf($wb['otp_code_email_template_txt'], $new_otp_code));
 		$send_result = $app->ispcmail->send($email_to);
 		$app->ispcmail->finish();
 
+		if ($send_result) {
 
-		// Increase sent counter.
-		if(!isset($_SESSION['otp']['sent'])) {
-			$_SESSION['otp']['sent'] = 1;
-		} else {
-			$_SESSION['otp']['sent']++;
+			// Increase sent counter.
+			if(!isset($_SESSION['otp']['sent'])) {
+				$_SESSION['otp']['sent'] = 1;
+			} else {
+				$_SESSION['otp']['sent']++;
+			}
+
+			$token_sent_message = $wb['otp_code_email_sent_txt'] . ' ' . $email_to;
 		}
-		$token_sent_message = $wb['otp_code_email_sent_txt'] . ' ' . $email_to;
-
+		else {
+			$token_sent_message = sprintf($wb['otp_code_email_sent_failed_txt'], $email_to);
+		}
 	}
 
 	// Show form to enter email code
