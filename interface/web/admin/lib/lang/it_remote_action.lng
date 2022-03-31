@@ -1,12 +1,12 @@
 <?php
 $wb['select_server_txt'] = 'Seleziona Server';
 $wb['btn_do_txt'] = 'Esegui Azione';
-$wb['do_osupdate_caption'] = 'Do OS-Update at remote server';
-$wb['do_osupdate_desc'] = 'This Action does a apt -y upgrade at your selected server.<br><br><strong>USE THIS AT YOUR OWN RISK!</strong>';
-$wb['do_ispcupdate_caption'] = 'Do ISPConfig 3 - Update at remote server';
-$wb['do_ispcupdate_desc'] = 'This action does a ISPConfig3 update at your selected server.<br><br><strong>USE THIS AT YOUR OWN RISK!</strong>';
-$wb['action_scheduled'] = 'The action is scheduled for execution';
-$wb['select_all_server'] = 'All server';
-$wb['ispconfig_update_title'] = 'ISPConfig update instructions';
-$wb['ispconfig_update_text'] = 'Login as root user on the shell of your server and execute the command<br /><br /> <strong>ispconfig_update.sh</strong><br /><br />to start the ISPConfig update.<br /><br /><a href=https://www.faqforge.com/linux/controlpanels/ispconfig3/how-to-update-ispconfig-3/ target=_blank>Click here for detailed update instructins</a>';
+$wb['do_osupdate_caption'] = 'Esegui un aggiornamento del S.O. sul server remoto';
+$wb['do_osupdate_desc'] = 'Questa azione esegue apt -y upgrade sul server selezionato.<br><br><strong>USI QUESTA FUNZIONE A TUO RISCHIO E PERICOLO!</strong>';
+$wb['do_ispcupdate_caption'] = 'Esegui aggiornamento di ISPConfig 3 sul server remoto';
+$wb['do_ispcupdate_desc'] = 'Questa operazione esegue un aggiornamento a ISPConfig 3 sul server selezionato.<br><br><strong>USI QUESTA FUNZIONE A TUO RISCHIO E PERICOLO!</strong>';
+$wb['action_scheduled'] = 'L\'azione è programmata per la sua esecuzione';
+$wb['select_all_server'] = 'Tutti i server';
+$wb['ispconfig_update_title'] = 'Istruzioni per l\'aggiornamento di ISPConfig';
+$wb['ispconfig_update_text'] = 'Collegati alla shell del server come root ed esegui il comando <br /><br /> <strong>ispconfig_update.sh</strong><br /><br />per iniziare il processo di aggiornamento.<br /><br /><a href=https://www.faqforge.com/linux/controlpanels/ispconfig3/how-to-update-ispconfig-3/ target=_blank>Clicca qui per le istruzioni dettagliate di aggiornamento (in inglese)</a>';
 ?>

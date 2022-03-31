@@ -114,6 +114,6 @@ NameVirtualHost *:<tmpl_var name="vhost_port">
   </tmpl_if>
 
   # Redirect http to https
-  ErrorDocument 400 "<script>document.location.href='https://'+location.hostname+':'+location.port';</script><h1>Error 400 - trying to redirect</h1>"
+  ErrorDocument 400 "<script>document.location.href='https://'+location.hostname+':'+location.port;</script><h1>Error 400 - trying to redirect</h1>"
 
 </VirtualHost>

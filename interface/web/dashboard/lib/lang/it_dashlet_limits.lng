@@ -1,15 +1,15 @@
 <?php
-$wb['limits_txt'] = 'Sintesi account';
+$wb['limits_txt'] = 'Sintesi profili';
 $wb['of_txt'] = 'su';
 $wb['limit_maildomain_txt'] = 'Domini e-mail';
 $wb['limit_mailbox_txt'] = 'Caselle e-mail';
 $wb['limit_mailalias_txt'] = 'Alias di e-mail';
 $wb['limit_mailaliasdomain_txt'] = 'Alias di domini';
 $wb['limit_mailforward_txt'] = 'Inoltro e-mail';
-$wb['limit_mailcatchall_txt'] = 'Account catchall e-mail';
+$wb['limit_mailcatchall_txt'] = 'Profilo catchall e-mail';
 $wb['limit_mailrouting_txt'] = 'Instradamento e-mail';
 $wb['limit_mailfilter_txt'] = 'Filtri e-mail';
-$wb['limit_fetchmail_txt'] = 'Account fetchmail';
+$wb['limit_fetchmail_txt'] = 'Profilo fetchmail';
 $wb['limit_spamfilter_wblist_txt'] = 'Filtri spamfilter white / blacklist';
 $wb['limit_spamfilter_user_txt'] = 'Utenti spamfilter';
 $wb['limit_spamfilter_policy_txt'] = 'Policy spamfilter';
