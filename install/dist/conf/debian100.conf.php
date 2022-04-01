@@ -65,14 +65,14 @@ $conf['mysql']['admin_user'] = 'root';
 $conf['mysql']['admin_password'] = '';
 $conf['mysql']['charset'] = 'utf8';
 $conf['mysql']['ispconfig_user'] = 'ispconfig';
-$conf['mysql']['ispconfig_password'] = md5(uniqid(rand()));
+$conf['mysql']['ispconfig_password'] = md5(random_bytes(20));
 $conf['mysql']['master_slave_setup'] = 'n';
 $conf['mysql']['master_host'] = '';
 $conf['mysql']['master_database'] = 'dbispconfig';
 $conf['mysql']['master_admin_user'] = 'root';
 $conf['mysql']['master_admin_password'] = '';
 $conf['mysql']['master_ispconfig_user'] = '';
-$conf['mysql']['master_ispconfig_password'] = md5(uniqid(rand()));
+$conf['mysql']['master_ispconfig_password'] = md5(random_bytes(20));
 
 //* Apache
 $conf['apache']['installed'] = false; // will be detected automatically during installation
@@ -153,6 +153,11 @@ $conf['amavis']['installed'] = false; // will be detected automatically during i
 $conf['amavis']['config_dir'] = '/etc/amavis';
 $conf['amavis']['init_script'] = 'amavis';
 
+//* Rspamd
+$conf['rspamd']['installed'] = false; // will be detected automatically during installation
+$conf['rspamd']['config_dir'] = '/etc/rspamd';
+$conf['rspamd']['init_script'] = 'rspamd';
+
 //* ClamAV
 $conf['clamav']['installed'] = false; // will be detected automatically during installation
 $conf['clamav']['init_script'] = 'clamav-daemon';
@@ -230,5 +235,8 @@ $conf['cron']['wget'] = '/usr/bin/wget';
 $conf['xmpp']['installed'] = false;
 $conf['xmpp']['init_script'] = 'metronome';
 
+
+// AppArmor
+$conf['apparmor']['installed'] = false;
 
 ?>
