@@ -190,6 +190,7 @@ class installer_base {
 			$salt_length = 12;
 		}
 
+		// todo: replace the below with password_hash() when we drop php5.4 support
 		if(function_exists('openssl_random_pseudo_bytes')) {
 			$salt .= substr(bin2hex(openssl_random_pseudo_bytes($salt_length)), 0, $salt_length);
 		} else {
@@ -225,6 +226,7 @@ class installer_base {
 		if(is_installed('named') || is_installed('bind') || is_installed('bind9')) $conf['bind']['installed'] = true;
 		if(is_installed('squid')) $conf['squid']['installed'] = true;
 		if(is_installed('nginx')) $conf['nginx']['installed'] = true;
+		if(is_installed('apparmor_status')) $conf['apparmor']['installed'] = true;
 		if(is_installed('iptables') && is_installed('ufw')) {
 			$conf['ufw']['installed'] = true;
 		} elseif(is_installed('iptables')) {
@@ -247,6 +249,7 @@ class installer_base {
 		$msg = '';
 
 		if(version_compare(phpversion(), '5.4', '<')) $msg .= "PHP Version 5.4 or newer is required. The currently used PHP version is ".phpversion().".\n";
+		if(version_compare(phpversion(), '8.0', '>=')) $msg .= "PHP Version 8 is not supported yet. Change PHP version back to the default version of the OS. The currently used PHP version is ".phpversion().".\n";
 		if(!function_exists('curl_init')) $msg .= "PHP Curl Module is missing.\n";
 		if(!function_exists('mysqli_connect')) $msg .= "PHP MySQLi Module is nmissing.\n";
 		if(!function_exists('mb_detect_encoding')) $msg .= "PHP Multibyte Module (MB) is missing.\n";
@@ -788,7 +791,7 @@ class installer_base {
 					$this->warning('Unable to set rights of user in master database: '.$value['db']."\n Query: ".$query."\n Error: ".$this->dbmaster->errorMessage);
 				}
 
-				$query = "GRANT SELECT, UPDATE(`dnssec_initialized`, `dnssec_info`, `dnssec_last_signed`) ON ?? TO ?@?";
+				$query = "GRANT SELECT, UPDATE(`dnssec_initialized`, `dnssec_info`, `dnssec_last_signed`, `rendered_zone`) ON ?? TO ?@?";
 				if ($verbose){
 					echo $query ."\n";
 				}
@@ -2477,6 +2480,13 @@ class installer_base {
 		exec('chown root:root '.$conf["squid"]["config_dir"].'/'.$configfile);
 	}
 
+	public function configure_apparmor() {
+		$configfile = 'apparmor_usr.sbin.named';
+		if(is_file('/etc/apparmor.d/local/usr.sbin.named')) copy('/etc/apparmor.d/local/usr.sbin.named', '/etc/apparmor.d/local/usr.sbin.named~');
+		$content = rf("tpl/".$configfile.".master");
+		wf('/etc/apparmor.d/local/usr.sbin.named', $content);
+	}
+
 	public function configure_ufw_firewall()
 	{
 		if($this->is_update == false) {
@@ -2759,11 +2769,17 @@ class installer_base {
 			$content = str_replace('{use_socket}', $use_socket, $content);
 
 			// Fix socket path on PHP 7 systems
-			if(file_exists('/var/run/php/php7.0-fpm.sock'))	$content = str_replace('/var/run/php5-fpm.sock', '/var/run/php/php7.0-fpm.sock', $content);
-			if(file_exists('/var/run/php/php7.1-fpm.sock'))	$content = str_replace('/var/run/php5-fpm.sock', '/var/run/php/php7.1-fpm.sock', $content);
-			if(file_exists('/var/run/php/php7.2-fpm.sock'))	$content = str_replace('/var/run/php5-fpm.sock', '/var/run/php/php7.2-fpm.sock', $content);
-			if(file_exists('/var/run/php/php7.3-fpm.sock'))	$content = str_replace('/var/run/php5-fpm.sock', '/var/run/php/php7.3-fpm.sock', $content);
-			if(file_exists('/var/run/php/php7.4-fpm.sock'))	$content = str_replace('/var/run/php5-fpm.sock', '/var/run/php/php7.4-fpm.sock', $content);
+			if (file_exists('/var/run/php/php7.4-fpm.sock')) {
+				$content = str_replace('/var/run/php5-fpm.sock', '/var/run/php/php7.4-fpm.sock', $content);
+			} elseif(file_exists('/var/run/php/php7.3-fpm.sock')) {
+				$content = str_replace('/var/run/php5-fpm.sock', '/var/run/php/php7.3-fpm.sock', $content);
+			} elseif (file_exists('/var/run/php/php7.2-fpm.sock')) {
+				$content = str_replace('/var/run/php5-fpm.sock', '/var/run/php/php7.2-fpm.sock', $content);
+			} elseif (file_exists('/var/run/php/php7.1-fpm.sock')) {
+				$content = str_replace('/var/run/php5-fpm.sock', '/var/run/php/php7.1-fpm.sock', $content);
+			} elseif (file_exists('/var/run/php/php7.0-fpm.sock')) {
+				$content = str_replace('/var/run/php5-fpm.sock', '/var/run/php/php7.0-fpm.sock', $content);
+			}
 
 			wf($vhost_conf_dir.'/apps.vhost', $content);
 
@@ -2860,7 +2876,7 @@ class installer_base {
 		if(@is_link($vhost_conf_enabled_dir.'/' . $use_symlink)) {
 			unlink($vhost_conf_enabled_dir.'/' . $use_symlink);
 		}
-		if(!@is_link($vhost_conf_enabled_dir.'/' . $use_symlink)) {
+		if(!@is_file($vhost_conf_enabled_dir.'/' . $use_symlink)) {
 			symlink($vhost_conf_dir.'/' . $use_name, $vhost_conf_enabled_dir.'/' . $use_symlink);
 		}
 	}
