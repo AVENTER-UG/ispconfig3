@@ -208,7 +208,7 @@ class bind_plugin {
 
 		//* Check for available entropy
 		if (file_get_contents('/proc/sys/kernel/random/entropy_avail') < 200) {
-			$app->log('DNSSEC ERROR: We are low on entropy. This could cause server script to fail. Please consider installing package haveged.', LOGLEVEL_ERR);
+			$app->log('DNSSEC ERROR: We are low on entropy. This could cause server script to fail. Please consider installing package haveged.', LOGLEVEL_ERROR);
 			echo "DNSSEC ERROR: We are low on entropy. This could cause server script to fail. Please consider installing package haveged.\n";
 			return false;
 		}
@@ -219,7 +219,7 @@ class bind_plugin {
 		$app->system->exec_safe('cd ?; named-checkzone ? ? | egrep -ho \'[0-9]{10}\'', $dns_config['bind_zonefiles_dir'], $domain, $dns_config['bind_zonefiles_dir'].'/'.$filespre.$domain);
 		$retState = $app->system->last_exec_retcode();
 		if ($retState != 0) {
-			$app->log('DNSSEC Error: Error in Zonefile for '.$domain, LOGLEVEL_ERR);
+			$app->log('DNSSEC Error: Error in Zonefile for '.$domain, LOGLEVEL_ERROR);
 			return false;
 		}
 
@@ -328,9 +328,14 @@ class bind_plugin {
 			$filename = $dns_config['bind_zonefiles_dir'].'/' . $this->zone_file_prefix() . str_replace("/", "_", substr($zone['origin'], 0, -1));
 
 			$old_zonefile = @file_get_contents($filename);
-			file_put_contents($filename, $tpl->grab());
+			$rendered_zone = $tpl->grab();
+			file_put_contents($filename, $rendered_zone);
+
 			chown($filename, $dns_config['bind_user']);
 			chgrp($filename, $dns_config['bind_group']);
+
+			// Store also in the db for exports.
+			$app->dbmaster->query("UPDATE `dns_soa` SET `rendered_zone`=? WHERE id=?", $rendered_zone, $zone['id']);
 
 			//* Check the zonefile
 			if(is_file($filename.'.err')) unlink($filename.'.err');
@@ -340,7 +345,7 @@ class bind_plugin {
 			if($return_status === 0) {
 				$app->log("Writing BIND domain file: ".$filename, LOGLEVEL_DEBUG);
 			} else {
-				$loglevel = @($dns_config['disable_bind_log'] === 'y')?'LOGLEVEL_DEBUG':'LOGLEVEL_WARN';
+				$loglevel = @($dns_config['disable_bind_log'] === 'y') ? LOGLEVEL_DEBUG : LOGLEVEL_WARN;
 				$app->log("Writing BIND domain file failed: ".$filename." ".implode(' ', $out), $loglevel);
 				if(is_array($out) && !empty($out)){
 					$app->log('Reason for Bind restart failure: '.implode("\n", $out), $loglevel);
@@ -417,12 +422,6 @@ class bind_plugin {
 		if(is_file($zone_file_name.'.err')) unlink($zone_file_name.'.err');
 		$app->log("Deleting BIND domain file: ".$zone_file_name, LOGLEVEL_DEBUG);
 
- 		//* DNSSEC-Implementation
- 		if($data['old']['dnssec_initialized'] == 'Y' && file_exists('/usr/local/ispconfig/server/scripts/dnssec-delete.sh')) {
-			//delete keys
-			$app->system->exec_safe('/usr/local/ispconfig/server/scripts/dnssec-delete.sh ?', $data['old']['origin']);
-		}
-
 		//* Reload bind nameserver
 		$app->services->restartServiceDelayed('bind', 'reload');
 
@@ -458,7 +457,7 @@ class bind_plugin {
 
 		//* Ensure that the named slave directory is writable by the named user
 		$slave_record_dir = $dns_config['bind_zonefiles_dir'].'/'.$this->slave_zone_file_prefix();
-		if(!@is_dir($slave_record_dir)) mkdir($slave_record_dir, 0770);
+		if(!@is_dir($slave_record_dir)) mkdir($slave_record_dir, 0770, true);
 		chown($slave_record_dir, $dns_config['bind_user']);
 		chgrp($slave_record_dir, $dns_config['bind_group']);
 

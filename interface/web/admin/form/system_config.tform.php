@@ -34,7 +34,7 @@
 */
 
 $form["title"]   = "system_config_title";
-$form["description"]  = "system_config_desc_txt";
+//$form["description"]  = "system_config_desc_txt";
 $form["name"]   = "system_config";
 $form["action"]  = "system_config_edit.php";
 $form["db_table"] = "sys_ini";
@@ -267,6 +267,18 @@ $form["tabs"]['mail'] = array (
 			'default' => 'n',
 			'value' => array(0 => 'n', 1 => 'y')
 		),
+		'enable_welcome_mail' => array(
+			'datatype' => 'VARCHAR',
+			'formtype' => 'CHECKBOX',
+			'default' => 'y',
+			'value' => array(0 => 'n', 1 => 'y')
+		),
+		'show_per_domain_relay_options' => array(
+			'datatype' => 'VARCHAR',
+			'formtype' => 'CHECKBOX',
+			'default' => 'n',
+			'value'    => array(0 => 'n', 1 => 'y')
+		),
 		'mailbox_show_autoresponder_tab' => array (
 			'datatype' => 'VARCHAR',
 			'formtype' => 'CHECKBOX',
@@ -468,6 +480,12 @@ $form["tabs"]['dns'] = array (
 			),
 			'value'  => '',
 			'name'  => 'default_slave_dnsserver'
+		),
+		'dns_show_zoneexport' => array (
+			'datatype' => 'VARCHAR',
+			'formtype' => 'CHECKBOX',
+			'default' => 'n',
+			'value'  => array(0 => 'n', 1 => 'y')
 		),
 		//#################################
 		// END Datatable fields

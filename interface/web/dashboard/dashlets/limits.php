@@ -47,6 +47,10 @@ class dashlet_limits
             'db_table' => 'mail_transport',
             'db_where' => "");
 
+        $limits[] = array('field' => 'limit_mail_wblist',
+            'db_table' => 'mail_access',
+            'db_where' => "");
+
         $limits[] = array('field' => 'limit_mailfilter',
             'db_table' => 'mail_user_filter',
             'db_where' => "");
@@ -134,6 +138,10 @@ class dashlet_limits
 
         $wb = array();
         $lng_file = 'lib/lang/'.$_SESSION['s']['language'].'_dashlet_limits.lng';
+        if (is_file($lng_file)) {
+            include $lng_file;
+        }
+        $lng_file = ISPC_ROOT_PATH . '/lib/lang/'.$_SESSION['s']['language'].'.lng';
         if (is_file($lng_file)) {
             include $lng_file;
         }
