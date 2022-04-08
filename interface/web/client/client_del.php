@@ -76,6 +76,7 @@ class page_action extends tform_actions {
 		'web_folder' => 'path', 
 		'web_folder_user' => 'username', 
 		'web_database_user' => 'database_user', 
+		'web_database' => 'database',
 	);
 
 	function onDelete() {
