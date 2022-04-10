@@ -196,6 +196,24 @@ class remoting_mail extends remoting {
 		return $app->remoting_lib->getDataRecord($primary_id);
 	}
 
+	//* Get mail user details for all account that belong to a client.
+	public function mail_user_get_all_by_client($session_id, $client_id)
+	{
+		global $app;
+
+		if(!$this->checkPerm($session_id, 'mail_user_get_all_by_client')) {
+			throw new SoapFault('permission_denied', 'You do not have the permissions to access this function.');
+			return false;
+		}
+		$app->uses('remoting_lib');
+		$sql = "SELECT u.* FROM `mail_user` u
+			LEFT JOIN `sys_group` g ON (u.sys_groupid=g.groupid)
+			WHERE g.client_id=?";
+		$params[] = $client_id;
+
+		$result = $app->db->queryAllRecords($sql, true, $params);
+		return $result;
+	}
 
 	//* Add mail domain
 	public function mail_user_add($session_id, $client_id, $params){
