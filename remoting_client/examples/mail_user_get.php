@@ -17,9 +17,13 @@ try {
 	//* Set the function parameters.
 	$mailuser_id = 1;
 
-	$app = $client->mail_user_get($session_id, $mailuser_id);
+	// Lookup by primary key, gets back a single record.
+	$mail_user = $client->mail_user_get($session_id, $mailuser_id);
+	print_r($mail_user);
 
-	print_r($app);
+	// Lookup by pattern gives an array of records.
+	$mail_users_array = $client->mail_user_get($session_id, array('email' => '%@example.com'));
+	print_r($mail_user_array);
 
 	if($client->logout($session_id)) {
 		echo 'Logged out.<br />';
