@@ -13,7 +13,7 @@ function remove_soft_deleted_mailbox {
         dir=$1
 
         echo "Purging $dir"
-echo    rm -r "$dir"
+        rm -r "$dir"
 }
 
 function compress_soft_deleted_mailbox {
@@ -29,7 +29,7 @@ function compress_soft_deleted_mailbox {
         fi
 
         echo "Compressing for $dir"
-echo    tar cvfj "$backupfile" --remove-files "$dir" 2> >( grep -v "tar: Removing leading" >&2)
+        tar cvfj "$backupfile" --remove-files "$dir" 2> >( grep -v "tar: Removing leading" >&2)
 }
 
 # List deleted mailboxs to archive
