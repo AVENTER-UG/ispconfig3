@@ -8,7 +8,7 @@ ls /var/vmail/*/[a-z0-9.-]*-deleted-[0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9
 if [ $? != 0 ]; then
         exit 0;
 fi
- 
+
 function remove_soft_deleted_mailbox {
         dir=$1
 
