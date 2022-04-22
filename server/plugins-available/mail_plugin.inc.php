@@ -486,7 +486,7 @@ class mail_plugin {
 		if($old_maildomain_path != $mail_config['homedir_path'] && !stristr($old_maildomain_path, '//') && !stristr($old_maildomain_path, '..') && !stristr($old_maildomain_path, '*') && !stristr($old_maildomain_path, '&') && strlen($old_maildomain_path) >= 10  && !empty($data['old']['domain'])) {
 			if ($mail_config['mailbox_soft_delete'] == 'y') {
 				// Move it, adding a date based suffix. A cronjob should purge or archive.
-				$thrash_maildomain_path = $old_maildomain_path . '-' . date("YmdHis");
+				$thrash_maildomain_path = $old_maildomain_path . '-deleted-' . date("YmdHis");
 				$app->system->exec_safe('mv ? ?', $old_maildomain_path, $thrash_maildomain_path);
 
 				// Update the dir's timestamp to make filtering on age easier in any cleanup cronjob.
