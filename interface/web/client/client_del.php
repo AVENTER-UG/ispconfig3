@@ -110,6 +110,11 @@ class page_action extends tform_actions {
 			$table_list = array();
 			$client_group_id = $app->functions->intval($client_group['groupid']);
 			if($client_group_id > 1) {
+
+				$client = $app->db->queryOneRecord("SELECT CONCAT(IF(client.company_name != '', CONCAT(client.company_name, ' :: '), ''), IF(client.contact_firstname != '', CONCAT(client.contact_firstname, ' '), ''), client.contact_name, ' (', client.username, IF(client.customer_no != '', CONCAT(', ', client.customer_no), ''), ')') as contactname FROM sys_group, client WHERE sys_group.client_id = client.client_id and sys_group.groupid = ?", $client_group_id);
+
+				$app->tpl->setVar('contactname', $client['contactname']);
+
 				foreach($this->tables as $table => $field) {
 					if($table != '') {
 						$records = $app->db->queryAllRecords("SELECT * FROM ?? WHERE sys_groupid = ?", $table, $client_group_id);
