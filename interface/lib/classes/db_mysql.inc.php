@@ -825,12 +825,13 @@ class db
 		return true;
 	}
 
-	//** Deletes a record and saves the changes into the datalog
+	// Updates a datalog record to store an error state.
 	public function datalogError($errormsg) {
 		global $app;
 
-		if(isset($app->modules->current_datalog_id) && $app->modules->current_datalog_id > 0) $this->query("UPDATE sys_datalog set error = ? WHERE datalog_id = ?", $errormsg, $app->modules->current_datalog_id);
-
+		if(isset($app->modules->current_datalog_id) && $app->modules->current_datalog_id > 0) {
+			$this->query("UPDATE sys_datalog set error = ? WHERE datalog_id = ?", $errormsg, $app->modules->current_datalog_id);
+		}
 		return true;
 	}
 
