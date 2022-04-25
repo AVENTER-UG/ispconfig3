@@ -82,6 +82,8 @@ class db
 		$this->dbClientFlags = ($flags !== NULL) ? $flags : $conf['db_client_flags'];
 		$this->_iConnId = mysqli_init();
 
+		mysqli_report(MYSQLI_REPORT_OFF);
+
 		mysqli_real_connect($this->_iConnId, $this->dbHost, $this->dbUser, $this->dbPass, '', (int)$this->dbPort, NULL, $this->dbClientFlags);
 		for($try=0;(!is_object($this->_iConnId) || mysqli_connect_errno()) && $try < 5;++$try) {
 			sleep($try);

@@ -166,9 +166,9 @@ class mysql_clientdb_plugin {
 						$link->escape_string($database_password));
 					if(!$link->query($query)) $success = false;
 				}
-				
+
 				$app->log("PASSWORD SET FOR '".$link->escape_string($database_user)."'@'$db_host' success? " . ($success ? 'yes' : 'no'), LOGLEVEL_DEBUG);
-				
+
 				if($success == true){
 					$link->query("FLUSH PRIVILEGES");
 				}
@@ -261,6 +261,7 @@ class mysql_clientdb_plugin {
 				return;
 			}
 
+			mysqli_report(MYSQLI_REPORT_OFF);
 			//* Connect to the database
 			$link = new mysqli($clientdb_host, $clientdb_user, $clientdb_password);
 			if ($link->connect_error) {
@@ -324,6 +325,7 @@ class mysql_clientdb_plugin {
 				return;
 			}
 
+			mysqli_report(MYSQLI_REPORT_OFF);
 			//* Connect to the database
 			$link = new mysqli($clientdb_host, $clientdb_user, $clientdb_password);
 			if ($link->connect_error) {
@@ -654,6 +656,7 @@ class mysql_clientdb_plugin {
 				return;
 			}
 
+			mysqli_report(MYSQLI_REPORT_OFF);
 			//* Connect to the database
 			$link = new mysqli($clientdb_host, $clientdb_user, $clientdb_password);
 			if ($link->connect_error) {
@@ -709,6 +712,7 @@ class mysql_clientdb_plugin {
 			return;
 		}
 
+		mysqli_report(MYSQLI_REPORT_OFF);
 		//* Connect to the database
 		$link = new mysqli($clientdb_host, $clientdb_user, $clientdb_password);
 		if ($link->connect_error) {
@@ -782,6 +786,7 @@ class mysql_clientdb_plugin {
 			return;
 		}
 
+		mysqli_report(MYSQLI_REPORT_OFF);
 		//* Connect to the database
 		$link = new mysqli($clientdb_host, $clientdb_user, $clientdb_password);
 		if ($link->connect_error) {
@@ -807,16 +812,16 @@ class mysql_clientdb_plugin {
 
 		$link->close();
 	}
-	
-	
-				
-				
+
+
+
+
 	function getDatabaseType($link) {
 		$result = $link->query('SELECT VERSION() as version');
 		if($result) {
 			$tmp = $result->fetch_assoc();
 			$result->free();
-			
+
 			if(stristr($tmp['version'],'mariadb')) {
 				return 'mariadb';
 			} else {
@@ -832,7 +837,7 @@ class mysql_clientdb_plugin {
 		if($result) {
 			$tmp = $result->fetch_assoc();
 			$result->free();
-			
+
 			$version = explode('-', $tmp['version']);
 			if($major_version_only == true) {
 				$version_parts = explode('.', $version[0]);
