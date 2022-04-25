@@ -83,13 +83,13 @@ class installer_base {
 		global $autoinstall, $autoupdate;
 		$finished = false;
 		do {
-			if($name != '' && $autoinstall[$name] != '') {
+			if($name != '' && isset($autoinstall[$name]) && $autoinstall[$name] != '') {
 				if($autoinstall[$name] == 'default') {
 					$input = $default;
 				} else {
 					$input = $autoinstall[$name];
 				}
-			} elseif($name != '' && $autoupdate[$name] != '') {
+			} elseif($name != '' && isset($autoupdate[$name]) && $autoupdate[$name] != '') {
 				if($autoupdate[$name] == 'default') {
 					$input = $default;
 				} else {
@@ -126,13 +126,13 @@ class installer_base {
 
 	public function free_query($query, $default, $name = '') {
 		global $autoinstall, $autoupdate;
-		if($name != '' && $autoinstall[$name] != '') {
+		if($name != '' && isset($autoinstall[$name]) && $autoinstall[$name] != '') {
 			if($autoinstall[$name] == 'default') {
 				$input = $default;
 			} else {
 				$input = $autoinstall[$name];
 			}
-		} elseif($name != '' && $autoupdate[$name] != '') {
+		} elseif($name != '' && isset($autoupdate[$name]) && $autoupdate[$name] != '') {
 			if($autoupdate[$name] == 'default') {
 				$input = $default;
 			} else {
