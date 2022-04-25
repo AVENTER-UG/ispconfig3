@@ -3012,12 +3012,15 @@ class installer_base {
 				$hook = $pre_hook . $renew_hook;
 			}
 
+			$which_certbot = shell_exec('which certbot /root/.local/share/letsencrypt/bin/letsencrypt /opt/eff.org/certbot/venv/bin/certbot letsencrypt');
+
 			// Get the default LE client name and version
-			$le_client = explode("\n", shell_exec('which certbot /root/.local/share/letsencrypt/bin/letsencrypt /opt/eff.org/certbot/venv/bin/certbot letsencrypt'));
+			$le_client = explode("\n", $which_certbot ? $which_certbot : '');
 			$le_client = reset($le_client);
 
+			$which_acme = shell_exec('which acme.sh /usr/local/ispconfig/server/scripts/acme.sh /root/.acme.sh/acme.sh');
 			// Check for Neilpang acme.sh as well
-			$acme = explode("\n", shell_exec('which acme.sh /usr/local/ispconfig/server/scripts/acme.sh /root/.acme.sh/acme.sh'));
+			$acme = explode("\n", $which_acme ? $which_acme : '');
 			$acme = reset($acme);
 
 			if((!$acme || !is_executable($acme)) && (!$le_client || !is_executable($le_client))) {
