@@ -1914,10 +1914,10 @@ class installer_base {
 			}
 
 			$tpl->setVar('dkim_path', $mail_config['dkim_path']);
-			$tpl->setVar('rspamd_redis_servers', $mail_config['rspamd_redis_servers']);
-			$tpl->setVar('rspamd_redis_password', $mail_config['rspamd_redis_password']);
-			$tpl->setVar('rspamd_redis_bayes_servers', $mail_config['rspamd_redis_bayes_servers']);
-			$tpl->setVar('rspamd_redis_bayes_password', $mail_config['rspamd_redis_bayes_password']);
+			$tpl->setVar('rspamd_redis_servers', (isset($mail_config['rspamd_redis_servers']) ? $mail_config['rspamd_redis_servers'] : ''));
+			$tpl->setVar('rspamd_redis_password', (isset($mail_config['rspamd_redis_password']) ? $mail_config['rspamd_redis_password'] : ''));
+			$tpl->setVar('rspamd_redis_bayes_servers', (isset($mail_config['rspamd_redis_bayes_servers']) ? $mail_config['rspamd_redis_bayes_servers'] : ''));
+			$tpl->setVar('rspamd_redis_bayes_password', (isset($mail_config['rspamd_redis_bayes_password']) ? $mail_config['rspamd_redis_bayes_password'] : ''));
 			if(count($local_addrs) > 0) {
 				$tpl->setLoop('local_addrs', $local_addrs);
 			}

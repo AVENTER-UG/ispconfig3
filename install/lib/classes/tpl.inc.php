@@ -931,12 +931,17 @@ if (!defined('vlibTemplateClassLoaded')) {
 		{
 			array_push($this->_namespace, $varname);
 			$tempvar = count($this->_namespace) - 1;
-			$retstr = "for (\$_".$tempvar."=0 ; \$_".$tempvar." < count(\$this->_arrvars";
+			$retstr = "for (\$_".$tempvar."=0 ; \$_".$tempvar." < (isset(\$this->_arrvars";
 			for ($i=0; $i < count($this->_namespace); $i++) {
 				$retstr .= "['".$this->_namespace[$i]."']";
 				if ($this->_namespace[$i] != $varname) $retstr .= "[\$_".$i."]";
 			}
-			return $retstr."); \$_".$tempvar."++) {";
+			$retstr .= ") ? count(\$this->_arrvars";
+			for ($i=0; $i < count($this->_namespace); $i++) {
+				$retstr .= "['".$this->_namespace[$i]."']";
+				if ($this->_namespace[$i] != $varname) $retstr .= "[\$_".$i."]";
+			}
+			return $retstr.") : 0); \$_".$tempvar."++) {";
 		}
 
 		/**
@@ -1035,7 +1040,7 @@ if (!defined('vlibTemplateClassLoaded')) {
 			$wholetag = $args[0];
 			$openclose = $args[1];
 			$tag = strtolower($args[2]);
-			
+
 			if ($tag == 'else') return '<?php } else { ?>';
 			if ($tag == 'tmpl_include') return $wholetag; // ignore tmpl_include tags
 
@@ -1170,7 +1175,15 @@ if (!defined('vlibTemplateClassLoaded')) {
 
 			array_push($this->_currentincludedir, dirname($this->_tmplfilename));
 			$this->_includedepth++;
-			$success = @eval($this->_tmplfilep);
+			try {
+				$success = @eval($this->_tmplfilep);
+			} catch(Exception $ex) {
+				print $this->_tmplfilep;
+				throw $ex;
+			} catch(TypeError $ex) {
+				print $this->_tmplfilep;
+				throw $ex;
+			}
 			$this->_includedepth--;
 			array_pop($this->_currentincludedir);
 
