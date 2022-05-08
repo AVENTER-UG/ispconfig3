@@ -27,6 +27,10 @@ NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
 EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
+if(version_compare(phpversion(), '7.0', '<')) {
+	require_once 'compatibility.inc.php';
+}
+
 // Set timezone
 if(isset($conf['timezone']) && $conf['timezone'] != '') {	// note: !empty($conf['timezone']) should give the same result and is more idiomatic for current versions of PHP (gwyneth 20220315)
 	date_default_timezone_set($conf['timezone']);
@@ -266,7 +270,7 @@ class app {
 		}
 
 		/** @var string Formatted message to be sent to the logging subsystems. */
-		$log_msg = @date('d.m.Y-H:i') . ' - ' . $priority_txt .' ' . $file_line_caller . '- '. $msg;
+		$log_msg = @date('d.m.Y-H:i') . ' - ' . $priority_txt . ' ' . $file_line_caller . '- '. $msg;
 
 		// Check if the user-set priority defines that this message should be output at all.
 		if($priority >= $conf['log_priority']) {
@@ -278,7 +282,7 @@ class app {
 				die('Unable to open logfile.');
 			}
 
-			if(!fwrite($fp, $log_msg . '\r\n')) {
+			if(!fwrite($fp, $log_msg . "\r\n")) {
 				die('Unable to write to logfile.');
 			}
 

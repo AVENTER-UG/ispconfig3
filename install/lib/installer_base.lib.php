@@ -249,6 +249,7 @@ class installer_base {
 		$msg = '';
 
 		if(version_compare(phpversion(), '5.4', '<')) $msg .= "PHP Version 5.4 or newer is required. The currently used PHP version is ".phpversion().".\n";
+		if(version_compare(phpversion(), '8.0', '>=')) $msg .= "PHP Version 8 is not supported yet. Change PHP version back to the default version of the OS. The currently used PHP version is ".phpversion().".\n";
 		if(!function_exists('curl_init')) $msg .= "PHP Curl Module is missing.\n";
 		if(!function_exists('mysqli_connect')) $msg .= "PHP MySQLi Module is nmissing.\n";
 		if(!function_exists('mb_detect_encoding')) $msg .= "PHP Multibyte Module (MB) is missing.\n";
@@ -2875,7 +2876,7 @@ class installer_base {
 		if(@is_link($vhost_conf_enabled_dir.'/' . $use_symlink)) {
 			unlink($vhost_conf_enabled_dir.'/' . $use_symlink);
 		}
-		if(!@is_link($vhost_conf_enabled_dir.'/' . $use_symlink)) {
+		if(!@is_file($vhost_conf_enabled_dir.'/' . $use_symlink)) {
 			symlink($vhost_conf_dir.'/' . $use_name, $vhost_conf_enabled_dir.'/' . $use_symlink);
 		}
 	}
