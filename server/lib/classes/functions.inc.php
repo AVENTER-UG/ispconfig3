@@ -356,6 +356,34 @@ class functions {
 		}
 	}
 
+
+	/**
+	 * Normalize a path and strip duplicate slashes from it
+	 *
+	 * This will also remove all /../ from the path, reducing the preceding path elements
+	 *
+	 * @param string $path
+	 * @return string
+	 */
+	public function normalize_path($path) {
+		$path = preg_replace('~[/]{2,}~', '/', $path);
+		$parts = explode('/', $path);
+		$return_parts = array();
+
+		foreach($parts as $current_part) {
+			if($current_part === '..') {
+				if(!empty($return_parts) && end($return_parts) !== '') {
+					array_pop($return_parts);
+				}
+			} else {
+				$return_parts[] = $current_part;
+			}
+		}
+
+		return implode('/', $return_parts);
+	}
+
+
 	/** IDN converter wrapper.
 	 * all converter classes should be placed in ISPC_CLASS_PATH.'/idn/'
 	 */
@@ -435,19 +463,21 @@ class functions {
 		}
 		return implode("\n", $domains);
 	}
-	
+
 	public function generate_ssh_key($client_id, $username = ''){
 		global $app;
-		
+
 		// generate the SSH key pair for the client
-		$id_rsa_file = '/tmp/'.uniqid('',true);
+		$app->system->exec_safe('mktemp -dt id_rsa.XXXXXXXX');
+		$tmpdir = $app->system->last_exec_out();
+		$id_rsa_file = $tmpdir . uniqid('',true);
 		$id_rsa_pub_file = $id_rsa_file.'.pub';
 		if(file_exists($id_rsa_file)) unset($id_rsa_file);
 		if(file_exists($id_rsa_pub_file)) unset($id_rsa_pub_file);
 		if(!file_exists($id_rsa_file) && !file_exists($id_rsa_pub_file)) {
 			$app->system->exec_safe('ssh-keygen -t rsa -C ? -f ? -N ""', $username.'-rsa-key-'.time(), $id_rsa_file);
 			$app->db->query("UPDATE client SET created_at = UNIX_TIMESTAMP(), id_rsa = ?, ssh_rsa = ? WHERE client_id = ?", $app->system->file_get_contents($id_rsa_file), $app->system->file_get_contents($id_rsa_pub_file), $client_id);
-			$app->system->exec_safe('rm -f ? ?', $id_rsa_file, $id_rsa_pub_file);
+			$app->system->rmdir($tmpdir, true);
 		} else {
 			$app->log("Failed to create SSH keypair for ".$username, LOGLEVEL_WARN);
 		}
