@@ -137,6 +137,9 @@ var ISPConfig = {
 		});
 		$('[data-toggle="tooltip"]').tooltip({
 		});
+
+		$('input[autofocus]').focus();
+
 		// grab all password fields and set the readonly prop to prevent password managers to fill in new password
 		$('input[type="password"]').each(function() {
 			$(this).prop('readonly', true)
@@ -736,7 +739,7 @@ $(document).on("click", "[data-uncheck-fields] > input[type='checkbox']", functi
 	}
 });
 
-$(document).on('ready', function () {
+$(document).ready(function() {
 	$.fn.extend({
 		insertAtCaret: function(myValue){
 			return this.each(function(i) {
