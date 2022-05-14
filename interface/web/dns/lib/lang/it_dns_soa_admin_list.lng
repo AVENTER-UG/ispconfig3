@@ -1,12 +1,12 @@
 <?php
-$wb['list_head_txt'] = 'DNS-Zones';
+$wb['list_head_txt'] = 'Zone DNS';
 $wb['active_txt'] = 'Attivo';
 $wb['server_id_txt'] = 'Server';
-$wb['origin_txt'] = 'Zone';
+$wb['origin_txt'] = 'Zona';
 $wb['ns_txt'] = 'NS';
 $wb['mbox_txt'] = 'Email';
-$wb['add_new_record_wizard_txt'] = 'Aggiungi un nuovo  DNS Zone with Wizard';
+$wb['add_new_record_wizard_txt'] = 'Aggiungi una nuova Zona DNS con la procedura guidata';
 $wb['add_new_record_txt'] = 'Aggiungi un nuovo  DNS Zone manually';
-$wb['import_zone_file_txt'] = 'Import Zone File';
+$wb['import_zone_file_txt'] = 'Importa file di Zona';
 $wb['sys_groupid_txt'] = 'Cliente';
 ?>

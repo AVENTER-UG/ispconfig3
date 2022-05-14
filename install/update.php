@@ -216,6 +216,19 @@ if($do_backup == 'yes') {
 	exec("tar pcfz $backup_path/etc.tar.gz /etc 2> /dev/null", $out, $returnvar);
 	if($returnvar != 0) die("Backup failed. We stop here...\n");
 
+  if (is_dir('/root/.acme.sh')) {
+    swriteln('Creating backup of "/root/.acme.sh" directory...');
+    exec("tar pcfz $backup_path/acme.sh.tar.gz /root/.acme.sh 2> /dev/null", $out, $returnvar);
+    if($returnvar != 0) die("Backup failed. We stop here...\n");
+  }
+
+  if (is_dir('/etc/letsencrypt')) {
+    swriteln('Creating backup of "/etc/letsencrypt" directory...');
+    exec("tar pcfz $backup_path/certbot.tar.gz /etc/letsencrypt 2> /dev/null", $out, $returnvar);
+    if($returnvar != 0) die("Backup failed. We stop here...\n");
+  }
+
+
 	exec("chown root:root $backup_path/*.tar.gz");
 	exec("chmod 700 $backup_path/*.tar.gz");
 }
@@ -499,6 +512,12 @@ if($reconfigure_services_answer == 'yes' || $reconfigure_services_answer == 'sel
 	$inst->configure_xmpp('dont-create-certs');
 	}
 
+  // Configure AppArmor
+  if($conf['apparmor']['installed']){
+    swriteln('Configuring AppArmor');
+    $inst->configure_apparmor();
+  }
+
 	if($conf['services']['firewall'] && $inst->reconfigure_app('Firewall', $reconfigure_services_answer)) {
 		if($conf['ufw']['installed'] == true) {
 			//* Configure Ubuntu Firewall
@@ -650,6 +669,11 @@ $inst->create_mount_script();
 $md5_filename = '/usr/local/ispconfig/security/data/file_checksums_'.date('Y-m-d_h-i').'.md5';
 exec('find /usr/local/ispconfig -type f -print0 | xargs -0 md5sum > '.$md5_filename . ' 2>/dev/null');
 chmod($md5_filename,0700);
+
+// TODO: In a future update, stop the update script when running courier
+if ($conf['courier']['installed'] == true) {
+	swriteln('WARNING: You are running Courier. We are removing support for Courier from ISPConfig. Migrate your system to Dovecot as soon as possible. See https://www.howtoforge.com/community/threads/migrate-from-courier-to-dovecot-on-your-ispconfig-managed-mailserver.88523/ for more information.');
+}
 
 echo "Update finished.\n";
 
