@@ -127,57 +127,65 @@ if($_SESSION['otp']['type'] == 'email') {
 	}
 
 	// Send code via email.
-	if(!isset($_SESSION['otp']['sent']) || $_GET['action'] == 'resend') {
-		// Generate new code
-		$new_otp_code = random_int(100000, 999999);
-		$_SESSION['otp']['code_hash'] = password_hash($new_otp_code, PASSWORD_DEFAULT);
-		//$_SESSION['otp']['code_debug'] = $new_otp_code; # for DEBUG only.
-		$_SESSION['otp']['starttime'] = time();
+	if (!isset($_SESSION['otp']['sent']) || $_GET['action'] == 'resend') {
 
-		// Ensure that code is not sent too often
-		if(isset($_SESSION['otp']['sent']) && $_SESSION['otp']['sent'] > $max_code_resend) {
-			$app->error('Code resend limit reached', 'index.php');
-		}
-
-		$app->uses('functions');
-		$app->uses('getconf');
-		$server_config_array = $app->getconf->get_global_config();
-
-		$app->uses('getconf,ispcmail');
-		$mail_config = $server_config_array['mail'];
-		if($mail_config['smtp_enabled'] == 'y') {
-			$mail_config['use_smtp'] = true;
-			$app->ispcmail->setOptions($mail_config);
-		}
-
-		$clientuser = $app->db->queryOneRecord('SELECT email FROM sys_user u LEFT JOIN client c ON (u.client_id=c.client_id) WHERE u.userid = ?', $_SESSION['s_pending']['user']['userid']);
-		if (!empty($clientuser['email'])) {
-		  $email_to = $clientuser['email'];
+		$mail_otp_code_retry_timeout = 30;
+		if (isset($_SESSION['otp']['starttime']) && $_SESSION['otp']['starttime'] > time() - $mail_otp_code_retry_timeout) {
+			$token_sent_message = sprintf($wb['otp_code_email_sent_wait_txt'], $mail_otp_code_retry_timeout);
 		}
 		else {
-		  // Admin users are not related to a client, thus use the globally configured email address.
-		  $email_to = $mail_config['admin_mail'];
-		}
 
-		$app->ispcmail->setSender($mail_config['admin_mail'], $mail_config['admin_name']);
-		$app->ispcmail->setSubject($wb['otp_code_email_subject_txt']);
-		$app->ispcmail->setMailText(sprintf($wb['otp_code_email_template_txt'], $new_otp_code));
-		$send_result = $app->ispcmail->send($email_to);
-		$app->ispcmail->finish();
+			// Generate new code
+			$new_otp_code = random_int(100000, 999999);
+			$_SESSION['otp']['code_hash'] = password_hash($new_otp_code, PASSWORD_DEFAULT);
+			//$_SESSION['otp']['code_debug'] = $new_otp_code; # for DEBUG only.
+			$_SESSION['otp']['starttime'] = time();
 
-		if ($send_result) {
-
-			// Increase sent counter.
-			if(!isset($_SESSION['otp']['sent'])) {
-				$_SESSION['otp']['sent'] = 1;
-			} else {
-				$_SESSION['otp']['sent']++;
+			// Ensure that code is not sent too often
+			if(isset($_SESSION['otp']['sent']) && $_SESSION['otp']['sent'] > $max_code_resend) {
+				$app->error('Code resend limit reached', 'index.php');
 			}
 
-			$token_sent_message = $wb['otp_code_email_sent_txt'] . ' ' . $email_to;
-		}
-		else {
-			$token_sent_message = sprintf($wb['otp_code_email_sent_failed_txt'], $email_to);
+			$app->uses('functions');
+			$app->uses('getconf');
+			$server_config_array = $app->getconf->get_global_config();
+
+			$app->uses('getconf,ispcmail');
+			$mail_config = $server_config_array['mail'];
+			if($mail_config['smtp_enabled'] == 'y') {
+				$mail_config['use_smtp'] = true;
+				$app->ispcmail->setOptions($mail_config);
+			}
+
+			$clientuser = $app->db->queryOneRecord('SELECT email FROM sys_user u LEFT JOIN client c ON (u.client_id=c.client_id) WHERE u.userid = ?', $_SESSION['s_pending']['user']['userid']);
+			if (!empty($clientuser['email'])) {
+				$email_to = $clientuser['email'];
+			}
+			else {
+				// Admin users are not related to a client, thus use the globally configured email address.
+				$email_to = $mail_config['admin_mail'];
+			}
+
+			$app->ispcmail->setSender($mail_config['admin_mail'], $mail_config['admin_name']);
+			$app->ispcmail->setSubject($wb['otp_code_email_subject_txt']);
+			$app->ispcmail->setMailText(sprintf($wb['otp_code_email_template_txt'], $new_otp_code));
+			$send_result = $app->ispcmail->send($email_to);
+			$app->ispcmail->finish();
+
+			if ($send_result) {
+
+				// Increase sent counter.
+				if(!isset($_SESSION['otp']['sent'])) {
+					$_SESSION['otp']['sent'] = 1;
+				} else {
+					$_SESSION['otp']['sent']++;
+				}
+
+				$token_sent_message = $wb['otp_code_email_sent_txt'] . ' ' . $email_to;
+			}
+			else {
+				$token_sent_message = sprintf($wb['otp_code_email_sent_failed_txt'], $email_to);
+			}
 		}
 	}
 
