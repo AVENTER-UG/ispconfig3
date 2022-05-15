@@ -134,6 +134,8 @@ function process_login_request(app $app, &$error, $conf, $module)
 
 		if ($loginAs) {
 			echo 'LOGIN_REDIRECT:'.$_SESSION['s']['module']['startpage'];
+			$app->plugin->raiseEvent('login', $username);
+			$app->auth_log('Successful login for user \''. $username .'\' ' . $msg . ' from '. $_SERVER['REMOTE_ADDR'] .' at '. date('Y-m-d H:i:s') . ' with session ID ' .session_id());
 			exit;
 		} else {
 
