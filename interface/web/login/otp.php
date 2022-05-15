@@ -77,7 +77,7 @@ function finish_2fa_success($msg = '') {
 if(isset($_POST['code']) && strlen($_POST['code']) == $otp_recovery_code_length) {
 	//* TODO Recovery code handling
 
-	$user = $app->db->queryOneRecord('SELECT otp_attempts, otp_recovery FROM sys_user WHERE userid = ?',$_SESSION['s_pending']['user']['userid']);
+	$user = $app->db->queryOneRecord('SELECT otp_attempts, otp_recovery FROM sys_user WHERE userid = ?', $_SESSION['s_pending']['user']['userid']);
 
 	//* We allow one more try to enter recovery code
 	if($user['otp_attempts'] > $max_global_code_retry + 1) {
@@ -103,7 +103,7 @@ if($_SESSION['otp']['type'] == 'email') {
 
 	if(isset($_POST['code']) && strlen($_POST['code']) == $code_length && isset($_SESSION['otp']['code_hash'])) {
 
-		$user = $app->db->queryOneRecord('SELECT otp_attempts FROM sys_user WHERE userid = ?',$_SESSION['s_pending']['user']['userid']);
+		$user = $app->db->queryOneRecord('SELECT otp_attempts FROM sys_user WHERE userid = ?', $_SESSION['s_pending']['user']['userid']);
 
 		//* Check if we reached limits
 		if($_SESSION['otp']['sent'] > $max_code_resend
