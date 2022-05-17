@@ -115,7 +115,7 @@ body {
     padding: 0 12px;
     height: 70px;
     border-bottom-style: solid;
-    botder-bottom-width: 2px;
+    border-bottom-width: 1px;
     transition: all ease 500ms; }
   #main-navigation .icon {
     font-size: 32px; }
