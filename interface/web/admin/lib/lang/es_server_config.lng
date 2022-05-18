@@ -191,10 +191,12 @@ $wb['nginx_vhost_conf_enabled_dir_txt'] = 'Directorio de configuración de host 
 $wb['no_notifications_txt'] = 'Sin notificaciones';
 $wb['overquota_db_notify_threshold_txt'] = 'DB quota warning usage level';
 $wb['overquota_db_notify_admin_txt'] = 'Enviar advertencias de cuota de base de datos al administrador';
+$wb['overquota_db_notify_reseller_txt'] = 'Send DB quota warnings to reseller';
 $wb['overquota_db_notify_client_txt'] = 'Enviar advertencias de cuota de base de datos a los clientes';
 $wb['overquota_notify_threshold_txt'] = 'Quota warning usage level';
 $wb['overquota_notify_threshold_error'] = 'Quota warning usage level must be between 0-100%';
 $wb['overquota_notify_admin_txt'] = 'Enviar advertencias de cuota excedida al administrador';
+$wb['overquota_notify_reseller_txt'] = 'Send quota warnings to reseller';
 $wb['overquota_notify_client_txt'] = 'Enviar advertencias de cuota excedida al cliente';
 $wb['overquota_notify_freq_note_txt'] = '0 = enviar mensaje solo una vez, sin volver a notificar';
 $wb['overquota_notify_freq_txt'] = 'Enviar advertencia de cuota cada X días';
