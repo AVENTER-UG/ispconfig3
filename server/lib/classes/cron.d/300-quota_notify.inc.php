@@ -426,7 +426,7 @@ class cronjob_quota_notify extends cronjob {
 						if(!$rec['last_quota_notification']) $send_notification = true; // not yet notified
 						elseif($mail_config['overquota_notify_freq'] > 0 && $rec['notified_before'] >= $mail_config['overquota_notify_freq']) $send_notification = true;
 
-						if(($mail_config['overquota_notify_admin'] == 'y' || $mail_config['overquota_notify_client'] == 'y') && $send_notification == true) {
+						if(($mail_config['overquota_notify_admin'] == 'y' || $mail_config['overquota_notify_reseller'] == 'y' || $mail_config['overquota_notify_client'] == 'y') && $send_notification == true) {
 							$app->dbmaster->datalogUpdate('mail_user', array("last_quota_notification" => date('Y-m-d')), 'mailuser_id', $rec['mailuser_id']);
 
 							$placeholders = array('{email}' => $rec['email'],
@@ -525,7 +525,7 @@ class cronjob_quota_notify extends cronjob {
 
 
 									//* Send quota notifications
-									if(($web_config['overquota_db_notify_admin'] == 'y' || $web_config['overquota_db_notify_client'] == 'y') && $send_notification == true) {
+									if(($web_config['overquota_db_notify_admin'] == 'y' || $web_config['overquota_db_notify_reseller'] == 'y' || $web_config['overquota_db_notify_client'] == 'y') && $send_notification == true) {
 										$app->dbmaster->datalogUpdate('web_database', array("last_quota_notification" => date('Y-m-d')), 'database_id', $rec['database_id']);
 										$placeholders = array(
 											'{database_name}' => $rec['database_name'],
