@@ -566,7 +566,7 @@ class cronjob_quota_notify extends cronjob {
 									if($rec['last_quota_notification']) $app->dbmaster->datalogUpdate('web_database', array("last_quota_notification" => null), 'database_id', $rec['database_id']);
 
 									// send notification - everything ok again
-									if($rec['last_quota_notification'] && $web_config['overquota_notify_onok'] == 'y' && ($web_config['overquota_db_notify_admin'] == 'y' || $web_config['overquota_db_notify_client'] == 'y')) {
+									if($rec['last_quota_notification'] && $web_config['overquota_notify_onok'] == 'y' && ($web_config['overquota_db_notify_admin'] == 'y' || $web_config['overquota_db_notify_reseller'] == 'y' || $web_config['overquota_db_notify_client'] == 'y')) {
 										$placeholders = array(
 											'{database_name}' => $rec['database_name'],
 											'{admin_mail}' => ($global_config['admin_mail'] != ''? $global_config['admin_mail'] : 'root'),
