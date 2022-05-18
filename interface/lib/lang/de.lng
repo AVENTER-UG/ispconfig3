@@ -173,3 +173,5 @@ $wb['unlimited_txt'] = 'unlimitiert';
 $wb['server_id_0_error_txt'] = 'Bitte Server auswählen. Server ID muss > als 0 sein.';
 $wb['datalog_changes_close_txt'] = 'Close';
 $wb['non_admin_error'] = 'Requires administrator level permissions';
+$wb['copy_to_clipboard_txt'] = 'Copy to clipboard';
+?>
