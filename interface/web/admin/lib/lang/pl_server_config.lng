@@ -192,6 +192,7 @@ $wb['mailbox_quota_stats_txt'] = 'Statystyki użycia skrzynek email';
 $wb['enable_ip_wildcard_txt'] = 'Enable IP wildcard (*)';
 $wb['web_folder_protection_txt'] = 'Make web folders immutable (extended attributes)';
 $wb['overtraffic_notify_admin_txt'] = 'Prześlij informacje o przekroczeniu transferu do admina';
+$wb['overtraffic_notify_reseller_txt'] = 'Send overtraffic notification to reseller';
 $wb['overtraffic_notify_client_txt'] = 'Prześlij informacje o przekroczeniu transferu do klienta';
 $wb['overtraffic_disable_web_txt'] = 'Disable websites that exceed traffic limit';
 $wb['rbl_error_regex'] = 'Please specify valid RBL hostnames.';

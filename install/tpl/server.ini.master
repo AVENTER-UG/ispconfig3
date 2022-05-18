@@ -103,6 +103,7 @@ enable_sni=y
 skip_le_check=n
 enable_ip_wildcard=y
 overtraffic_notify_admin=y
+overtraffic_notify_reseller=y
 overtraffic_notify_client=y
 nginx_cgi_socket=/var/run/fcgiwrap.socket
 php_fpm_init_script=php5-fpm

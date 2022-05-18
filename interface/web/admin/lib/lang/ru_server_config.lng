@@ -192,6 +192,7 @@ $wb['mailbox_quota_stats_txt'] = 'Статистика квоты почтово
 $wb['enable_ip_wildcard_txt'] = 'Включить IP подстановочный знак (*)';
 $wb['web_folder_protection_txt'] = 'Сделать веб-папки неизменяемыми (расширенные атрибуты)';
 $wb['overtraffic_notify_admin_txt'] = 'Присылать уведомление трафика администратору';
+$wb['overtraffic_notify_reseller_txt'] = 'Send overtraffic notification to reseller';
 $wb['overtraffic_notify_client_txt'] = 'Присылать уведомление трафика клиенту';
 $wb['overtraffic_disable_web_txt'] = 'Disable websites that exceed traffic limit';
 $wb['rbl_error_regex'] = 'Пожалуйста, укажите действительные имена хостов RBL.';

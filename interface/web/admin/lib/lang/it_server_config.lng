@@ -180,6 +180,7 @@ $wb['mailbox_quota_stats_txt'] = 'Statistiche Quota Casella di Posta';
 $wb['enable_ip_wildcard_txt'] = 'Abilita  IP wildcard (*)';
 $wb['web_folder_protection_txt'] = 'Imposta cartelle sito in moaniera non modificabile (attributi estesi)';
 $wb['overtraffic_notify_admin_txt'] = 'Trasmetti notifiche superamento traffico ad admin';
+$wb['overtraffic_notify_reseller_txt'] = 'Send overtraffic notification to reseller';
 $wb['overtraffic_notify_client_txt'] = 'Trasmetti notifiche superamento traffico al cliente';
 $wb['overtraffic_disable_web_txt'] = 'Disabilita i siti web che eccedono il limiti di traffico';
 $wb['rbl_error_regex'] = 'Per cortesia specificare nomi host RBL validi.';

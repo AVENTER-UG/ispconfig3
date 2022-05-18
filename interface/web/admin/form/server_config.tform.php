@@ -1082,6 +1082,12 @@ $form["tabs"]['web'] = array(
 			'default' => 'y',
 			'value' => array(0 => 'n', 1 => 'y')
 		),
+		'overtraffic_notify_reseller' => array(
+			'datatype' => 'VARCHAR',
+			'formtype' => 'CHECKBOX',
+			'default' => 'y',
+			'value' => array(0 => 'n', 1 => 'y')
+		),
 		'overtraffic_notify_client' => array(
 			'datatype' => 'VARCHAR',
 			'formtype' => 'CHECKBOX',

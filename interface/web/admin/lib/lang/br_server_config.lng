@@ -199,6 +199,7 @@ $wb['mailbox_quota_stats_txt'] = 'Estatísticas das cotas para contas de email';
 $wb['enable_ip_wildcard_txt'] = 'Habilitar curingas IP (*)';
 $wb['web_folder_protection_txt'] = 'Tornar pastas Web imutáveis (atributos estendidos)';
 $wb['overtraffic_notify_admin_txt'] = 'Enviar notificação de tráfego excedido para o administrador';
+$wb['overtraffic_notify_reseller_txt'] = 'Send overtraffic notification to reseller';
 $wb['overtraffic_notify_client_txt'] = 'Enviar notificação de tráfego excedido para o cliente';
 $wb['overtraffic_disable_web_txt'] = 'Disable websites that exceed traffic limit';
 $wb['rbl_error_regex'] = 'Por favor, insira nomes de host válidos para RBLs.';

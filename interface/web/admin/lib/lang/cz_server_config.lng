@@ -178,6 +178,7 @@ $wb['mailbox_quota_stats_txt'] = 'Statistika kvóty poštovní schránky';
 $wb['enable_ip_wildcard_txt'] = 'Aktivovat IP wildcard (*)';
 $wb['web_folder_protection_txt'] = 'Make web folders immutable (extended attributes)';
 $wb['overtraffic_notify_admin_txt'] = 'Při překročení limitu přenesených dat, poslat oznámení adminovi';
+$wb['overtraffic_notify_reseller_txt'] = 'Send overtraffic notification to reseller';
 $wb['overtraffic_notify_client_txt'] = 'Při překročení limitu přenesených dat, poslat oznámení klientovi';
 $wb['overtraffic_disable_web_txt'] = 'Disable websites that exceed traffic limit';
 $wb['rbl_error_regex'] = 'Please specify valid RBL hostnames.';

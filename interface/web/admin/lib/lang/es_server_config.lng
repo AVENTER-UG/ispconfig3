@@ -200,6 +200,7 @@ $wb['overquota_notify_freq_note_txt'] = '0 = enviar mensaje solo una vez, sin vo
 $wb['overquota_notify_freq_txt'] = 'Enviar advertencia de cuota cada X días';
 $wb['overquota_notify_onok_txt'] = 'Enviar al cliente información de cuota correcta';
 $wb['overtraffic_notify_admin_txt'] = 'Enviar notificación de tráfico sobrepasado al administrador';
+$wb['overtraffic_notify_reseller_txt'] = 'Send overtraffic notification to reseller';
 $wb['overtraffic_notify_client_txt'] = 'Enviar notificación de tráfico sobrepasado al cliente';
 $wb['permissions_txt'] = 'Permisos';
 $wb['php_fpm_ini_path_error_empty'] = 'La ruta al archivo php.ini de PHP-FPM está vacío.';
