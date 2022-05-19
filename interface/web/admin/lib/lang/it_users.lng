@@ -34,4 +34,5 @@ $wb['username_error_collision'] = 'Il nome utente non può essere web o web+un n
 $wb['client_not_admin_err'] = 'Un utente che appartiene ad un cliente non può essere del tipo: admin';
 $wb['lost_password_function_txt'] = 'La funzione password dimenticata è disponibile';
 $wb['no_user_insert'] = 'CP-Utente di tipo -utente- viene aggiunto automaticamente quando aggiungi un cliente o un rivenditore.';
+$wb['otp_auth_txt'] = '2-Factor Authentication';
 ?>

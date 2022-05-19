@@ -12,4 +12,5 @@ $wb['password_match_txt'] = 'Le password coincidono.';
 $wb['language_txt'] = 'Lingua pannello';
 $wb['startmodule_txt'] = 'Modulo di avvio';
 $wb['app_theme_txt'] = 'Apparenza';
+$wb['otp_auth_txt'] = 'Two Factor Authentication';
 ?>
