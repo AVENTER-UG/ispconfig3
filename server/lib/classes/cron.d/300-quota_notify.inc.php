@@ -522,8 +522,7 @@ class cronjob_quota_notify extends cronjob {
 											if($client['email'] != '') {
 												$recipients[] = $client['email'];
 											}
-											
-
+										}
 										$this->_tools->send_notification_email('db_quota_notification', $placeholders, $recipients);
 
 									}
