@@ -323,6 +323,10 @@ class bind_plugin {
 					}
 				}
 			}
+			else {
+				$app->log("DNS zone[".$zone['origin']."] has no records yet, skip...", LOGLEVEL_DEBUG);
+				return;
+			}
 			$tpl->setLoop('zones', $records);
 
 			$filename = $dns_config['bind_zonefiles_dir'].'/' . $this->zone_file_prefix() . str_replace("/", "_", substr($zone['origin'], 0, -1));
