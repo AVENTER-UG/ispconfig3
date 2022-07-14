@@ -346,18 +346,10 @@ class installer_base {
 			$this->db->query("UPDATE sys_ini SET config = ? WHERE sysini_id = 1", $system_ini);
 
 		}
-	}
+  }
 
-	//** Create the server record in the database
-	public function add_database_server_record() {
-
-		global $conf;
-
-		if($conf['mysql']['host'] == 'localhost') {
-			$from_host = 'localhost';
-		} else {
-			$from_host = $conf['hostname'];
-		}
+  private function add_record($from_host) {
+    global $conf;
 
 		// Delete ISPConfig user in the local database, in case that it exists
 		$this->db->query("DROP USER ?@?", $conf['mysql']['ispconfig_user'], $from_host);
@@ -380,6 +372,19 @@ class installer_base {
 			if(!$this->db->query($query, $conf['mysql']['ispconfig_user'], $from_host)) {
 				$this->error('Unable to grant administrative permissions to user: '.$conf['mysql']['ispconfig_user'].' Error: '.$this->db->errorMessage);
 			}
+		}
+  }
+
+	//** Create the server record in the database
+	public function add_database_server_record() {
+
+		global $conf;
+
+		if($conf['mysql']['host'] == 'localhost') {
+			$this->add_record("localhost");
+		} else {
+			$this->add_record($conf['hostname']);
+			$this->add_record(gethostbyname($conf['hostname']));
 		}
 
 		//* Set the database name in the DB library
@@ -623,7 +628,7 @@ class installer_base {
 				$hosts[$from_ip]['user'] = $conf['mysql']['master_ispconfig_user'];
 				$hosts[$from_ip]['db'] = $conf['mysql']['master_database'];
 				$hosts[$from_ip]['pwd'] = $conf['mysql']['master_ispconfig_password'];
-			}
+      }
 		} else{
 			/*
 			 * it is NOT a master-slave - Setup so we have to find out all clients and their
@@ -637,9 +642,15 @@ class installer_base {
 			foreach ($data as $item){
 				$hosts[$item['Host']]['user'] = $item['User'];
 				$hosts[$item['Host']]['db'] = $conf['mysql']['master_database'];
-				$hosts[$item['Host']]['pwd'] = ''; // the user already exists, so we need no pwd!
+        $hosts[$item['Host']]['pwd'] = ''; // the user already exists, so we need no pwd!
+
 			}
-		}
+    }
+
+	  $from_ip = gethostbyname($conf['hostname']);
+	  $hosts[$from_ip]['user'] = $conf['mysql']['master_ispconfig_user'];
+	  $hosts[$from_ip]['db'] = $conf['mysql']['master_database'];
+	  $hosts[$from_ip]['pwd'] = $conf['mysql']['master_ispconfig_password'];
 
 		if(count($hosts) > 0) {
 			foreach($hosts as $host => $value) {
