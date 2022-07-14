@@ -253,6 +253,8 @@ CREATE TABLE `client` (
   `template_additional` text,
   `created_at` bigint(20) DEFAULT NULL,
   `locked` enum('n','y') NOT NULL DEFAULT 'n',
+  `agb` enum('n','y') NOT NULL DEFAULT 'n',
+  `dsgvo` enum('n','y') NOT NULL DEFAULT 'n',
   `canceled` enum('n','y') NOT NULL DEFAULT 'n',
   `can_use_api` enum('n','y') NOT NULL DEFAULT 'n',
   `tmp_data` mediumblob,
