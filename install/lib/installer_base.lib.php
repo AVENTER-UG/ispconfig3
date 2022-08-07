@@ -384,7 +384,7 @@ class installer_base {
 			$this->add_record("localhost");
 		} else {
 			$this->add_record($conf['hostname']);
-			$this->add_record(gethostbyname($conf['hostname']));
+			$this->add_record(gethostbyname(gethostname()));
 		}
 
 		//* Set the database name in the DB library
