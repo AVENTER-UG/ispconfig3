@@ -151,6 +151,8 @@ class page_action extends tform_actions {
 	function onBeforeDelete() {
 		global $app, $conf;
 
+		// DUPLICATE CODE IN interface/lib/classes/remote.d/client.inc.php
+
 		$client_id = $app->functions->intval($this->dataRecord['client_id']);
 
 		if($client_id > 0) {

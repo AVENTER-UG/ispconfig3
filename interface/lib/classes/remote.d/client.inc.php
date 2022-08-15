@@ -397,6 +397,8 @@ class remoting_client extends remoting {
 			return false;
 		}
 
+		// DUPLICATE CODE IN interface/web/client/client_del.php
+
 		$client_id = $app->functions->intval($client_id);
 
 		if($client_id > 0) {
