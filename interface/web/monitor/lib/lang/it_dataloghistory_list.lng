@@ -5,4 +5,5 @@ $wb['server_id_txt'] = 'Server';
 $wb['dbtable_txt'] = 'Tabella DB';
 $wb['action_txt'] = 'Azione';
 $wb['status_txt'] = 'Stato';
+$wb['user_txt'] = 'User';
 ?>
