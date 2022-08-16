@@ -69,7 +69,7 @@ class system_config_dns_ca_plugin {
 		
 		$global_config = $app->getconf->get_global_config('sites');
 
-		if(($page_form->dataRecord['ssl_letsencrypt'] == 'y') && ($global_config['le_caa_autocreate_options'] == 'y')) {
+		if(($page_form->dataRecord['ssl_letsencrypt'] == 'y') && ($global_config['le_caa_autocreate_options'] != 'n')) {
 			$domain = $page_form->dataRecord['domain'];
 			$subdomain = $page_form->dataRecord['subdomain'];
 			$temp=$app->db->queryAllRecords("SELECT * FROM dns_rr WHERE type = 'CAA' AND (name = ? OR name = ?) AND data like ?", $domain.'.', $subdomain.'.'.$domain.'.', '%letsencrypt%');
