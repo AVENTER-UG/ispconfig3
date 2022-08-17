@@ -341,3 +341,5 @@ $wb['tooltip_jailkit_hardlinks_txt'] = 'L\'uso di hardlinks è meno sicuro però
 $wb['jailkit_hardlinks_allow_txt'] = 'Consenti hardlinks all\'interno di jail';
 $wb['jailkit_hardlinks_no_txt'] = 'No, rimuovi i file con hardlink';
 $wb['jailkit_hardlinks_yes_txt'] = 'Si, usa hardlinks se possibile';
+$wb['mailbox_soft_delete_txt'] = 'Mailbox soft delete';
+$wb['mailbox_soft_delete_info_txt'] = 'by default cleaned up after 7 days.';
