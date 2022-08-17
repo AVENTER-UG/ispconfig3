@@ -335,7 +335,7 @@ class functions {
 		}
 
 		// idn_to_* chokes on leading dots, but we need them for amavis, so remove it for later
-		if(strpos($domain, '.') == 0) {
+		if(substr($domain, 0, 1) === '.') {
 			$leading_dot = true;
 			$domain = substr($domain, 1);
 		} else {
