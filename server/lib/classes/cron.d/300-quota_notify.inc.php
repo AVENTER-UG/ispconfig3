@@ -57,6 +57,13 @@ class cronjob_quota_notify extends cronjob {
 
 		$web_config = $app->getconf->get_server_config($conf['server_id'], 'web');
 
+		// Get client email and eventual reseller email
+		$client_group_id = $rec["sys_groupid"];
+		$client = $app->db->queryOneRecord("SELECT client.email, client.parent_client_id FROM sys_group, client WHERE sys_group.client_id = client.client_id and sys_group.groupid = ?", $client_group_id);
+		if($client['parent_client_id'] > 0) {
+			$reseller = $app->db->queryOneRecord("SELECT email FROM client WHERE client_id = ?", $client['parent_client_id']);
+		}
+
 		//######################################################################################################
 		// enforce traffic quota (run only on the "master-server")
 		//######################################################################################################
@@ -107,11 +114,6 @@ class cronjob_quota_notify extends cronjob {
 
 							//* Send email to reseller
 							if($web_config['overtraffic_notify_reseller'] == 'y') {
-								$client_group_id = $rec["sys_groupid"];
-								$app->db->queryOneRecord("SELECT parent_client_id FROM sys_group, client WHERE sys_group.client_id = client.client_id and sys_group.groupid = ?", $client_group_id);
-								if($client['parent_client_id'] > 0) {
-									$reseller = $app->db->queryOneRecord("SELECT email FROM client WHERE client_id = ?", $client['parent_client_id']);
-								}
 								if($reseller['email'] != '') {
 									$recipients[] = $reseller['email'];
 								}
@@ -119,8 +121,6 @@ class cronjob_quota_notify extends cronjob {
 
 							//* Send email to client
 							if($web_config['overtraffic_notify_client'] == 'y') {
-								$client_group_id = $rec["sys_groupid"];
-								$client = $app->db->queryOneRecord("SELECT client.email FROM sys_group, client WHERE sys_group.client_id = client.client_id and sys_group.groupid = ?", $client_group_id);
 								if($client['email'] != '') {
 									$recipients[] = $client['email'];
 								}
@@ -245,11 +245,6 @@ class cronjob_quota_notify extends cronjob {
 
 							//* Send email to reseller
 							if($web_config['overquota_notify_reseller'] == 'y') {
-								$client_group_id = $rec["sys_groupid"];
-								$app->db->queryOneRecord("SELECT parent_client_id FROM sys_group, client WHERE sys_group.client_id = client.client_id and sys_group.groupid = ?", $client_group_id);
-								if($client['parent_client_id'] > 0) {
-									$reseller = $app->db->queryOneRecord("SELECT email FROM client WHERE client_id = ?", $client['parent_client_id']);
-								}
 								if($reseller['email'] != '') {
 									$recipients[] = $reseller['email'];
 								}
@@ -257,8 +252,6 @@ class cronjob_quota_notify extends cronjob {
 
 							//* Send email to client
 							if($web_config['overquota_notify_client'] == 'y') {
-								$client_group_id = $rec["sys_groupid"];
-								$client = $app->db->queryOneRecord("SELECT client.email FROM sys_group, client WHERE sys_group.client_id = client.client_id and sys_group.groupid = ?", $client_group_id);
 								if($client['email'] != '') {
 									$recipients[] = $client['email'];
 								}
@@ -292,11 +285,6 @@ class cronjob_quota_notify extends cronjob {
 
 							//* Send email to reseller
 							if($web_config['overquota_notify_reseller'] == 'y') {
-								$client_group_id = $rec["sys_groupid"];
-								$app->db->queryOneRecord("SELECT parent_client_id FROM sys_group, client WHERE sys_group.client_id = client.client_id and sys_group.groupid = ?", $client_group_id);
-								if($client['parent_client_id'] > 0) {
-									$reseller = $app->db->queryOneRecord("SELECT email FROM client WHERE client_id = ?", $client['parent_client_id']);
-								}
 								if($reseller['email'] != '') {
 									$recipients[] = $reseller['email'];
 								}
@@ -304,8 +292,6 @@ class cronjob_quota_notify extends cronjob {
 
 							//* Send email to client
 							if($web_config['overquota_notify_client'] == 'y') {
-								$client_group_id = $rec["sys_groupid"];
-								$client = $app->db->queryOneRecord("SELECT client.email FROM sys_group, client WHERE sys_group.client_id = client.client_id and sys_group.groupid = ?", $client_group_id);
 								if($client['email'] != '') {
 									$recipients[] = $client['email'];
 								}
@@ -397,11 +383,6 @@ class cronjob_quota_notify extends cronjob {
 
 							//* Send email to reseller
 							if($web_config['overquota_notify_reseller'] == 'y') {
-								$client_group_id = $rec["sys_groupid"];
-								$app->db->queryOneRecord("SELECT parent_client_id FROM sys_group, client WHERE sys_group.client_id = client.client_id and sys_group.groupid = ?", $client_group_id);
-								if($client['parent_client_id'] > 0) {
-									$reseller = $app->db->queryOneRecord("SELECT email FROM client WHERE client_id = ?", $client['parent_client_id']);
-								}
 								if($reseller['email'] != '') {
 									$recipients[] = $reseller['email'];
 								}
@@ -409,8 +390,6 @@ class cronjob_quota_notify extends cronjob {
 
 							//* Send email to client
 							if($mail_config['overquota_notify_client'] == 'y') {
-								$client_group_id = $rec["sys_groupid"];
-								$client = $app->db->queryOneRecord("SELECT client.email FROM sys_group, client WHERE sys_group.client_id = client.client_id and sys_group.groupid = ?", $client_group_id);
 								if($client['email'] != '') {
 									$recipients[] = $client['email'];
 								}
@@ -444,11 +423,6 @@ class cronjob_quota_notify extends cronjob {
 
 							//* Send email to reseller
 							if($web_config['overquota_notify_reseller'] == 'y') {
-								$client_group_id = $rec["sys_groupid"];
-								$app->db->queryOneRecord("SELECT parent_client_id FROM sys_group, client WHERE sys_group.client_id = client.client_id and sys_group.groupid = ?", $client_group_id);
-								if($client['parent_client_id'] > 0) {
-									$reseller = $app->db->queryOneRecord("SELECT email FROM client WHERE client_id = ?", $client['parent_client_id']);
-								}
 								if($reseller['email'] != '') {
 									$recipients[] = $reseller['email'];
 								}
@@ -456,8 +430,6 @@ class cronjob_quota_notify extends cronjob {
 
 							//* Send email to client
 							if($mail_config['overquota_notify_client'] == 'y') {
-								$client_group_id = $rec["sys_groupid"];
-								$client = $app->db->queryOneRecord("SELECT client.email FROM sys_group, client WHERE sys_group.client_id = client.client_id and sys_group.groupid = ?", $client_group_id);
 								if($client['email'] != '') {
 									$recipients[] = $client['email'];
 								}
@@ -508,9 +480,6 @@ class cronjob_quota_notify extends cronjob {
 						foreach($cid as $monitor) {
 
 							if ($monitor['database_name'] == $database) {
-								//* get the client
-								$client = $app->db->queryOneRecord("SELECT client.username, client.email FROM web_database, sys_group, client WHERE web_database.sys_groupid = sys_group.groupid AND sys_group.client_id = client.client_id AND web_database.database_name=?", $database);
-
 								//* check quota
 								if ($quota > 0) $used_ratio = $monitor['size'] / $quota;
 								else $used_ratio = 0;
@@ -543,20 +512,17 @@ class cronjob_quota_notify extends cronjob {
 
 										//* Send email to reseller
 										if($web_config['overquota_db_notify_reseller'] == 'y') {
-											$client_group_id = $rec["sys_groupid"];
-											$app->db->queryOneRecord("SELECT parent_client_id FROM sys_group, client WHERE sys_group.client_id = client.client_id and sys_group.groupid = ?", $client_group_id);
-											if($client['parent_client_id'] > 0) {
-												$reseller = $app->db->queryOneRecord("SELECT email FROM client WHERE client_id = ?", $client['parent_client_id']);
-											}
 											if($reseller['email'] != '') {
 												$recipients[] = $reseller['email'];
 											}
 										}
 										
 										//* Send email to client
-										if($web_config['overquota_db_notify_client'] == 'y' && $client['email'] != '')
-											$recipients[] = $client['email'];
-
+										if($web_config['overquota_db_notify_client'] == 'y') {
+											if($client['email'] != '') {
+												$recipients[] = $client['email'];
+											}
+										}
 										$this->_tools->send_notification_email('db_quota_notification', $placeholders, $recipients);
 
 									}
@@ -578,24 +544,24 @@ class cronjob_quota_notify extends cronjob {
 										$recipients = array();
 
 										//* send email to admin
-										if($global_config['admin_mail'] != '' && $web_config['overquota_db_notify_admin'] == 'y')
+										if($global_config['admin_mail'] != '' && $web_config['overquota_db_notify_admin'] == 'y') {
 											$recipients[] = $global_config['admin_mail'];
+										}
 
 										//* Send email to reseller
 										if($web_config['overquota_db_notify_reseller'] == 'y') {
-											$client_group_id = $rec["sys_groupid"];
-											$app->db->queryOneRecord("SELECT parent_client_id FROM sys_group, client WHERE sys_group.client_id = client.client_id and sys_group.groupid = ?", $client_group_id);
-											if($client['parent_client_id'] > 0) {
-												$reseller = $app->db->queryOneRecord("SELECT email FROM client WHERE client_id = ?", $client['parent_client_id']);
-											}
 											if($reseller['email'] != '') {
 												$recipients[] = $reseller['email'];
 											}
 										}
 
 										//* Send email to client
-										if($web_config['overquota_db_notify_client'] == 'y' && $client['email'] != '')
-											$recipients[] = $client['email'];
+										if($mail_config['overquota_notify_client'] == 'y') {
+											if($client['email'] != '') {
+												$recipients[] = $client['email'];
+											}
+										}
+											
 
 										$this->_tools->send_notification_email('db_quota_ok_notification', $placeholders, $recipients);
 
