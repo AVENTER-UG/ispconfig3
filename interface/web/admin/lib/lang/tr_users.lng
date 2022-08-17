@@ -34,4 +34,5 @@ $wb['username_error_collision'] = 'Kullanıcı adı -web- ya da -web- sözcüğ�
 $wb['client_not_admin_err'] = 'Bir müşteriye ait bir kullanıcının türü admin olarak atanamaz';
 $wb['lost_password_function_txt'] = 'Parolamı unuttum özelliği kullanılabilir';
 $wb['no_user_insert'] = 'Bir müşteri ya da bayi eklediğinizde -user- türündeki kontrol panosu kullanıcıları otomatik olarak eklenir ve güncellenir .';
+$wb['otp_auth_txt'] = '2-Factor Authentication';
 ?>

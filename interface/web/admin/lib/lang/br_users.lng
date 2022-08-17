@@ -38,3 +38,4 @@ $wb['startmodule_empty'] = 'O módulo inicial está vazio.';
 $wb['startmodule_regex'] = 'Caracteres inválidos no módulo inicial.';
 $wb['app_theme_empty'] = 'Tema está vazio.';
 $wb['app_theme_regex'] = 'Caracteres inválidos no tema.';
+$wb['otp_auth_txt'] = '2-Factor Authentication';

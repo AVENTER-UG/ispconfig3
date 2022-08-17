@@ -397,6 +397,8 @@ class remoting_client extends remoting {
 			return false;
 		}
 
+		// DUPLICATE CODE IN interface/web/client/client_del.php
+
 		$client_id = $app->functions->intval($client_id);
 
 		if($client_id > 0) {
@@ -413,7 +415,7 @@ class remoting_client extends remoting {
 			$app->db->query("DELETE FROM sys_user WHERE client_id = ?", $client_id);
 
 			//* Delete all records (sub-clients, mail, web, etc....)  of this client.
-			$tables = 'cron,dns_rr,dns_soa,dns_slave,ftp_user,mail_access,mail_content_filter,mail_domain,mail_forwarding,mail_get,mail_user,mail_user_filter,shell_user,spamfilter_users,support_message,web_database,web_database_user,web_domain,web_traffic,domain,mail_mailinglist,client,spamfilter_wblist';
+			$tables = 'cron,dns_rr,dns_soa,dns_slave,ftp_user,mail_access,mail_content_filter,mail_forwarding,mail_get,mail_user,mail_user_filter,shell_user,spamfilter_users,mail_domain,support_message,web_database,web_database_user,web_domain,web_traffic,domain,mail_mailinglist,client,spamfilter_wblist';
 			$tables_array = explode(',', $tables);
 			$client_group_id = $app->functions->intval($client_group['groupid']);
 			if($client_group_id > 1) {
