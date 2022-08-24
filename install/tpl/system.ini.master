@@ -39,6 +39,7 @@ web_php_options=no,fast-cgi,mod,php-fpm
 show_aps_menu=n
 client_protection=y
 ssh_authentication=
+le_caa_autocreate_options=y
 
 
 [tools]

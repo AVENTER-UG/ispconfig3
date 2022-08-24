@@ -223,7 +223,7 @@ var ISPConfig = {
 
 		var frame_id = 'ajaxUploader-iframe-' + Math.round(new Date().getTime() / 1000);
 		$('body').append('<iframe width="0" height="0" style="display:none;" name="'+frame_id+'" id="'+frame_id+'"/>');
-		$('#'+frame_id).load(function() {
+		$('#'+frame_id).on("load", function() {
 			var msg = handleResponse(this);
 			$('#errorMsg').remove();
 			$('#OKMsg').remove();
