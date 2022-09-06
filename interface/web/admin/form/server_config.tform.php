@@ -1652,6 +1652,20 @@ $form["tabs"]['dns'] = array(
 			'width' => '40',
 			'maxlength' => '255'
 		),
+		'bind_keyfiles_dir' => array(
+			'datatype' => 'VARCHAR',
+			'formtype' => 'TEXT',
+			'default' => '',
+			'validators' => array(	0 => array('type' => 'NOTEMPTY',
+										'errmsg' => 'bind_keyfiles_dir_error_empty'),
+									1 => array ( 	'type' => 'REGEX',
+										'regex' => '/^\/[a-zA-Z0-9\.\-\_\/]{1,128}$/',
+										'errmsg'=> 'bind_keyfiles_dir_error_regex'),
+			),
+			'value' => '',
+			'width' => '40',
+			'maxlength' => '255'
+		),
 		'named_conf_path' => array(
 			'datatype' => 'VARCHAR',
 			'formtype' => 'TEXT',
