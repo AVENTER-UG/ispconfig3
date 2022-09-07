@@ -2,6 +2,7 @@
 $wb['limit_mailmailinglist_txt'] = 'Omezení limitu dosaženo';
 $wb['domain_error_empty'] = 'Doména je prázdná.';
 $wb['listname_error_empty'] = 'Název seznamu je prázdný.';
+$wb['listname_error_regex'] = 'The list name is invalid. The minimum length is 2 characters (allowed are: [a-z 1-9 - _]).';
 $wb['domain_error_regex'] = 'Neplatný název domény.';
 $wb['email_in_use_txt'] = 'E-mail je již používán';
 $wb['no_domain_perm'] = 'Nemáte oprávnění pro tuto doménu.';
