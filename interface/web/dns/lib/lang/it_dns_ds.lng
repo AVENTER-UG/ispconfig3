@@ -1,17 +1,17 @@
 <?php
 $wb['server_id_txt'] = 'Server';
-$wb['zone_txt'] = 'Zone';
+$wb['zone_txt'] = 'Zona';
 $wb['name_txt'] = 'Hostname';
-$wb['type_txt'] = 'type';
-$wb['data_txt'] = 'Data';
+$wb['type_txt'] = 'tipo';
+$wb['data_txt'] = 'Dati';
 $wb['ttl_txt'] = 'TTL';
-$wb['active_txt'] = 'Active';
-$wb['limit_dns_record_txt'] = 'The max. number of DNS records for your account is reached.';
-$wb['no_zone_perm'] = 'You do not have the permission to add a record to this DNS zone.';
-$wb['name_error_empty'] = 'The hostname is empty.';
-$wb['name_error_regex'] = 'The hostname has the wrong format.';
-$wb['data_error_empty'] = 'Text empty';
-$wb['data_error_regex'] = 'Text format invalid';
-$wb['ttl_range_error'] = 'Min. TTL time is 60 seconds.';
-$wb['invalid_type_ds'] = 'DS-Record has a wrong format.';
+$wb['active_txt'] = 'Attivo';
+$wb['limit_dns_record_txt'] = 'Hai raggiunto il numero massimo di record DNS per il tuo profilo.';
+$wb['no_zone_perm'] = 'Non hai il permesso di aggiungere un record a questa zona DNS.';
+$wb['name_error_empty'] = 'Il campo hostname è vuoto.';
+$wb['name_error_regex'] = 'L\'hostname ha un formato errato.';
+$wb['data_error_empty'] = 'Testo vuoto';
+$wb['data_error_regex'] = 'Formato testo non corretto';
+$wb['ttl_range_error'] = 'Minimo TTL è 60 secondi.';
+$wb['invalid_type_ds'] = 'Il Record DNS ha un formato non corretto.';
 ?>

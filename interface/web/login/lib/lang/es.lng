@@ -32,4 +32,13 @@ $wb['pw_reset_act_mail_msg'] = 'Por favor confirme que desea restablecer la cont
 $wb['lost_password_function_wait_txt'] = 'No puede solicitar una nueva contraseña todavía. Por favor, espere unos minutos.';
 $wb['lost_password_function_expired_txt'] = 'Este enlace de activación ha caducado. Por favor, solicite uno nuevo.';
 $wb['lost_password_function_denied_txt'] = 'Este enlace de activación no es válido.';
+$wb['otp_code_txt'] = 'Two Factor Authentication';
+$wb['otp_code_desc_txt'] = 'Enter the code you got from your authenticator app or via email.';
+$wb['otp_code_placeholder_txt'] = 'OTP code';
+$wb['otp_code_email_sent_txt'] = 'An email was sent to';
+$wb['otp_code_email_subject_txt'] = 'ISPConfig Login authentication';
+$wb['otp_code_email_template_txt'] = 'Your One time login code is %s' . PHP_EOL . 'This code is valid for 10 minutes.' . PHP_EOL;
+$wb['otp_code_resend_txt'] = 'Request new code';
+$wb['otp_code_email_sent_failed_txt'] = 'Failed sending an email to %s';
+$wb['otp_code_email_sent_wait_txt'] = 'Please wait, re-sending the code is only possible after %s seconds.';
 ?>

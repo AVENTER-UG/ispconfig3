@@ -11,6 +11,11 @@
                         <div class='input-group-field'>
 							<select name="email_domain" id="email_domain" class="form-control" style="height:50px;min-width:170px;">{tmpl_var name='email_domain'}</select>
                         </div>
+                        <div class="input-group-field">
+                          <a class="btn btn-default formbutton-narrow" href="javascript: navigator.clipboard.writeText(document.getElementById('email_local_part').value + '@' + document.getElementById('email_domain').value);" title="">i
+                            <span class="fa fa-clone"></span>
+                          </a>
+                        </div>
                     </div>
 				</div>
             </div>

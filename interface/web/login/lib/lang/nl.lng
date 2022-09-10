@@ -32,4 +32,13 @@ $wb['pw_reset_act_mail_msg'] = 'Please confirm that your want to reset your ISPC
 $wb['lost_password_function_wait_txt'] = 'You cannot request a new password, yet. Please wait a few minutes.';
 $wb['lost_password_function_expired_txt'] = 'This activation link has expired. Please request a new one.';
 $wb['lost_password_function_denied_txt'] = 'This activation link is not valid.';
+$wb['otp_code_txt'] = 'Twee-factor authenticatie';
+$wb['otp_code_desc_txt'] = 'Enter the code you got from your authenticator app or via email.';
+$wb['otp_code_placeholder_txt'] = 'OTP code';
+$wb['otp_code_email_sent_txt'] = 'Een email is verstuurd aan';
+$wb['otp_code_email_subject_txt'] = 'ISPConfig Login authenticatie';
+$wb['otp_code_email_template_txt'] = 'Uw eenmalige login code is %s' . PHP_EOL . 'Deze code is geldig voor 10 minuten.' . PHP_EOL;
+$wb['otp_code_resend_txt'] = 'Aanvragen nieuwe code';
+$wb['otp_code_email_sent_failed_txt'] = 'Verzenden van email naar %s is mislukt.';
+$wb['otp_code_email_sent_wait_txt'] = 'Please wait, re-sending the code is only possible after %s seconds.';
 ?>

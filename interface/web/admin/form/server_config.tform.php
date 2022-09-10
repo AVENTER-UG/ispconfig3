@@ -207,7 +207,7 @@ $form["tabs"]['server'] = array(
 			'datatype' => 'VARCHAR',
 			'formtype' => 'SELECT',
 			'default' => 'userzip',
-			'value' => array('userzip' => 'backup_mode_userzip', 'rootgz' => 'backup_mode_rootgz'),
+			'value' => array('userzip' => 'backup_mode_userzip', 'rootgz' => 'backup_mode_rootgz', 'borg' => 'backup_mode_borg_txt'),
 			'width' => '40',
 			'maxlength' => '255'
 		),
@@ -734,13 +734,37 @@ $form["tabs"]['mail'] = array(
 			'default' => 'y',
 			'value' => array(0 => 'n', 1 => 'y')
 		),
+		'mailbox_soft_delete' => array (
+			'datatype' => 'VARCHAR',
+			'formtype' => 'CHECKBOX',
+			'default' => 'n',
+			'value' => array(0 => 'n', 1 => 'y')
+		),
 		'mailbox_quota_stats' => array (
 			'datatype' => 'VARCHAR',
 			'formtype' => 'CHECKBOX',
 			'default' => 'y',
 			'value' => array(0 => 'n', 1 => 'y')
 		),
+		'overquota_notify_threshold' => array(
+			'datatype' => 'INTEGER',
+			'formtype' => 'TEXT',
+			'default' => '90',
+			'validators' => array(
+				0 => array('type' => 'NOTEMPTY', 'errmsg' => 'overquota_notify_threshold_error'),
+				1 => array('type' => 'RANGE',	'range' => '0:100',	'errmsg' => 'overquota_notify_threshold_error'),
+			),
+			'value' => '',
+			'width' => '20',
+			'maxlength' => '3'
+		),
 		'overquota_notify_admin' => array(
+			'datatype' => 'VARCHAR',
+			'formtype' => 'CHECKBOX',
+			'default' => 'y',
+			'value' => array(0 => 'n', 1 => 'y')
+		),
+		'overquota_notify_reseller' => array(
 			'datatype' => 'VARCHAR',
 			'formtype' => 'CHECKBOX',
 			'default' => 'y',
@@ -1070,6 +1094,12 @@ $form["tabs"]['web'] = array(
 			'default' => 'y',
 			'value' => array(0 => 'n', 1 => 'y')
 		),
+		'overtraffic_notify_reseller' => array(
+			'datatype' => 'VARCHAR',
+			'formtype' => 'CHECKBOX',
+			'default' => 'y',
+			'value' => array(0 => 'n', 1 => 'y')
+		),
 		'overtraffic_notify_client' => array(
 			'datatype' => 'VARCHAR',
 			'formtype' => 'CHECKBOX',
@@ -1082,7 +1112,25 @@ $form["tabs"]['web'] = array(
 			'default' => 'y',
 			'value' => array(0 => 'n', 1 => 'y')
 		),
+		'overquota_notify_threshold' => array(
+			'datatype' => 'INTEGER',
+			'formtype' => 'TEXT',
+			'default' => '90',
+			'validators' => array(
+				0 => array('type' => 'NOTEMPTY', 'errmsg' => 'overquota_notify_threshold_error'),
+				1 => array('type' => 'RANGE',	'range' => '0:100',	'errmsg' => 'overquota_notify_threshold_error'),
+			),
+			'value' => '',
+			'width' => '20',
+			'maxlength' => '3'
+		),
 		'overquota_notify_admin' => array(
+			'datatype' => 'VARCHAR',
+			'formtype' => 'CHECKBOX',
+			'default' => 'y',
+			'value' => array(0 => 'n', 1 => 'y')
+		),
+		'overquota_notify_reseller' => array(
 			'datatype' => 'VARCHAR',
 			'formtype' => 'CHECKBOX',
 			'default' => 'y',
@@ -1094,7 +1142,25 @@ $form["tabs"]['web'] = array(
 			'default' => 'y',
 			'value' => array(0 => 'n', 1 => 'y')
 		),
+		'overquota_db_notify_threshold' => array(
+			'datatype' => 'INTEGER',
+			'formtype' => 'TEXT',
+			'default' => '90',
+			'validators' => array(
+				0 => array('type' => 'NOTEMPTY', 'errmsg' => 'overquota_notify_threshold_error'),
+				1 => array('type' => 'RANGE',	'range' => '0:100',	'errmsg' => 'overquota_notify_threshold_error'),
+			),
+			'value' => '',
+			'width' => '20',
+			'maxlength' => '3'
+		),
 		'overquota_db_notify_admin' => array(
+			'datatype' => 'VARCHAR',
+			'formtype' => 'CHECKBOX',
+			'default' => 'y',
+			'value' => array(0 => 'n', 1 => 'y')
+		),
+		'overquota_db_notify_reseller' => array(
 			'datatype' => 'VARCHAR',
 			'formtype' => 'CHECKBOX',
 			'default' => 'y',
@@ -1581,6 +1647,20 @@ $form["tabs"]['dns'] = array(
 									1 => array ( 	'type' => 'REGEX',
 										'regex' => '/^\/[a-zA-Z0-9\.\-\_\/]{1,128}$/',
 										'errmsg'=> 'bind_zonefiles_dir_error_regex'),
+			),
+			'value' => '',
+			'width' => '40',
+			'maxlength' => '255'
+		),
+		'bind_keyfiles_dir' => array(
+			'datatype' => 'VARCHAR',
+			'formtype' => 'TEXT',
+			'default' => '',
+			'validators' => array(	0 => array('type' => 'NOTEMPTY',
+										'errmsg' => 'bind_keyfiles_dir_error_empty'),
+									1 => array ( 	'type' => 'REGEX',
+										'regex' => '/^\/[a-zA-Z0-9\.\-\_\/]{1,128}$/',
+										'errmsg'=> 'bind_keyfiles_dir_error_regex'),
 			),
 			'value' => '',
 			'width' => '40',

@@ -1,13 +1,13 @@
 <?php
-$wb['template_type_txt'] = 'Email type';
-$wb['subject_txt'] = 'Subject';
-$wb['message_txt'] = 'Message';
-$wb['Email template'] = 'Email template';
-$wb['Settings'] = 'Setting';
-$wb['variables_txt'] = 'Variables';
-$wb['variables_description_txt'] = '(The username and password variables are only available in welcome emails.)';
-$wb['duplicate_welcome_error'] = 'There can be only one default welcome email template. Please edit the existing template instead of adding a new one.';
-$wb['template_name_txt'] = 'Template name';
-$wb['subject_error_empty'] = 'Subject is empty';
-$wb['message_error_empty'] = 'Message is empty';
+$wb['template_type_txt'] = 'Email tipo';
+$wb['subject_txt'] = 'Oggetto';
+$wb['message_txt'] = 'Messaggio';
+$wb['Email template'] = 'Email modello';
+$wb['Settings'] = 'Impostazioni';
+$wb['variables_txt'] = 'Variabili';
+$wb['variables_description_txt'] = '(I valori della username e della password sono disponibili solo nella mail di benvenuto.)';
+$wb['duplicate_welcome_error'] = 'Ci può essere un solo modello di mail di benvenuto. Edita il modello esistente piuttosto che aggiungerne un altro.';
+$wb['template_name_txt'] = 'Nome Modello';
+$wb['subject_error_empty'] = 'Oggetto è vuoto';
+$wb['message_error_empty'] = 'Messaggio è vuoto';
 ?>

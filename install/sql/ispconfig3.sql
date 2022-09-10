@@ -635,6 +635,7 @@ CREATE TABLE `dns_soa` (
   `dnssec_algo` SET('NSEC3RSASHA1','ECDSAP256SHA256') NOT NULL DEFAULT 'ECDSAP256SHA256',
   `dnssec_last_signed` BIGINT NOT NULL DEFAULT '0',
   `dnssec_info` TEXT NULL,
+  `rendered_zone` MEDIUMTEXT NULL,
   PRIMARY KEY  (`id`),
   UNIQUE KEY `origin` (`origin`),
   KEY `active` (`active`)
@@ -966,6 +967,27 @@ CREATE TABLE `mail_mailinglist` (
   `email` varchar(255) NOT NULL DEFAULT '',
   `password` varchar(255) NOT NULL DEFAULT '',
   PRIMARY KEY  (`mailinglist_id`)
+) DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for Table `mail_relay_domain`
+--
+
+CREATE TABLE IF NOT EXISTS `mail_relay_domain` (
+  `relay_domain_id` bigint(20) NOT NULL AUTO_INCREMENT,
+  `sys_userid` int(11) NOT NULL DEFAULT '0',
+  `sys_groupid` int(11) NOT NULL DEFAULT '0',
+  `sys_perm_user` varchar(5) DEFAULT NULL,
+  `sys_perm_group` varchar(5) DEFAULT NULL,
+  `sys_perm_other` varchar(5) DEFAULT NULL,
+  `server_id` int(11) NOT NULL DEFAULT '0',
+  `domain` varchar(255) DEFAULT NULL,
+  `access` varchar(255) NOT NULL DEFAULT 'OK',
+  `active` varchar(255) NOT NULL DEFAULT 'y',
+  PRIMARY KEY (`relay_domain_id`),
+  UNIQUE KEY `domain` (`domain`, `server_id`)
 ) DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
 
 -- --------------------------------------------------------
@@ -1820,6 +1842,10 @@ CREATE TABLE `sys_user` (
   `lost_password_function` tinyint(1) NOT NULL default '1',
   `lost_password_hash` VARCHAR(50) NOT NULL default '',
   `lost_password_reqtime` DATETIME NULL default NULL,
+  `otp_type` set('none', 'email') NOT NULL DEFAULT 'none',
+  `otp_data` varchar(255) DEFAULT NULL,
+  `otp_recovery` varchar(64) DEFAULT NULL,
+  `otp_attempts` tinyint(4) NOT NULL DEFAULT 0,
   PRIMARY KEY  (`userid`)
 ) DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
 

@@ -408,6 +408,13 @@
 </tmpl_if>
 <tmpl_if name='use_tcp'>
 			#ProxyPassMatch ^/(.*\.php[345]?(/.*)?)$ fcgi://127.0.0.1:<tmpl_var name='fpm_port'><tmpl_var name='web_document_root'>/$1
+			<Directory {tmpl_var name='web_document_root_www'}>
+				<FilesMatch "\.php[345]?$">
+					<If "-f '%{REQUEST_FILENAME}'">
+						SetHandler "proxy:fcgi://127.0.0.1:<tmpl_var name='fpm_port'>"
+					</If>
+				</FilesMatch>
+			</Directory>
 			<Directory {tmpl_var name='web_document_root'}>
 				<FilesMatch "\.php[345]?$">
 					<If "-f '%{REQUEST_FILENAME}'">
@@ -418,6 +425,13 @@
 </tmpl_if>
 <tmpl_if name='use_socket'>
 			#ProxyPassMatch ^/(.*\.php[345]?(/.*)?)$ unix://<tmpl_var name='fpm_socket'>|fcgi://localhost/<tmpl_var name='web_document_root'>/$1
+			<Directory {tmpl_var name='web_document_root_www'}>
+				<FilesMatch "\.php[345]?$">
+					<If "-f '%{REQUEST_FILENAME}'">
+						SetHandler "proxy:unix:<tmpl_var name='fpm_socket'>|fcgi://localhost"
+					</If>
+				</FilesMatch>
+			</Directory>
 			<Directory {tmpl_var name='web_document_root'}>
 				<FilesMatch "\.php[345]?$">
 					<If "-f '%{REQUEST_FILENAME}'">
@@ -517,8 +531,12 @@
 		RewriteCond %{REQUEST_URI} !^/php-fcgi/
 		RewriteCond %{REQUEST_URI} !^<tmpl_var name='rewrite_target'>
 </tmpl_if>
+<tmpl_if name='use_proxy_protocol' op='==' value='y'>
+<tmpl_if name='ssl_enabled'>
 <tmpl_if name="rewrite_target_is_ssl" op="==" value="y">
 		SSLProxyEngine On
+</tmpl_if>
+</tmpl_if>
 </tmpl_if>
 
 		RewriteRule   ^/(.*)$ <tmpl_var name='rewrite_target'><tmpl_if name="rewrite_add_path" op="==" value="y">$1</tmpl_if>  <tmpl_var name='rewrite_type'>

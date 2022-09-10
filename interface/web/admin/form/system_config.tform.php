@@ -246,7 +246,13 @@ $form["tabs"]['sites'] = array (
 			'formtype' => 'SELECT',
 			'default' => '',
 			'value'  => array('' => 'ssh_authentication_password_key', 'password' => 'ssh_authentication_password', 'key' => 'ssh_authentication_key')
-		)
+		),
+		'le_caa_autocreate_options' => array (
+			'datatype' => 'VARCHAR',
+			'formtype' => 'CHECKBOX',
+			'default' => 'y',
+			'value'  => array(0 => 'n', 1 => 'y')
+		),	
 		//#################################
 		// END Datatable fields
 		//#################################
@@ -480,6 +486,12 @@ $form["tabs"]['dns'] = array (
 			),
 			'value'  => '',
 			'name'  => 'default_slave_dnsserver'
+		),
+		'dns_show_zoneexport' => array (
+			'datatype' => 'VARCHAR',
+			'formtype' => 'CHECKBOX',
+			'default' => 'n',
+			'value'  => array(0 => 'n', 1 => 'y')
 		),
 		//#################################
 		// END Datatable fields
