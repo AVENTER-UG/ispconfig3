@@ -526,7 +526,7 @@ class db
 			$sString = '';
 		}
 
-		$cur_encoding = mb_detect_encoding($sString);
+		$cur_encoding = mb_detect_encoding($sString, "auto");
 		if($cur_encoding != "UTF-8") {
 			if($cur_encoding != 'ASCII') {
 				if(is_object($app) && method_exists($app, 'log')) $app->log('String ' . substr($sString, 0, 25) . '... is ' . $cur_encoding . '.', LOGLEVEL_DEBUG);

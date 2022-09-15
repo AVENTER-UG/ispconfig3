@@ -33,6 +33,7 @@ class system {
 	var $client_service = null;
 	private $_last_exec_out = null;
 	private $_last_exec_retcode = null;
+	private $server_count = null;
 
 	public function has_service($userid, $service) {
 		global $app;

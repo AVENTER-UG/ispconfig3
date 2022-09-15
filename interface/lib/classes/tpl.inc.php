@@ -233,7 +233,7 @@ if (!defined('vlibTemplateClassLoaded')) {
 		public function setVar($k, $v = null, $encode = false)
 		{
 			global $app;
-
+			
 			if (is_array($k)) {
 				foreach($k as $key => $value){
 					$key = ($this->OPTIONS['CASELESS']) ? strtolower(trim($key)) : trim($key);
@@ -1079,12 +1079,12 @@ if (!defined('vlibTemplateClassLoaded')) {
 		private function _parseHook ($name)
 		{
 			global $app;
-
+			
 			if(!$name) return false;
-
+			
 			$module = isset($_SESSION['s']['module']['name']) ? $_SESSION['s']['module']['name'] : '';
 			$form = isset($app->tform->formDef['name']) ? $app->tform->formDef['name'] : '';
-
+			
 			$events = array();
 			if($module) {
 				$events[] = $module . ':' . ($form ? $form : '') . ':' . $name;
@@ -1093,9 +1093,9 @@ if (!defined('vlibTemplateClassLoaded')) {
 				$events[] = $name;
 				$events[] = 'on_template_content';
 			}
-
+			
 			$events = array_unique($events);
-
+			
 			for($e = 0; $e < count($events); $e++) {
 				$tmpresult = $app->plugin->raiseEvent($events[$e], array(
 					'name' => $name,
@@ -1104,10 +1104,10 @@ if (!defined('vlibTemplateClassLoaded')) {
 				), true);
 				if(!$tmpresult) $tmpresult = '';
 				else $tmpresult = $this->_getData($tmpresult, false, true);
-
+				
 				$result .= $tmpresult;
 			}
-
+			
 			return $result;
 		}
 
@@ -1121,17 +1121,12 @@ if (!defined('vlibTemplateClassLoaded')) {
 		{
 			array_push($this->_namespace, $varname);
 			$tempvar = count($this->_namespace) - 1;
-			$retstr = "for (\$_".$tempvar."=0 ; \$_".$tempvar." < (isset(\$this->_arrvars";
+			$retstr = "for (\$_".$tempvar."=0 ; \$_".$tempvar." < \$this->_tpl_count(\$this->_arrvars";
 			for ($i=0; $i < count($this->_namespace); $i++) {
 				$retstr .= "['".$this->_namespace[$i]."']";
 				if ($this->_namespace[$i] != $varname) $retstr .= "[\$_".$i."]";
 			}
-			$retstr .= ") ? count(\$this->_arrvars";
-			for ($i=0; $i < count($this->_namespace); $i++) {
-				$retstr .= "['".$this->_namespace[$i]."']";
-				if ($this->_namespace[$i] != $varname) $retstr .= "[\$_".$i."]";
-			}
-			return $retstr.") : 0); \$_".$tempvar."++) {";
+			return $retstr."); \$_".$tempvar."++) {";
 		}
 
 		/**
@@ -1230,7 +1225,7 @@ if (!defined('vlibTemplateClassLoaded')) {
 			$wholetag = $args[0];
 			$openclose = $args[1];
 			$tag = strtolower($args[2]);
-
+			
 			if ($tag == 'else') return '<?php } else { ?>';
 			if ($tag == 'tmpl_include') return $wholetag; // ignore tmpl_include tags
 
@@ -1308,10 +1303,10 @@ if (!defined('vlibTemplateClassLoaded')) {
 				if ($this->OPTIONS['ENABLE_PHPINCLUDE']) {
 					return '<?php include(\''.$file.'\'); ?>';
 				}
-
+			
 			case 'hook':
 				return $this->_parseHook(@$var);
-
+			
 			case 'include':
 				return '<?php $this->_getData($this->_fileSearch(\''.$file.'\'), 1); ?>';
 
@@ -1464,6 +1459,27 @@ if (!defined('vlibTemplateClassLoaded')) {
 				$return .= $prestr.bin2hex($str[$i]).$poststr;
 			}
 			return $return;
+		}
+
+		/**
+		* Used during in evaled code to replace PHP count function for PHP 8 compatibility
+		* @var variable to be counted
+		*/
+		private function _tpl_count($var)
+		{
+			$retvar = 0;
+			if(isset($var)) {
+				if(is_array($var)) {
+					$retvar = count($var);
+				} elseif(is_null($var)) {
+					$retvar = 0;
+				} else {
+					$retvar = 1;
+				}
+			} else {
+				$retvar = 0;
+			}
+			return $retvar;
 		}
 
 		/*- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

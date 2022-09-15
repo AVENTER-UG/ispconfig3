@@ -135,7 +135,7 @@ class listform_actions {
 			}
 		}
 
-		if($_SESSION['search'][$_SESSION['s']['module']['name'].$app->listform->listDef["name"].$app->listform->listDef['table']]['order_in_php']) $php_sort = true;
+		if(@$_SESSION['search'][$_SESSION['s']['module']['name'].$app->listform->listDef["name"].$app->listform->listDef['table']]['order_in_php']) $php_sort = true;
 
 		// Getting Datasets from DB
 		$records = $app->db->queryAllRecords($this->getQueryString($php_sort));
@@ -226,7 +226,7 @@ class listform_actions {
 		}
 
 		$sql_where = $app->listform->getSearchSQL($sql_where);
-		if($app->listform->listDef['join_sql']) $sql_where .= ' AND '.$app->listform->listDef['join_sql'];
+		if(isset($app->listform->listDef['join_sql'])) $sql_where .= ' AND '.$app->listform->listDef['join_sql'];
 		$app->tpl->setVar($app->listform->searchValues);
 
 		$order_by_sql = $this->SQLOrderBy;
@@ -245,8 +245,9 @@ class listform_actions {
 
 		$table_selects = array();
 		$table_selects[] = trim($app->listform->listDef['table']).'.*';
-		$app->listform->listDef['additional_tables'] = trim($app->listform->listDef['additional_tables']);
-		if($app->listform->listDef['additional_tables'] != ''){
+
+		if(isset($app->listform->listDef['additional_tables']) && trim($app->listform->listDef['additional_tables']) != ''){
+			$app->listform->listDef['additional_tables'] = trim($app->listform->listDef['additional_tables']);
 			$additional_tables = explode(',', $app->listform->listDef['additional_tables']);
 			foreach($additional_tables as $additional_table){
 				$table_selects[] = trim($additional_table).'.*';
@@ -254,7 +255,7 @@ class listform_actions {
 		}
 		$select = implode(', ', $table_selects);
 
-		$sql = 'SELECT '.$select.$extselect.' FROM '.$app->listform->listDef['table'].($app->listform->listDef['additional_tables'] != ''? ','.$app->listform->listDef['additional_tables'] : '')."$join WHERE $sql_where $order_by_sql";
+		$sql = 'SELECT '.$select.$extselect.' FROM '.$app->listform->listDef['table'].(isset($app->listform->listDef['additional_tables']) && $app->listform->listDef['additional_tables'] != ''? ','.$app->listform->listDef['additional_tables'] : '')."$join WHERE $sql_where $order_by_sql";
 		if($no_limit == false) $sql .= " $limit_sql";
 		//echo $sql;
 		return $sql;
