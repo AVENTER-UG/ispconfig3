@@ -1585,7 +1585,7 @@ class tform_base {
 
 		// Set form title
 		$form_hint = $this->lng($this->formDef["title"]);
-		if($this->formDef["description"] != '') $form_hint .= '<div class="pageForm_description">'.$this->lng($this->formDef["description"]).'</div>';
+		if(isset($this->formDef["description"]) && $this->formDef["description"] != '') $form_hint .= '<div class="pageForm_description">'.$this->lng($this->formDef["description"]).'</div>';
 		$app->tpl->setVar('form_hint', $form_hint);
 
 		// Set Wordbook for this form
