@@ -78,7 +78,7 @@ class cronjob_monitor_mem_usage extends cronjob {
 			$key = trim($part[0]);
 			$tmp = explode(' ', trim($part[1]));
 			$value = 0;
-			if ($tmp[1] == 'kB')
+			if (isset($tmp[1]) && $tmp[1] == 'kB')
 				$value = $tmp[0] * 1024;
 			$data[$key] = $value;
 		}
