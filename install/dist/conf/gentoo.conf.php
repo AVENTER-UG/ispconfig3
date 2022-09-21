@@ -182,6 +182,7 @@ $conf['pureftpd']['installed'] = false; // will be detected automatically during
 $conf['pureftpd']['config_file'] = '/etc/conf.d/pure-ftpd';
 $conf['pureftpd']['mysql_config_file'] = '/etc/pureftpd-mysql.conf';
 $conf['pureftpd']['init_script'] = 'pure-ftpd';
+$conf['pureftpd']['main_config_file'] = '/etc/pure-ftpd.conf';
 
 //* MyDNS
 $conf['mydns']['installed'] = false; // will be detected automatically during installation
