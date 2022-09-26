@@ -6,7 +6,7 @@
 
 {vhost_port_listen} Listen {vhost_port}
 <tmpl_if name='apache_version' op='<' value='2.4' format='version'>
-  NameVirtualHost *:{vhost_port}
+  # NameVirtualHost *:{vhost_port}
 </tmpl_if>
 
 <VirtualHost _default_:{vhost_port}>
