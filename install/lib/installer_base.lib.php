@@ -1653,7 +1653,7 @@ class installer_base {
 		//* These postconf commands will be executed on installation and update
 		$server_ini_rec = $this->db->queryOneRecord("SELECT mail_server, config FROM ?? WHERE server_id = ?", $conf["mysql"]["database"] . '.server', $conf['server_id']);
 		$server_ini_array = ini_to_array(stripslashes($server_ini_rec['config']));
-		$mail_server = ($server_ini_rec['mail_server']) ? true : false;
+		$mail_server = $conf['services']['mail'];
 		unset($server_ini_rec);
 
 		// amavisd user config file
@@ -1777,7 +1777,7 @@ class installer_base {
 		//* These postconf commands will be executed on installation and update
 		$server_ini_rec = $this->db->queryOneRecord("SELECT mail_server, config FROM ?? WHERE server_id = ?", $conf["mysql"]["database"] . '.server', $conf['server_id']);
 		$server_ini_array = ini_to_array(stripslashes($server_ini_rec['config']));
-		$mail_server = ($server_ini_rec['mail_server']) ? true : false;
+		$mail_server = $conf['services']['mail'];
 		unset($server_ini_rec);
 
 		$config_dir = $conf['postfix']['config_dir'];
