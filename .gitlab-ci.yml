@@ -76,6 +76,10 @@ syntax_diff:lint:
 #    
 #  needs: ["syntax:lint"]
 
+# Define commands that run before each job's script
+before_script:
+    - umask 002 # set permissions to default directory permissions of 775 and default file permissions are 664,
+
 build:package:
     stage: build
     image: edbizarro/gitlab-ci-pipeline-php:7.2
