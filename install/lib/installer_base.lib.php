@@ -892,6 +892,20 @@ class installer_base {
 	public function configure_mailman($status = 'insert') {
 		global $conf;
 
+		// Fix for #6314: bug on Debian 11 systems where Mailman3 is not available and broken routes exist in the Mailman config
+		$data_dir = '/var/lib/mailman';
+		if (($conf['mailman']['installed'] != true) && is_dir($data_dir)) {
+			rename($data_dir, $data_dir . '-bk');
+			//* Create the mailman files
+			if(!is_dir('/var/lib/mailman/data')) exec('mkdir -p /var/lib/mailman/data');
+			if(!is_file('/var/lib/mailman/data/aliases')) touch('/var/lib/mailman/data/aliases');
+			exec('postmap /var/lib/mailman/data/aliases');
+			if(!is_file('/var/lib/mailman/data/virtual-mailman')) touch('/var/lib/mailman/data/virtual-mailman');
+			exec('postmap /var/lib/mailman/data/virtual-mailman');
+			if(!is_file('/var/lib/mailman/data/transport-mailman')) touch('/var/lib/mailman/data/transport-mailman');
+			exec('postmap /var/lib/mailman/data/transport-mailman');
+		}
+
 		$config_dir = $conf['mailman']['config_dir'].'/';
 		$full_file_name = $config_dir.'mm_cfg.py';
 		//* Backup exiting file
