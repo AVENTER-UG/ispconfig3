@@ -52,7 +52,7 @@ class installer_base {
 	}
 
 	public function update_acme() {
-		$acme = explode("\n", shell_exec('which acme.sh /usr/local/ispconfig/server/scripts/acme.sh /root/.acme.sh/acme.sh'));
+		$acme = explode("\n", shell_exec('which acme.sh /usr/local/ispconfig/server/scripts/acme.sh /root/.acme.sh/acme.sh 2> /dev/null'));
 		$acme = reset($acme);
 		$val = 0;
 
@@ -892,6 +892,20 @@ class installer_base {
 	public function configure_mailman($status = 'insert') {
 		global $conf;
 
+		// Fix for #6314: bug on Debian 11 systems where Mailman3 is not available and broken routes exist in the Mailman config
+		$data_dir = '/var/lib/mailman';
+		if (($conf['mailman']['installed'] != true) && is_dir($data_dir)) {
+			rename($data_dir, $data_dir . '-bk');
+			//* Create the mailman files
+			if(!is_dir('/var/lib/mailman/data')) exec('mkdir -p /var/lib/mailman/data');
+			if(!is_file('/var/lib/mailman/data/aliases')) touch('/var/lib/mailman/data/aliases');
+			exec('postmap /var/lib/mailman/data/aliases');
+			if(!is_file('/var/lib/mailman/data/virtual-mailman')) touch('/var/lib/mailman/data/virtual-mailman');
+			exec('postmap /var/lib/mailman/data/virtual-mailman');
+			if(!is_file('/var/lib/mailman/data/transport-mailman')) touch('/var/lib/mailman/data/transport-mailman');
+			exec('postmap /var/lib/mailman/data/transport-mailman');
+		}
+
 		$config_dir = $conf['mailman']['config_dir'].'/';
 		$full_file_name = $config_dir.'mm_cfg.py';
 		//* Backup exiting file
@@ -1653,7 +1667,7 @@ class installer_base {
 		//* These postconf commands will be executed on installation and update
 		$server_ini_rec = $this->db->queryOneRecord("SELECT mail_server, config FROM ?? WHERE server_id = ?", $conf["mysql"]["database"] . '.server', $conf['server_id']);
 		$server_ini_array = ini_to_array(stripslashes($server_ini_rec['config']));
-		$mail_server = ($server_ini_rec['mail_server']) ? true : false;
+		$mail_server = $conf['services']['mail'];
 		unset($server_ini_rec);
 
 		// amavisd user config file
@@ -1777,7 +1791,7 @@ class installer_base {
 		//* These postconf commands will be executed on installation and update
 		$server_ini_rec = $this->db->queryOneRecord("SELECT mail_server, config FROM ?? WHERE server_id = ?", $conf["mysql"]["database"] . '.server', $conf['server_id']);
 		$server_ini_array = ini_to_array(stripslashes($server_ini_rec['config']));
-		$mail_server = ($server_ini_rec['mail_server']) ? true : false;
+		$mail_server = $conf['services']['mail'];
 		unset($server_ini_rec);
 
 		$config_dir = $conf['postfix']['config_dir'];
@@ -1981,8 +1995,13 @@ class installer_base {
 
 		exec('chmod a+r /etc/rspamd/local.d/* /etc/rspamd/local.d/maps.d/* /etc/rspamd/override.d/*');
 		# protect passwords in these files
-		exec('chgrp _rspamd /etc/rspamd/local.d/redis.conf /etc/rspamd/local.d/classifier-bayes.conf /etc/rspamd/local.d/worker-controller.inc');
-		exec('chmod 640 /etc/rspamd/local.d/redis.conf /etc/rspamd/local.d/classifier-bayes.conf /etc/rspamd/local.d/worker-controller.inc');
+		exec('chgrp _rspamd /etc/rspamd/local.d/redis.conf /etc/rspamd/local.d/classifier-bayes.conf');
+		exec('chmod 640 /etc/rspamd/local.d/redis.conf /etc/rspamd/local.d/classifier-bayes.conf');
+
+		if(file_exists('/etc/rspamd/local.d/worker-controller.inc')) {
+			exec('chgrp _rspamd /etc/rspamd/local.d/worker-controller.inc');
+			exec('chmod 640 /etc/rspamd/local.d/worker-controller.inc');
+		}
 
 		# unneccesary, since this was done above?
 		$command = 'usermod -a -G amavis _rspamd';
