@@ -44,8 +44,7 @@ class letsencrypt {
 	}
 
 	public function get_acme_script() {
-		$which_acme = shell_exec('which acme.sh /usr/local/ispconfig/server/scripts/acme.sh /root/.acme.sh/acme.sh');
-		$acme = explode("\n", $which_acme ? $which_acme : '');
+		$acme = explode("\n", shell_exec('which acme.sh /usr/local/ispconfig/server/scripts/acme.sh /root/.acme.sh/acme.sh 2> /dev/null'));
 		$acme = reset($acme);
 		if(is_executable($acme)) {
 			return $acme;

@@ -251,7 +251,7 @@ $form['tabs']['users'] = array (
 			'formtype' => 'CHECKBOX',
 			'regex'  => '',
 			'errmsg' => '',
-			'default' => '',
+                       'default' => '1',
 			'value'  => array(0 => 0, 1 => 1),
 			'separator' => '',
 			'width'  => '30',
