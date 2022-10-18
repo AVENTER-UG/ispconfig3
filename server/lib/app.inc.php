@@ -36,6 +36,11 @@ if(isset($conf['timezone']) && $conf['timezone'] != '') {	// note: !empty($conf[
 	date_default_timezone_set($conf['timezone']);
 }
 
+//* Set error reporting level when we are not on a developer system
+if(DEVSYSTEM !== true) {
+	@ini_set('error_reporting', E_ALL & ~E_NOTICE & ~E_DEPRECATED & ~E_WARNING);
+}
+
 /**
  * Class for defining (mostly static) methods that are commonly used across the whole application.
  *
