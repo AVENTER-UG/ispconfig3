@@ -27,8 +27,8 @@ $wb['limit_client_txt'] = 'Anzahl der Kunden';
 $wb['limit_database_txt'] = 'Anzahl der Datenbanken';
 $wb['limit_mailmailinglist_txt'] = 'Anzahl der Mailinglisten';
 $wb['limit_domain_txt'] = 'Anzahl der Domains';
-$wb['limit_mailquota_txt'] = 'Assigned mailbox quota';
-$wb['limit_web_quota_txt'] = 'Assigned web quota';
-$wb['limit_database_quota_txt'] = 'Assigned database quota';
-$wb['limit_mail_wblist_txt'] = 'Number of email white / blacklist entries';
-?>
+$wb['limit_mailquota_txt'] = 'Zugewiesenes Postfach-Speicherkontingent';
+$wb['limit_web_quota_txt'] = 'Zugewiesenes Webspace-Speicherkontingent';
+$wb['limit_database_quota_txt'] = 'Zugewiesenes Datenbank-Speicherkontingent';
+$wb['limit_mail_wblist_txt'] = 'Anzahl der Email white / blacklist Einträge';
+

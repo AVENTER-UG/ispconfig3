@@ -77,7 +77,7 @@ class db
 		$this->dbPort = $port ? $port : $conf['db_port'];
 		$this->dbName = $database ? $database : $conf['db_database'];
 		$this->dbUser = $user ? $user : $conf['db_user'];
-		$this->dbPass = $pass ? $pass : $conf['db_password'];
+		$this->dbPass = ( $pass !== NULL ) ? $pass : $conf['db_password'];
 		$this->dbCharset = $conf['db_charset'];
 		$this->dbClientFlags = ($flags !== NULL) ? $flags : $conf['db_client_flags'];
 		$this->_iConnId = mysqli_init();
