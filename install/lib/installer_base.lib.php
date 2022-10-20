@@ -83,13 +83,13 @@ class installer_base {
 		global $autoinstall, $autoupdate;
 		$finished = false;
 		do {
-			if($name != '' && $autoinstall[$name] != '') {
+			if($name != '' && isset($autoinstall[$name]) && $autoinstall[$name] != '') {
 				if($autoinstall[$name] == 'default') {
 					$input = $default;
 				} else {
 					$input = $autoinstall[$name];
 				}
-			} elseif($name != '' && $autoupdate[$name] != '') {
+			} elseif($name != '' && isset($autoupdate[$name]) && $autoupdate[$name] != '') {
 				if($autoupdate[$name] == 'default') {
 					$input = $default;
 				} else {
@@ -126,13 +126,13 @@ class installer_base {
 
 	public function free_query($query, $default, $name = '') {
 		global $autoinstall, $autoupdate;
-		if($name != '' && $autoinstall[$name] != '') {
+		if($name != '' && isset($autoinstall[$name]) && $autoinstall[$name] != '') {
 			if($autoinstall[$name] == 'default') {
 				$input = $default;
 			} else {
 				$input = $autoinstall[$name];
 			}
-		} elseif($name != '' && $autoupdate[$name] != '') {
+		} elseif($name != '' && isset($autoupdate[$name]) && $autoupdate[$name] != '') {
 			if($autoupdate[$name] == 'default') {
 				$input = $default;
 			} else {
@@ -249,7 +249,7 @@ class installer_base {
 		$msg = '';
 
 		if(version_compare(phpversion(), '5.4', '<')) $msg .= "PHP Version 5.4 or newer is required. The currently used PHP version is ".phpversion().".\n";
-		if(version_compare(phpversion(), '8.0', '>=')) $msg .= "PHP Version 8 is not supported yet. Change PHP version back to the default version of the OS. The currently used PHP version is ".phpversion().".\n";
+		if(version_compare(phpversion(), '8.2', '>=')) $msg .= "PHP Version 8.2+ is not supported yet. Change PHP version back to the default version of the OS. The currently used PHP version is ".phpversion().".\n";
 		if(!function_exists('curl_init')) $msg .= "PHP Curl Module is missing.\n";
 		if(!function_exists('mysqli_connect')) $msg .= "PHP MySQLi Module is nmissing.\n";
 		if(!function_exists('mb_detect_encoding')) $msg .= "PHP Multibyte Module (MB) is missing.\n";
@@ -1521,7 +1521,7 @@ class installer_base {
 			}
 			$new_options[] = $value;
 		}
-		if ($configure_lmtp && $conf['mail']['content_filter'] === 'amavisd') {
+		if ($configure_lmtp && (!isset($conf['mail']['content_filter']) || $conf['mail']['content_filter'] === 'amavisd')) {
 			for ($i = 0; isset($new_options[$i]); $i++) {
 				if ($new_options[$i] == 'reject_unlisted_recipient') {
 					array_splice($new_options, $i+1, 0, array("check_recipient_access proxy:mysql:${config_dir}/mysql-verify_recipients.cf"));
@@ -1928,10 +1928,10 @@ class installer_base {
 			}
 
 			$tpl->setVar('dkim_path', $mail_config['dkim_path']);
-			$tpl->setVar('rspamd_redis_servers', $mail_config['rspamd_redis_servers']);
-			$tpl->setVar('rspamd_redis_password', $mail_config['rspamd_redis_password']);
-			$tpl->setVar('rspamd_redis_bayes_servers', $mail_config['rspamd_redis_bayes_servers']);
-			$tpl->setVar('rspamd_redis_bayes_password', $mail_config['rspamd_redis_bayes_password']);
+			$tpl->setVar('rspamd_redis_servers', (isset($mail_config['rspamd_redis_servers']) ? $mail_config['rspamd_redis_servers'] : ''));
+			$tpl->setVar('rspamd_redis_password', (isset($mail_config['rspamd_redis_password']) ? $mail_config['rspamd_redis_password'] : ''));
+			$tpl->setVar('rspamd_redis_bayes_servers', (isset($mail_config['rspamd_redis_bayes_servers']) ? $mail_config['rspamd_redis_bayes_servers'] : ''));
+			$tpl->setVar('rspamd_redis_bayes_password', (isset($mail_config['rspamd_redis_bayes_password']) ? $mail_config['rspamd_redis_bayes_password'] : ''));
 			if(count($local_addrs) > 0) {
 				$tpl->setLoop('local_addrs', $local_addrs);
 			}
@@ -3031,12 +3031,15 @@ class installer_base {
 				$hook = $pre_hook . $renew_hook;
 			}
 
+			$which_certbot = shell_exec('which certbot /root/.local/share/letsencrypt/bin/letsencrypt /opt/eff.org/certbot/venv/bin/certbot letsencrypt');
+
 			// Get the default LE client name and version
-			$le_client = explode("\n", shell_exec('which certbot /root/.local/share/letsencrypt/bin/letsencrypt /opt/eff.org/certbot/venv/bin/certbot letsencrypt'));
+			$le_client = explode("\n", $which_certbot ? $which_certbot : '');
 			$le_client = reset($le_client);
 
+			$which_acme = shell_exec('which acme.sh /usr/local/ispconfig/server/scripts/acme.sh /root/.acme.sh/acme.sh');
 			// Check for Neilpang acme.sh as well
-			$acme = explode("\n", shell_exec('which acme.sh /usr/local/ispconfig/server/scripts/acme.sh /root/.acme.sh/acme.sh'));
+			$acme = explode("\n", $which_acme ? $which_acme : '');
 			$acme = reset($acme);
 
 			if((!$acme || !is_executable($acme)) && (!$le_client || !is_executable($le_client))) {

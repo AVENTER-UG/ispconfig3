@@ -931,7 +931,7 @@ if (!defined('vlibTemplateClassLoaded')) {
 		{
 			array_push($this->_namespace, $varname);
 			$tempvar = count($this->_namespace) - 1;
-			$retstr = "for (\$_".$tempvar."=0 ; \$_".$tempvar." < count(\$this->_arrvars";
+			$retstr = "for (\$_".$tempvar."=0 ; \$_".$tempvar." < \$this->_tpl_count(\$this->_arrvars";
 			for ($i=0; $i < count($this->_namespace); $i++) {
 				$retstr .= "['".$this->_namespace[$i]."']";
 				if ($this->_namespace[$i] != $varname) $retstr .= "[\$_".$i."]";
@@ -1170,7 +1170,15 @@ if (!defined('vlibTemplateClassLoaded')) {
 
 			array_push($this->_currentincludedir, dirname($this->_tmplfilename));
 			$this->_includedepth++;
-			$success = @eval($this->_tmplfilep);
+			try {
+				$success = @eval($this->_tmplfilep);
+			} catch(Exception $ex) {
+				print $this->_tmplfilep;
+				throw $ex;
+			} catch(TypeError $ex) {
+				print $this->_tmplfilep;
+				throw $ex;
+			}
 			$this->_includedepth--;
 			array_pop($this->_currentincludedir);
 
@@ -1266,6 +1274,27 @@ if (!defined('vlibTemplateClassLoaded')) {
 				$return .= $prestr.bin2hex($str[$i]).$poststr;
 			}
 			return $return;
+		}
+
+		/**
+		* Used during in evaled code to replace PHP count function for PHP 8 compatibility
+		* @var variable to be counted
+		*/
+		private function _tpl_count($var)
+		{
+			$retvar = 0;
+			if(isset($var)) {
+				if(is_array($var)) {
+					$retvar = count($var);
+				} elseif(is_null($var)) {
+					$retvar = 0;
+				} else {
+					$retvar = 1;
+				}
+			} else {
+				$retvar = 0;
+			}
+			return $retvar;
 		}
 
 		/*- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

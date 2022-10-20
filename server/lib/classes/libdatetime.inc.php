@@ -152,7 +152,7 @@ abstract class ISPConfigDateTime {
 	 * - onlytime: HH:MM
 	 * - rss: Rss time format for XML
 	 * - nice: if you prepend a nice: (like nice:long) you will get results like "today" or "yesterday" if applicable
-	 * - custom: you can give a strftime format like %d.%m.%Y %H:%M if you prepend custom: to it
+	 * - custom: you can give a php date function format like d.m.Y H:i if you prepend custom: to it
 	 * @param bool $time if true apped the time to the date string
 	 * @param bool $seconds if true append the seconds to the time
 	 * @return string date string
@@ -174,15 +174,15 @@ abstract class ISPConfigDateTime {
 		$fmt = '';
 		$prepend = '';
 		if(substr($format, 0, 5) == 'nice:') {
-			if(strftime('%d.%m.%Y', $date) == strftime('%d.%m.%Y', $portal->getTime())) {
+			if(date('d.m.Y', $date) == date('d.m.Y', $portal->getTime())) {
 				if($time == true) $format = 'onlytime';
 				else $format = '';
 				$prepend = 'Heute';
-			} elseif(strftime('%d.%m.%Y', $date) == strftime('%d.%m.%Y', $portal->getTime() - 86400)) {
+			} elseif(date('d.m.Y', $date) == date('d.m.Y', $portal->getTime() - 86400)) {
 				if($time == true) $format = 'onlytime';
 				else $format = '';
 				$prepend = 'Gestern';
-			} elseif(strftime('%d.%m.%Y', $date) == strftime('%d.%m.%Y', $portal->getTime() + 86400)) {
+			} elseif(date('d.m.Y', $date) == date('d.m.Y', $portal->getTime() + 86400)) {
 				if($time == true) $format = 'onlytime';
 				else $format = '';
 				$prepend = 'Morgen';
@@ -195,21 +195,21 @@ abstract class ISPConfigDateTime {
 			$time = false;
 		}
 
-		if($format == 'short') $fmt = '%d.%m.%y';
-		elseif($format == 'veryshort') $fmt = '%d.%m.';
-		elseif($format == 'medium') $fmt = '%d.%m.%Y';
-		elseif($format == 'long') $fmt = '%d. %B %Y';
-		elseif($format == 'extra') $fmt = '%A, %d. %B %Y';
-		elseif($format == 'day') $fmt = '%d';
-		elseif($format == 'monthnum') $fmt = '%m';
-		elseif($format == 'shortmonth') $fmt = '%b';
-		elseif($format == 'month') $fmt = '%B';
-		elseif($format == 'shortyear') $fmt = '%y';
-		elseif($format == 'year') $fmt = '%Y';
-		elseif($format == 'onlydate') $fmt = '%d.%m.';
-		elseif($format == 'onlydatelong') $fmt = '%d. %B';
+		if($format == 'short') $fmt = 'd.m.y';
+		elseif($format == 'veryshort') $fmt = 'd.m.';
+		elseif($format == 'medium') $fmt = 'd.m.Y';
+		elseif($format == 'long') $fmt = 'd. B Y';
+		elseif($format == 'extra') $fmt = 'A, d. B Y';
+		elseif($format == 'day') $fmt = 'd';
+		elseif($format == 'monthnum') $fmt = 'm';
+		elseif($format == 'shortmonth') $fmt = 'b';
+		elseif($format == 'month') $fmt = 'B';
+		elseif($format == 'shortyear') $fmt = 'y';
+		elseif($format == 'year') $fmt = 'Y';
+		elseif($format == 'onlydate') $fmt = 'd.m.';
+		elseif($format == 'onlydatelong') $fmt = 'd. B';
 		elseif($format == 'onlytime') {
-			$fmt = '%H:%M';
+			$fmt = 'H:i';
 			$time = false;
 		} elseif($format == 'rss') {
 			$ret = date(DATE_RSS, $date);
@@ -220,9 +220,9 @@ abstract class ISPConfigDateTime {
 			if($prepend != '') $ret = $prepend . ' ' . $ret;
 			return $ret;
 		}
-		if($time == true) $fmt .= ' %H:%M' . ($seconds == true ? ':%S' : '');
+		if($time == true) $fmt .= ' H:i' . ($seconds == true ? ':s' : '');
 
-		if($fmt != '') $ret = strftime($fmt, $date);
+		if($fmt != '') $ret = date($fmt, $date);
 		else $ret = '';
 
 		if($prepend != '') $ret = trim($prepend . ' ' . $ret);
@@ -249,10 +249,10 @@ abstract class ISPConfigDateTime {
 	 * @return mixed either int (months) or array of int (0 => years, 1 => months) or FALSE on invalid dates
 	 */
 	public static function months_between($date_from, $date_to, $return_years = false, $include_both = false) {
-		$date_from = self::to_string($date_from, 'custom:%Y%m');
+		$date_from = self::to_string($date_from, 'custom:Ym');
 		if($date_from === false) return $date_from;
 
-		$date_to = self::to_string($date_to, 'custom:%Y%m');
+		$date_to = self::to_string($date_to, 'custom:Ym');
 		if($date_to === false) return $date_to;
 
 		$date_from = intval($date_from);
@@ -294,12 +294,12 @@ abstract class ISPConfigDateTime {
 	 * @return mixed either int (days) or FALSE on invalid dates
 	 */
 	public static function days_between($date_from, $date_to, $include_both = false) {
-		$date_from = self::to_string($date_from, 'custom:%Y-%m-%d');
+		$date_from = self::to_string($date_from, 'custom:Y-m-d');
 		if($date_from === false) return $date_from;
 		list($y, $m, $d) = explode('-', $date_from);
 		$ts_from = mktime(0, 0, 0, $m, $d, $y);
 
-		$date_to = self::to_string($date_to, 'custom:%Y-%m-%d');
+		$date_to = self::to_string($date_to, 'custom:Y-m-d');
 		if($date_to === false) return $date_to;
 		list($y, $m, $d) = explode('-', $date_to);
 		$ts_to = mktime(0, 0, 0, $m, $d, $y);
@@ -364,7 +364,7 @@ abstract class ISPConfigDateTime {
 		if($date === false) $date = $portal->getTime(true);
 
 		if(is_numeric($date)) {
-			return $no_time ? strftime('%Y-%m-%d', $date) : strftime('%Y-%m-%d %H:%M:%S', $date);
+			return $no_time ? date('Y-m-d', $date) : date('Y-m-d H:i:s', $date);
 		}
 
 		if(preg_match('/^(.*)(\d{1,2}:\d{1,2}(:\d{1,2})?)(\D|$)/', $date, $matches)) {
@@ -473,7 +473,7 @@ abstract class ISPConfigDateTime {
 		if($date === false) return $date;
 
 		list($year, $month, $day) = explode('-', $date);
-		list($curyear, $curmonth, $curday) = explode('-', strftime('%Y-%m-%d', $portal->getTime()));
+		list($curyear, $curmonth, $curday) = explode('-', date('Y-m-d', $portal->getTime()));
 
 		$year_diff = $curyear - $year;
 		$month_diff = $curmonth - $month;
