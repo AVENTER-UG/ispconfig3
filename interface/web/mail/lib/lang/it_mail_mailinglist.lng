@@ -2,6 +2,7 @@
 $wb['limit_mailmailinglist_txt'] = 'Limite raggiunto';
 $wb['domain_error_empty'] = 'Dominio vuoto.';
 $wb['listname_error_empty'] = 'Listname vuoto.';
+$wb['listname_error_regex'] = 'The list name is invalid. The minimum length is 2 characters (allowed are: [a-z 1-9 - _]).';
 $wb['domain_error_regex'] = 'Nome dominio non valido.';
 $wb['email_in_use_txt'] = 'Email è già in uso';
 $wb['no_domain_perm'] = 'Non hai i diritti per questo dominio.';
