@@ -63,7 +63,7 @@ if($type == 'getserverid'){
 	$json .= '"}';
 }
 
-if($type == 'getphpfastcgi'){
+if($type == 'getserverphp'){
 	$json = '{';
 
 	$server_type = 'apache';
@@ -92,25 +92,28 @@ if($type == 'getphpfastcgi'){
 		$sql_where .= ")";
 	}
 
+	$php_records = array();
 	if($php_type == 'php-fpm' || ($php_type == 'hhvm' && $server_type == 'nginx')){
 		$php_records = $app->db->queryAllRecords("SELECT * FROM server_php WHERE php_fpm_init_script != '' AND php_fpm_ini_dir != '' AND php_fpm_pool_dir != '' AND server_id = ? AND active = 'y'".$sql_where, $server_id);
 	} elseif($php_type == 'fast-cgi'){
 		$php_records = $app->db->queryAllRecords("SELECT * FROM server_php WHERE php_fastcgi_binary != '' AND php_fastcgi_ini_dir != '' AND server_id = ? AND active = 'y'".$sql_where, $server_id);
 	}
-	$php_records[]=array('name' => $app->functions->htmlentities($web_config['php_default_name']));
+	if (empty($web_config['php_default_hide']) || 'n' === $web_config['php_default_hide']) {
+		$php_records[]=array('name' => $app->functions->htmlentities($web_config['php_default_name']));
+	}
 	uasort($php_records, 'sort_php');
 	$php_select = "";
 	if(is_array($php_records) && !empty($php_records)) {
 		foreach( $php_records as $php_record) {
 			if($php_type == 'php-fpm' || ($php_type == 'hhvm' && $server_type == 'nginx')){
-				$php_version = $php_record['name'].':'.$php_record['php_fpm_init_script'].':'.$php_record['php_fpm_ini_dir'].':'.$php_record['php_fpm_pool_dir'];
+				$php_version = $php_record['server_php_id'];
 			} else {
-				$php_version = $php_record['name'].':'.$php_record['php_fastcgi_binary'].':'.$php_record['php_fastcgi_ini_dir'];
+				$php_version = $php_record['server_php_id'];
 			}
 			if($php_record['name'] != $web_config['php_default_name']) {
 				$json .= '"'.$php_version.'": "'.$php_record['name'].'",';
 			} else {
-				$json .= '"": "'.$php_record['name'].'",';
+				$json .= '"0": "'.$php_record['name'].'",';
 			}
 		}
 	}
@@ -200,11 +203,9 @@ if ($type == 'getdirectivesnippet') {
 	$web_config = $app->getconf->get_server_config($server_id, 'web');
 	if (!empty($web_config['server_type'])) $server_type = $web_config['server_type'];
 
-	$m_snippets = $app->db->queryAllRecords("SELECT directive_snippets_id, name FROM directive_snippets WHERE customer_viewable = 'y' AND active = 'y' AND master_directive_snippets_id > 0 AND type = ? ORDER BY name ASC", $server_type);
-	
-	$snippets = $app->db->queryAllRecords("SELECT directive_snippets_id, name FROM directive_snippets WHERE customer_viewable = 'y' AND active = 'y' AND master_directive_snippets_id = 0 AND type = ? ORDER BY name ASC", $server_type);
+	$snippets = $app->db->queryAllRecords("SELECT directive_snippets_id, name FROM directive_snippets WHERE customer_viewable = 'y' AND active = 'y' AND type = ? ORDER BY name ASC", $server_type);
 
-	$json = json_encode(array('m_snippets' => $m_snippets, 'snippets' => $snippets));
+	$json = json_encode(array('snippets' => $snippets));
 }
 
 if($type == 'getclientssldata'){
@@ -213,7 +214,7 @@ if($type == 'getclientssldata'){
 	$client = $app->db->queryOneRecord("SELECT company_name,contact_firstname, contact_name, street, zip, city, telephone, mobile,fax, country, state, email FROM client WHERE client_id = ?",$sys_group['client_id']);
 	if(is_array($client) && !empty($client)){
 		if($client['telephone'] == '' && $client['mobile'] != '') $client['telephone'] = $client['mobile'];
-		
+
 		$fname = '';
 		$lname = '';
 		$parts = preg_split("/\s+/", $client['contact_name']);

@@ -1,9 +1,10 @@
 <?php
+$wb['users_txt'] = 'Users';
 $wb['username_txt'] = 'Korisničko ime';
 $wb['username_err'] = 'Korisničko ime je predugačko ili sadrži nedozvoljene znakove.';
 $wb['username_empty'] = 'Korisničko ime je prazno.';
 $wb['username_unique'] = 'Već postoji korisnik sa ovim korisničkim imenom.';
-$wb['passwort_txt'] = 'Šifra';
+$wb['password_txt'] = 'Šifra';
 $wb['password_strength_txt'] = 'Jačina šifre';
 $wb['modules_txt'] = 'Modul';
 $wb['startmodule_txt'] = 'Početni modul';
@@ -33,4 +34,5 @@ $wb['username_error_collision'] = 'Korisničko ime ne može biti web ili web sa 
 $wb['client_not_admin_err'] = 'Korisnik koji je u grupi klijenti ne može biti admin';
 $wb['lost_password_function_txt'] = 'Forgot password function is available';
 $wb['no_user_insert'] = 'CP-Users of type -user- get added and updated automatically when you add a client or reseller.';
+$wb['otp_auth_txt'] = '2-Factor Authentication';
 ?>

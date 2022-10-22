@@ -58,7 +58,7 @@ class auth {
 
 		$userid = $app->functions->intval($userid);
 		$client = $app->db->queryOneRecord("SELECT client.limit_client FROM sys_user, client WHERE sys_user.userid = ? AND sys_user.client_id = client.client_id", $userid);
-		if($client['limit_client'] != 0) {
+		if(is_array($client) && $client['limit_client'] != 0) {
 			return true;
 		} else {
 			return false;
@@ -141,12 +141,18 @@ class auth {
 		}
 	}
 
-	public function check_module_permissions($module) {
+
+       /**
+        * Check that the user has access to the given module.
+        *
+        * @return boolean
+        */
+       public function verify_module_permissions($module)  {
 		// Check if the current user has the permissions to access this module
 		$module = trim(preg_replace('@\s+@', '', $module));
 		$user_modules = explode(',',$_SESSION["s"]["user"]["modules"]);
+               $can_use_module = false;
 		if(strpos($module, ',') !== false){
-			$can_use_module = false;
 			$tmp_modules = explode(',', $module);
 			if(is_array($tmp_modules) && !empty($tmp_modules)){
 				foreach($tmp_modules as $tmp_module){
@@ -158,17 +164,21 @@ class auth {
 					}
 				}
 			}
-			if(!$can_use_module){
-				// echo "LOGIN_REDIRECT:/index.php";
-				header("Location: /index.php");
-				exit;
-			}
-		} else {
-			if(!in_array($module,$user_modules)) {
-				// echo "LOGIN_REDIRECT:/index.php";
-				header("Location: /index.php");
-				exit;
-			}
+               }
+               elseif(in_array($module,$user_modules)) {
+                       $can_use_module = true;
+               }
+               return $can_use_module;
+       }
+
+       /**
+        * Check that the user has access to the given module, redirect and exit on failure.
+        */
+       public function check_module_permissions($module)  {
+               if(!$this->verify_module_permissions($module)) {
+                       // echo "LOGIN_REDIRECT:/index.php";
+                       header("Location: /index.php");
+                       exit;
 		}
 	}
 	
@@ -188,10 +198,40 @@ class auth {
 		
 	}
 
+	/**
+	 * Get the minimum password length.
+	 */
+	public function get_min_password_length() {
+		global $app;
+		$server_config_array = $app->getconf->get_global_config();
+		$min_password_length = 8;
+		if(isset($server_config_array['misc']['min_password_length'])) $min_password_length = $server_config_array['misc']['min_password_length'];
+		return $min_password_length;
+	}
+
+	/**
+	 * Get the minimum password strength.
+	 */
+	public function get_min_password_strength() {
+		global $app;
+		$server_config_array = $app->getconf->get_global_config();
+		$min_password_strength = 0;
+		if(isset($server_config_array['misc']['min_password_strength'])) $min_password_strength = $server_config_array['misc']['min_password_strength'];
+		return $min_password_strength;
+	}
+
+	/**
+	 * Generate a ranmdom password.
+	 *
+	 * @param int $minLength
+	 *   Minimum number of characters.
+	 * @param boolean $special
+	 *   Include special characters, like # and !
+	 */
 	public function get_random_password($minLength = 8, $special = false) {
 		if($minLength < 8) $minLength = 8;
 		$maxLength = $minLength + 5;
-		$length = mt_rand($minLength, $maxLength);
+		$length = random_int($minLength, $maxLength);
 		
 		$alphachars = "abcdefghijklmnopqrstuvwxyz";
 		$upperchars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
@@ -200,28 +240,28 @@ class auth {
 		
 		$num_special = 0;
 		if($special == true) {
-			$num_special = intval(mt_rand(0, round($length / 4))) + 1;
+			$num_special = intval(random_int(0, round($length / 4))) + 1;
 		}
-		$numericlen = mt_rand(1, 2);
+		$numericlen = random_int(1, 2);
 		$alphalen = $length - $num_special - $numericlen;
 		$upperlen = intval($alphalen / 2);
 		$alphalen = $alphalen - $upperlen;
 		$password = '';
 		
 		for($i = 0; $i < $alphalen; $i++) {
-			$password .= substr($alphachars, mt_rand(0, strlen($alphachars) - 1), 1);
+			$password .= substr($alphachars, random_int(0, strlen($alphachars) - 1), 1);
 		}
 		
 		for($i = 0; $i < $upperlen; $i++) {
-			$password .= substr($upperchars, mt_rand(0, strlen($upperchars) - 1), 1);
+			$password .= substr($upperchars, random_int(0, strlen($upperchars) - 1), 1);
 		}
 		
 		for($i = 0; $i < $num_special; $i++) {
-			$password .= substr($specialchars, mt_rand(0, strlen($specialchars) - 1), 1);
+			$password .= substr($specialchars, random_int(0, strlen($specialchars) - 1), 1);
 		}
 		
 		for($i = 0; $i < $numericlen; $i++) {
-			$password .= substr($numchars, mt_rand(0, strlen($numchars) - 1), 1);
+			$password .= substr($numchars, random_int(0, strlen($numchars) - 1), 1);
 		}
 		
 		return str_shuffle($password);
@@ -258,8 +298,8 @@ class auth {
 	public function csrf_token_get($form_name) {
 		/* CSRF PROTECTION */
 		// generate csrf protection id and key
-		$_csrf_id = uniqid($form_name . '_'); // form id
-		$_csrf_key = sha1(uniqid(microtime(true), true)); // the key
+		$_csrf_id = $form_name . '_' . bin2hex(random_bytes(12)); // form id
+		$_csrf_key = sha1(random_bytes(20)); // the key
 		if(!isset($_SESSION['_csrf'])) $_SESSION['_csrf'] = array();
 		if(!isset($_SESSION['_csrf_timeout'])) $_SESSION['_csrf_timeout'] = array();
 		$_SESSION['_csrf'][$_csrf_id] = $_csrf_key;

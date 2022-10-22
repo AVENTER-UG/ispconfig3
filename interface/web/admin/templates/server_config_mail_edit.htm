@@ -1,10 +1,7 @@
-<div class='page-header'>
-	<h1><tmpl_var name="list_head_txt"> {tmpl_var name='server_name'}</h1>
-</div>
-<p><tmpl_var name="list_desc_txt"></p>
+<div class="alert alert-info"><h4 style="text-align:center"><tmpl_var name="config_for_txt"> {tmpl_var name='server_name'}</h4></div>
 
 
-        
+
             <div class="form-group">
                 <label for="module" class="col-sm-3 control-label">{tmpl_var name='module_txt'}</label>
                 <div class="col-sm-9"><select name="module" id="module" class="form-control">
@@ -52,11 +49,37 @@
             </div>
 			<div class="form-group rspamd">
                 <label for="rspamd_url" class="col-sm-3 control-label col-text">{tmpl_var name='rspamd_url_txt'}</label>
-                <div class="col-sm-6"><a href="{tmpl_var name='rspamd_url'}" target="_blank">{tmpl_var name='rspamd_url'}</a><a href="{tmpl_var name='rspamd_url'}" target="_blank" class="btn btn-default formbutton-default formbutton-narrow" style="margin-left:20px"><span class="icon icon-link"></span></a></div>
+				<div class="col-sm-8"><div class="input-group">
+					<input type="text" name="rspamd_url" id="rspamd_url" value="{tmpl_var name='rspamd_url'}" class="form-control" />
+					<span class="input-group-btn">
+						<a href="{tmpl_var name='rspamd_url'}" target="_blank" class="btn btn-default formbutton-default formbutton-narrow" style="margin-left:20px"><span class="icon icon-link"></span></a>
+					</span>
+				</div></div>
+			</div>
             </div>
 			<div class="form-group rspamd">
                 <label for="rspamd_password" class="col-sm-3 control-label">{tmpl_var name='rspamd_password_txt'}</label>
                 <div class="col-sm-9"><input type="text" name="rspamd_password" id="rspamd_password" value="{tmpl_var name='rspamd_password'}" class="form-control" /></div>
+			</div>
+			<div class="form-group rspamd">
+                <label for="rspamd_redis_servers" class="col-sm-3 control-label">{tmpl_var name='rspamd_redis_servers_txt'}</label>
+                <div class="col-sm-9" data-toggle="tooltip" title="{tmpl_var name='tooltip_rspamd_redis_servers_txt'}">
+			<input type="text" name="rspamd_redis_servers" id="rspamd_redis_servers" value="{tmpl_var name='rspamd_redis_servers'}" class="form-control" /></div>
+			</div>
+			<div class="form-group rspamd">
+                <label for="rspamd_redis_password" class="col-sm-3 control-label">{tmpl_var name='rspamd_redis_password_txt'}</label>
+                <div class="col-sm-9" data-toggle="tooltip" title="{tmpl_var name='tooltip_rspamd_redis_password_txt'}">
+			<input type="text" name="rspamd_redis_password" id="rspamd_redis_password" value="{tmpl_var name='rspamd_redis_password'}" class="form-control" /></div>
+			</div>
+			<div class="form-group rspamd">
+                <label for="rspamd_redis_bayes_servers" class="col-sm-3 control-label">{tmpl_var name='rspamd_redis_bayes_servers_txt'}</label>
+                <div class="col-sm-9" data-toggle="tooltip" title="{tmpl_var name='tooltip_rspamd_redis_bayes_servers_txt'}">
+			<input type="text" name="rspamd_redis_bayes_servers" id="rspamd_redis_bayes_servers" value="{tmpl_var name='rspamd_redis_bayes_servers'}" class="form-control" /></div>
+			</div>
+			<div class="form-group rspamd">
+                <label for="rspamd_redis_bayes_password" class="col-sm-3 control-label">{tmpl_var name='rspamd_redis_bayes_password_txt'}</label>
+                <div class="col-sm-9" data-toggle="tooltip" title="{tmpl_var name='tooltip_rspamd_redis_bayes_password_txt'}">
+			<input type="text" name="rspamd_redis_bayes_password" id="rspamd_redis_bayes_password" value="{tmpl_var name='rspamd_redis_bayes_password'}" class="form-control" /></div>
 			</div>
             <div class="form-group">
                 <label for="mailuser_uid" class="col-sm-3 control-label">{tmpl_var name='mailuser_uid_txt'}</label>
@@ -100,19 +123,50 @@
                 <div class="col-sm-6"><input type="text" name="message_size_limit" id="message_size_limit" value="{tmpl_var name='message_size_limit'}" class="form-control" /></div><div class="col-sm-3 input-sm">&nbsp;MB
             </div></div>
             <div class="form-group">
+                <label for="realtime_blackhole_list" class="col-sm-3 control-label">{tmpl_var name='realtime_blackhole_list_txt'}</label>
+                <div class="col-sm-6"><input type="text" name="realtime_blackhole_list" id="realtime_blackhole_list" value="{tmpl_var name='realtime_blackhole_list'}" class="form-control" /></div><div class="col-sm-3 input-sm">&nbsp;{tmpl_var name='realtime_blackhole_list_note_txt'}
+            </div></div>
+            <div class="form-group">
+                <label class="col-sm-3 control-label">{tmpl_var name='reject_unknown_txt'}</label>
+                <div class="col-sm-9"><a data-toggle="tooltip" title="{tmpl_var name='tooltip_reject_unknown_txt'}">
+                    <select name="reject_unknown" id="reject_unknown" class="form-control">
+                        {tmpl_var name='reject_unknown'}
+                    </select></a>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-3 control-label">{tmpl_var name='stress_adaptive_txt'}</label>
+                <div class="col-sm-9">
+                    <a data-toggle="tooltip" title="{tmpl_var name='tooltip_stress_adaptive_txt'}">{tmpl_var name="stress_adaptive"}</a>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-3 control-label">{tmpl_var name='mailbox_soft_delete_txt'}</label>
+                <div class="col-sm-9">
+                    {tmpl_var name='mailbox_soft_delete'}&nbsp;{tmpl_var name='mailbox_soft_delete_info_txt'}
+                </div>
+            </div>
+            <div class="form-group">
                 <label class="col-sm-3 control-label">{tmpl_var name='mailbox_quota_stats_txt'}</label>
                 <div class="col-sm-9">
                     {tmpl_var name='mailbox_quota_stats'}
                 </div>
             </div>
             <div class="form-group">
-                <label for="realtime_blackhole_list" class="col-sm-3 control-label">{tmpl_var name='realtime_blackhole_list_txt'}</label>
-                <div class="col-sm-6"><input type="text" name="realtime_blackhole_list" id="realtime_blackhole_list" value="{tmpl_var name='realtime_blackhole_list'}" class="form-control" /></div><div class="col-sm-3 input-sm">&nbsp;{tmpl_var name='realtime_blackhole_list_note_txt'}
-            </div></div>
-			<div class="form-group">
+                <label for="overquota_notify_threshold" class="col-sm-3 control-label">{tmpl_var name='overquota_notify_threshold_txt'}</label>
+                <div class="col-sm-6"><input type="text" name="overquota_notify_threshold" id="overquota_notify_threshold" value="{tmpl_var name='overquota_notify_threshold'}" class="form-control" /></div>
+                <div class="col-sm-3 input-sm">%</div>
+            </div>
+            <div class="form-group">
                 <label class="col-sm-3 control-label">{tmpl_var name='overquota_notify_admin_txt'}</label>
                 <div class="col-sm-9">
                     {tmpl_var name='overquota_notify_admin'}
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-3 control-label">{tmpl_var name='overquota_notify_reseller_txt'}</label>
+                <div class="col-sm-9">
+                    {tmpl_var name='overquota_notify_reseller'}
                 </div>
             </div>
             <div class="form-group">
@@ -131,10 +185,10 @@
                     {tmpl_var name='overquota_notify_onok'}
                 </div>
             </div>
-        
-            
+
+
         <input type="hidden" name="id" value="{tmpl_var name='id'}">
-            
+
         <div class="clear"><div class="right">
             <button class="btn btn-default formbutton-success" type="button" value="{tmpl_var name='btn_save_txt'}" data-submit-form="pageForm" data-form-action="admin/server_config_edit.php">{tmpl_var name='btn_save_txt'}</button>
             <button class="btn btn-default formbutton-default" type="button" value="{tmpl_var name='btn_cancel_txt'}" data-load-content="admin/server_config_list.php">{tmpl_var name='btn_cancel_txt'}</button>
@@ -144,13 +198,13 @@
 		var pword = password(8, false, 1);
 		jQuery('#rspamd_password').val(pword);
 	}
-	
+
 	if($('#content_filter').val() === 'rspamd'){
 		$('.rspamd').show();
 	} else {
 		$('.rspamd').hide();
 	}
-	
+
 	$('#content_filter').change(function(){
 		if($(this).val() === 'rspamd'){
 			$('.rspamd').show();

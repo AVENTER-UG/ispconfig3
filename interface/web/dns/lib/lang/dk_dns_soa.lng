@@ -7,7 +7,7 @@ $wb['serial_txt'] = 'Serial';
 $wb['refresh_txt'] = 'Opfriske';
 $wb['retry_txt'] = 'Prøv igen';
 $wb['expire_txt'] = 'Udløber';
-$wb['minimum_txt'] = 'Minimum';
+$wb['minimum_txt'] = 'Minimum (negative cache ttl)';
 $wb['ttl_txt'] = 'TTL';
 $wb['xfer_txt'] = 'Tillad zone overførsler til <br />disse IP-adresser (kommasepareret liste)';
 $wb['active_txt'] = 'Aktiv';
@@ -41,4 +41,7 @@ $wb['dnssec_wanted_info'] = 'When disabling DNSSEC keys are not going to be dele
 $wb['error_not_allowed_server_id'] = 'The selected server is not allowed for this account.';
 $wb['soa_cannot_be_changed_txt'] = 'The Zone (SOA) can not be changed. Please contact your administrator to change the zone.';
 $wb['configuration_error_txt'] = 'CONFIGURATION ERROR';
+$wb['dnssec_algo_txt'] = 'DNSSEC Algorithm';
+$wb['rendered_zone_txt'] = 'Bind zone format for reference and export.';
+$wb['rendered_zone_unavailable_txt'] = 'Sorry, no data is available yet.';
 ?>

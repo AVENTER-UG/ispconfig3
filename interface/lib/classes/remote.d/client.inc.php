@@ -108,7 +108,7 @@ class remoting_client extends remoting {
 		if(isset($rec['client_id'])) {
 			return $app->functions->intval($rec['client_id']);
 		} else {
-			throw new SoapFault('no_client_found', 'There is no sysuser account for this client ID.');
+			throw new SoapFault('no_client_found', 'There is no sys_user account with this userid.');
 			return false;
 		}
 
@@ -243,6 +243,15 @@ class remoting_client extends remoting {
 		$affected_rows = $this->updateQuery('../client/form/' . (isset($params['limit_client']) && $params['limit_client'] != 0 ? 'reseller' : 'client') . '.tform.php', $reseller_id, $client_id, $params, 'client:' . ($reseller_id ? 'reseller' : 'client') . ':on_after_update');
 
 		$app->remoting_lib->ispconfig_sysuser_update($params, $client_id);
+		
+		// if canceled
+        if ($params['canceled']) {
+        	$result = $app->functions->func_client_cancel($client_id, $params['canceled']);
+        }
+        // if locked
+        if ($params['locked']) {
+        	$result = $app->functions->func_client_lock($client_id, $params['locked']);
+		}
 
 		return $affected_rows;
 	}
@@ -257,7 +266,7 @@ class remoting_client extends remoting {
 
 		if(@is_numeric($client_id)) {
 			$sql = "SELECT * FROM `client_template_assigned` WHERE `client_id` = ?";
-			return $app->db->queryOneRecord($sql, $client_id);
+			return $app->db->queryAllRecords($sql, $client_id);
 		} else {
 			throw new SoapFault('The ID must be an integer.');
 			return array();
@@ -388,6 +397,8 @@ class remoting_client extends remoting {
 			return false;
 		}
 
+		// DUPLICATE CODE IN interface/web/client/client_del.php
+
 		$client_id = $app->functions->intval($client_id);
 
 		if($client_id > 0) {
@@ -404,7 +415,7 @@ class remoting_client extends remoting {
 			$app->db->query("DELETE FROM sys_user WHERE client_id = ?", $client_id);
 
 			//* Delete all records (sub-clients, mail, web, etc....)  of this client.
-			$tables = 'cron,dns_rr,dns_soa,dns_slave,ftp_user,mail_access,mail_content_filter,mail_domain,mail_forwarding,mail_get,mail_user,mail_user_filter,shell_user,spamfilter_users,support_message,web_database,web_database_user,web_domain,web_traffic,domain,mail_mailinglist,client';
+			$tables = 'cron,dns_rr,dns_soa,dns_slave,ftp_user,mail_access,mail_content_filter,mail_forwarding,mail_get,mail_user,mail_user_filter,shell_user,spamfilter_users,mail_domain,support_message,web_database,web_database_user,web_domain,web_traffic,domain,mail_mailinglist,client,spamfilter_wblist';
 			$tables_array = explode(',', $tables);
 			$client_group_id = $app->functions->intval($client_group['groupid']);
 			if($client_group_id > 1) {

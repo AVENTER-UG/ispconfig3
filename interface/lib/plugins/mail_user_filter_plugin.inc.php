@@ -80,7 +80,7 @@ class mail_user_filter_plugin {
 			}
 		}
 
-		// We did not found our rule, so we add it now as first rule.
+		// We did not find our rule, so we add it now as first rule.
 		if($found == false && $page_form->dataRecord["active"] == 'y') {
 			$new_rule = $this->mail_user_filter_get_rule($page_form);
 			$out = $new_rule . $out;
@@ -92,7 +92,7 @@ class mail_user_filter_plugin {
 	}
 
 	/*
-	 *	Remove the rendered filter from custom_mailfilter when a mail_user_filter is deleted
+	 *	Remove the rendered filter from custom_mailfilter when a mail_user_filter is deleted.
 	 */
 	function mail_user_filter_del($event_name, $page_form) {
 		global $app, $conf;
@@ -137,8 +137,13 @@ class mail_user_filter_plugin {
 			$content = '';
 			$content .= '### BEGIN FILTER_ID:'.$page_form->id."\n";
 
-			//$content .= 'require ["fileinto", "regex", "vacation"];'."\n";
-			
+			if($page_form->dataRecord["source"] == 'Header') {
+				$parts = explode(':',trim($page_form->dataRecord["searchterm"]));
+				$page_form->dataRecord["source"] = trim(array_shift($parts));
+				$page_form->dataRecord["searchterm"] = trim(implode(':',$parts));
+				unset($parts);
+			}
+
 			if($page_form->dataRecord["op"] == 'domain') {
 				$content .= 'if address :domain :is "'.strtolower($page_form->dataRecord["source"]).'" "'.$page_form->dataRecord["searchterm"].'" {'."\n";
 			} elseif ($page_form->dataRecord["op"] == 'localpart') {
@@ -152,33 +157,50 @@ class mail_user_filter_plugin {
 				$content .= 'if size :over '.intval($page_form->dataRecord["searchterm"]).$unit.' {'."\n";
 			} else {
 			
-				if($page_form->dataRecord["source"] == 'Header') {
-					$parts = explode(':',trim($page_form->dataRecord["searchterm"]));
-					$page_form->dataRecord["source"] = trim($parts[0]);
-					unset($parts[0]);
-					$page_form->dataRecord["searchterm"] = trim(implode(':',$parts));
-					unset($parts);
+				$content .= 'if header :regex    "'.strtolower($page_form->dataRecord["source"]).'" ["';
+
+				# special chars in sieve regex must be escaped with double-backslash
+				if($page_form->dataRecord["op"] == 'regex') {
+					# if providing a regex, special chars must already be quoted as intended;
+					# we will simply try to check for an obviously unquoted double-quote and handle that.
+					$patterns = array( '/([^\\\\]{2})"/', '/([^\\\\])\\\\"/' );
+					$replace  = array( '${1}\\\\\\\\"', '${1}\\\\\\\\"' );
+					$searchterm = preg_replace( $patterns, $replace, $page_form->dataRecord["searchterm"] );
+				} else {
+					$sieve_regex_escape = array(
+						'\\' => '\\\\\\',
+						'+' => '\\\\+',
+						'*' => '\\\\*',
+						'?' => '\\\\?',
+						'[' => '\\\\[',
+						'^' => '\\\\^',
+						']' => '\\\\]',
+						'$' => '\\\\$',
+						'(' => '\\\\(',
+						')' => '\\\\)',
+						'{' => '\\\\{',
+						'}' => '\\\\}',
+						'|' => '\\\\|',
+						'.' => '\\\\.',
+						# these (from preg_quote) should not be needed
+						#'=' => '\\\\=',
+						#'!' => '\\\\!',
+						#'<' => '\\\\<',
+						#'>' => '\\\\>',
+						#':' => '\\\\:',
+						#'-' => '\\\\-',
+						#'#' => '\\\\#',
+						);
+					$searchterm = strtr( $page_form->dataRecord["searchterm"], $sieve_regex_escape );
+
 				}
-
-				$content .= 'if header :regex    ["'.strtolower($page_form->dataRecord["source"]).'"] ["';
-
-				$searchterm = preg_quote($page_form->dataRecord["searchterm"]);
-				$searchterm = str_replace(
-					array(
-						'"',
-						'\\[',
-						'\\]'
-					),
-					array(
-						'\\"',
-						'\\\\[',
-						'\\\\]'
-					), $searchterm);
 
 				if($page_form->dataRecord["op"] == 'contains') {
 					$content .= ".*".$searchterm;
 				} elseif ($page_form->dataRecord["op"] == 'is') {
 					$content .= "^".$searchterm."$";
+				} elseif ($page_form->dataRecord["op"] == 'regex') {
+					$content .= $searchterm;
 				} elseif ($page_form->dataRecord["op"] == 'begins') {
 					$content .= "^".$searchterm."";
 				} elseif ($page_form->dataRecord["op"] == 'ends') {
@@ -195,7 +217,7 @@ class mail_user_filter_plugin {
 			} elseif ($page_form->dataRecord["action"] == 'stop') {
 				$content .= "    stop;\n";
 			} elseif ($page_form->dataRecord["action"] == 'reject') {
-				$content .= '    reject "'.$page_form->dataRecord["target"].'";    stop;\n\n';
+				$content .= '    reject "'.$page_form->dataRecord["target"].'";' . "\n    stop;\n";
 			} else {
 				$content .= "    discard;\n    stop;\n";
 			}

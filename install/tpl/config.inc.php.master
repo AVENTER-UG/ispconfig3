@@ -33,11 +33,11 @@ if( !empty($_SERVER['DOCUMENT_ROOT']) ) {
 	Header("Pragma: no-cache");
 	Header("Cache-Control: no-store, no-cache, max-age=0, must-revalidate");
 	Header("Content-Type: text/html; charset=utf-8");
-	
+
 	//** Set a few php.ini values
 	ini_set('register_globals',0);
 	ini_set('magic_quotes_gpc', 0);
-	
+
 	if (isset($_REQUEST['GLOBALS']) || isset($_FILES['GLOBALS']) || isset($_REQUEST['s']) || isset($_REQUEST['s_old']) || isset($_REQUEST['conf'])) {
 		die('Internal Error: var override attempt detected');
 		exit;
@@ -45,7 +45,6 @@ if( !empty($_SERVER['DOCUMENT_ROOT']) ) {
 }
 
 //** Set a few php.ini values
-if(get_magic_quotes_runtime()) set_magic_quotes_runtime(false);
 if(isset($app)) unset($app);
 if(isset($conf)) unset($conf);
 
@@ -56,8 +55,8 @@ $revision = str_replace(array('Revision:','$',' '), '', $svn_revision);
 
 //** Application
 define('ISPC_APP_TITLE', 'ISPConfig');
-define('ISPC_APP_VERSION', '3.1dev');
-define('DEVSYSTEM', 0);
+define('ISPC_APP_VERSION', '3.2dev');
+define('DEVSYSTEM', false);
 
 
 //** Database
@@ -118,7 +117,7 @@ define('CLASSES_ROOT',INCLUDE_ROOT.FS_DIV.'classes');
 //** Server
 $conf['app_title'] = ISPC_APP_TITLE;
 $conf['app_version'] = ISPC_APP_VERSION;
-$conf['app_link'] = 'http://www.ispconfig.org/';
+$conf['app_link'] = 'https://www.ispconfig.org/';
 $conf['modules_available'] = 'dashboard,admin,mail,sites,monitor,client,dns,help';
 $conf['server_id'] = '{server_id}';
 $conf['init_scripts'] = '/etc/init.d';
@@ -128,8 +127,8 @@ $conf['init_scripts'] = '/etc/init.d';
 $conf['interface_modules_enabled'] = 'dashboard,mail,sites,dns,tools,help';
 
 //** Demo mode
-/* The demo mode is an option to restrict certain actions in the interface like 
-*  changing the password of users with sys_userid < 3 etc. to be 
+/* The demo mode is an option to restrict certain actions in the interface like
+*  changing the password of users with sys_userid < 3 etc. to be
 *  able to run the ISPConfig interface as online demo. It does not
 *  affect the server part. The demo mode should be always set to false
 *  on every normal installation
@@ -140,10 +139,6 @@ $conf['demo_mode'] = false;
 //** Logging
 $conf['log_file'] = $conf['ispconfig_log_dir'].$conf['fs_div'].'ispconfig.log';
 $conf['log_priority'] = {ispconfig_log_priority}; // 0 = Debug, 1 = Warning, 2 = Error
-
-
-//** Allow software package installations
-$conf['software_updates_enabled'] = false;
 
 
 //** Themes

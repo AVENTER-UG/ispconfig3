@@ -246,7 +246,7 @@ class cron {
 			$ts = mktime($iHour, $iMinute, 0, $iMonth, $iDay, $iYear);
 			//print strftime('%d.%m.%Y (%A) %H:%M', $ts) . "\n";
 			//var_dump($iCurMinute, $iCurHour, $iCurDay, $iCurMonth, $iCurWDay, '--', $iNextMinute, $iNextHour, $iNextDay, $iNextMonth, $iNextWDay);
-			if(ISPConfigDateTime::last_day($iMonth, $iYear) >= $iDay && in_array($app->functions->intval(strftime('%w', $ts)), $this->_aValidValues['weekday'], true) === true) {
+			if(ISPConfigDateTime::last_day($iMonth, $iYear) >= $iDay && in_array($app->functions->intval(date('w', $ts)), $this->_aValidValues['weekday'], true) === true) {
 				$bValid = true;
 			} else {
 				if($iYear - $iStartYear > 5) {

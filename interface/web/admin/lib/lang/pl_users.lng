@@ -1,9 +1,10 @@
 <?php
+$wb['users_txt'] = 'Users';
 $wb['username_txt'] = 'Nazwa użytkownika';
 $wb['username_err'] = 'Nazwa użytkownika jest za długa lub zawiera niedozwolone znaki.';
 $wb['username_empty'] = 'Nazwa użytkownika jest pusta.';
 $wb['username_unique'] = 'Istnieje już użytkownik o takiej nazwie.';
-$wb['passwort_txt'] = 'Hasło';
+$wb['password_txt'] = 'Hasło';
 $wb['password_strength_txt'] = 'Siła hasła';
 $wb['modules_txt'] = 'Moduł';
 $wb['startmodule_txt'] = 'Moduł startowy';
@@ -33,4 +34,5 @@ $wb['username_error_collision'] = 'Nazwa użytkownika nie może być web lub web
 $wb['client_not_admin_err'] = 'A user that belongs to a client can not be set to type: admin';
 $wb['lost_password_function_txt'] = 'Forgot password function is available';
 $wb['no_user_insert'] = 'CP-Users of type -user- get added and updated automatically when you add a client or reseller.';
+$wb['otp_auth_txt'] = '2-Factor Authentication';
 ?>

@@ -1,0 +1,25 @@
+<tmpl_if name="msg">
+<div class="alert alert-success" role="alert"><tmpl_var name="msg"></div>
+</tmpl_if>
+<tmpl_if name="error">
+<div class="alert alert-danger" role="alert"><tmpl_var name="error"></div>
+</tmpl_if>
+<h2><tmpl_var name="otp_code_txt"></h2>
+<p><tmpl_var name="otp_code_desc_txt"></p>
+<form accept-charset="UTF-8" role="form" method="post" action="otp.php">
+<fieldset>
+	<div class="form-group">
+		<input class="form-control" placeholder="{tmpl_var name='otp_code_placeholder_txt'}" name="code" id="code" type="text" autofocus>
+	</div>
+	<div class="right">
+			<input class="btn btn-default formbutton-default" type="submit" value="{tmpl_var name='login_button_txt'}">
+	</div>
+	<tmpl_if name="token_sent_message">{tmpl_var name='token_sent_message'}<br /></tmpl_if>
+	<a href="otp.php?action=resend">{tmpl_var name='otp_code_resend_txt'}</a>
+
+
+	<input type="hidden" name="_csrf_id" value="{tmpl_var name='_csrf_id'}" />
+	<input type="hidden" name="_csrf_key" value="{tmpl_var name='_csrf_key'}" />
+
+</fieldset>
+</form>

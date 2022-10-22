@@ -106,7 +106,19 @@ class apps_vhost_plugin {
 				$vhost_port_listen = '#';
 			}
 			$tpl->setVar('vhost_port_listen', $vhost_port_listen);
-			
+
+			/* Check if SSL should be enabled: */
+			if(is_file('/usr/local/ispconfig/interface/ssl/ispserver.crt') && is_file('/usr/local/ispconfig/interface/ssl/ispserver.key')) {
+				$tpl->setVar('ssl_comment','');
+			} else {
+				$tpl->setVar('ssl_comment','#');
+			}
+			if(is_file('/usr/local/ispconfig/interface/ssl/ispserver.crt') && is_file('/usr/local/ispconfig/interface/ssl/ispserver.key') && is_file('/usr/local/ispconfig/interface/ssl/ispserver.bundle')) {
+				$tpl->setVar('ssl_bundle_comment','');
+			} else {
+				$tpl->setVar('ssl_bundle_comment','#');
+			}
+
 			$mail_config = $app->getconf->get_server_config($conf['server_id'], 'mail');
 			if($mail_config['content_filter'] == 'rspamd'){
 				$use_rspamd = true;
@@ -180,10 +192,12 @@ class apps_vhost_plugin {
 			$content = str_replace('{fpm_socket}', $fpm_socket, $content);
 			$content = str_replace('{cgi_socket}', $cgi_socket, $content);
 			if(	file_exists('/var/run/php5-fpm.sock')
+                                || file_exists('/var/lib/php5-fpm/apps.sock')
 				|| file_exists('/var/run/php/php7.0-fpm.sock')
 				|| file_exists('/var/run/php/php7.1-fpm.sock')
 				|| file_exists('/var/run/php/php7.2-fpm.sock')
 				|| file_exists('/var/run/php/php7.3-fpm.sock')
+				|| file_exists('/var/run/php/php7.4-fpm.sock')
 			){
 				$use_tcp = '#';
 				$use_socket = '';
@@ -191,9 +205,19 @@ class apps_vhost_plugin {
 				$use_tcp = '';
 				$use_socket = '#';
 			}
+
+            /* Check if SSL should be enabled: */
+            if(is_file('/usr/local/ispconfig/interface/ssl/ispserver.crt') && is_file('/usr/local/ispconfig/interface/ssl/ispserver.key')) {
+				$content = str_replace('{ssl_comment}', '', $content);
+				$content = str_replace('{ssl_on}', 'ssl http2', $content);
+            } else {
+				$content = str_replace('{ssl_comment}', '#', $content);
+				$content = preg_replace('/(\s)\{ssl_on\}/', '', $content);
+			}
+
 			$content = str_replace('{use_tcp}', $use_tcp, $content);
 			$content = str_replace('{use_socket}', $use_socket, $content);
-			
+
 			$mail_config = $app->getconf->get_server_config($conf['server_id'], 'mail');
 			if($mail_config['content_filter'] == 'rspamd'){
 				$use_rspamd = '';
@@ -203,9 +227,11 @@ class apps_vhost_plugin {
 			$content = str_replace('{use_rspamd}', $use_rspamd, $content);
 
 			// Fix socket path on PHP 7 systems
-			if(file_exists('/var/run/php/php7.0-fpm.sock'))	$content = str_replace('/var/run/php5-fpm.sock', '/var/run/php/php7.0-fpm.sock', $content);
-			if(file_exists('/var/run/php/php7.1-fpm.sock'))	$content = str_replace('/var/run/php5-fpm.sock', '/var/run/php/php7.1-fpm.sock', $content);
-			if(file_exists('/var/run/php/php7.2-fpm.sock'))	$content = str_replace('/var/run/php5-fpm.sock', '/var/run/php/php7.2-fpm.sock', $content);
+			if(file_exists('/var/run/php/php7.4-fpm.sock')) $content = str_replace('/var/run/php5-fpm.sock', '/var/run/php/php7.4-fpm.sock', $content);
+			if(file_exists('/var/run/php/php7.3-fpm.sock')) $content = str_replace('/var/run/php5-fpm.sock', '/var/run/php/php7.3-fpm.sock', $content);
+			if(file_exists('/var/run/php/php7.2-fpm.sock')) $content = str_replace('/var/run/php5-fpm.sock', '/var/run/php/php7.2-fpm.sock', $content);
+			if(file_exists('/var/run/php/php7.1-fpm.sock')) $content = str_replace('/var/run/php5-fpm.sock', '/var/run/php/php7.1-fpm.sock', $content);
+			if(file_exists('/var/run/php/php7.0-fpm.sock')) $content = str_replace('/var/run/php5-fpm.sock', '/var/run/php/php7.0-fpm.sock', $content);
 
 			// PHP-FPM
 			// Dont just copy over the php-fpm pool template but add some custom settings
@@ -225,7 +251,7 @@ class apps_vhost_plugin {
 			file_put_contents("$vhost_conf_dir/apps.vhost", $content);
 
 			// enabled / disable apps-vhost
-			$vhost_symlink = $web_config['vhost_conf_enabled_dir'].'/000-apps.vhost';
+			$vhost_symlink = $vhost_conf_enabled_dir . '/000-apps.vhost';
 			if(is_link($vhost_symlink) && $web_config['apps_vhost_enabled'] == 'n') {
 				$app->system->unlink($vhost_symlink);
 			}

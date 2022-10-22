@@ -82,6 +82,7 @@ class mail_plugin {
 		//* get the config
 		$app->uses('getconf,system');
 		$mail_config = $app->getconf->get_server_config($conf['server_id'], 'mail');
+		$global_mail_config = $app->getconf->get_global_config('mail');
 
 		// convert to lower case - it could cause problems if some directory above has upper case name
 		//  $data['new']['maildir'] = strtolower($data['new']['maildir']);
@@ -135,7 +136,7 @@ class mail_plugin {
 			$app->system->exec_safe("su -c 'doveadm mailbox create -u ? Trash'", $data["new"]["email"]);
 			$app->system->exec_safe("su -c 'doveadm mailbox create -u ? Junk'", $data["new"]["email"]);
 			$app->system->exec_safe("su -c 'doveadm mailbox create -u ? Drafts'", $data["new"]["email"]);
-			
+
 			$app->system->exec_safe("su -c 'doveadm mailbox subscribe -u ? INBOX'", $data["new"]["email"]);
 			$app->system->exec_safe("su -c 'doveadm mailbox subscribe -u ? Sent'", $data["new"]["email"]);
 			$app->system->exec_safe("su -c 'doveadm mailbox subscribe -u ? Trash'", $data["new"]["email"]);
@@ -149,26 +150,26 @@ class mail_plugin {
 				$app->log('Created Directory: '.$maildomain_path, LOGLEVEL_DEBUG);
 				$maildomain_path .= '/Maildir';
 			}
-					
+
 			//* When the mail user dir exists but it is not a valid maildir, move it to corrupted maildir folder
 			if(!empty($maildomain_path) && is_dir($maildomain_path) && !is_dir($maildomain_path.'/new') && !is_dir($maildomain_path.'/cur')) {
 				if(!is_dir($mail_config['homedir_path'].'/corrupted/'.$data['new']['mailuser_id'])) $app->system->mkdirpath($mail_config['homedir_path'].'/corrupted/'.$data['new']['mailuser_id'], 0700, $mail_config['mailuser_name'], $mail_config['mailuser_group']);
 				$app->system->exec_safe("su -c ? vmail", "mv -f " . $data['new']['maildir']." ".$mail_config['homedir_path'].'/corrupted/'.$data['new']['mailuser_id']);
 				$app->log('Moved invalid maildir to corrupted Maildirs folder: '.$data['new']['maildir'], LOGLEVEL_WARN);
 			}
-	
+
 			//* Create the maildir, if it doesn not exist, set permissions, set quota.
 			if(!empty($maildomain_path) && !is_dir($maildomain_path)) {
-	
+
 				$app->system->maildirmake($maildomain_path, $user, '', $group);
-	
+
 				//* This is to fix the maildrop quota not being rebuilt after the quota is changed.
 				if($mail_config['pop3_imap_daemon'] != 'dovecot') {
 					if(is_dir($maildomain_path)) $app->system->exec_safe("su -c ? ?", "maildirmake -q ".$data['new']['quota']."S ".$maildomain_path, $user); // Avoid maildirmake quota bug, see debian bug #214911
 					$app->log('Created Maildir: '."su -c 'maildirmake -q ".$data['new']['quota']."S ".$maildomain_path."' ".$user, LOGLEVEL_DEBUG);
 				}
 			}
-	
+
 			if(!is_dir($data['new']['maildir'].'/.Sent')) {
 				$app->system->maildirmake($maildomain_path, $user, 'Sent', $group);
 			}
@@ -181,11 +182,11 @@ class mail_plugin {
 			if(!is_dir($data['new']['maildir'].'/.Junk')) {
 				$app->system->maildirmake($maildomain_path, $user, 'Junk', $group);
 			}
-	
+
 			// Set permissions now recursive
 			$app->system->exec_safe('chown -R ?:? ?', $user, $group, $data['new']['maildir']);
 			$app->log('Set ownership on '.$data['new']['maildir'], LOGLEVEL_DEBUG);
-	
+
 			//* Set the maildir quota
 			if(is_dir($data['new']['maildir'].'/new') && $mail_config['pop3_imap_daemon'] != 'dovecot') {
 				if($data['new']['quota'] > 0) {
@@ -218,20 +219,30 @@ class mail_plugin {
 			$lines = file($conf['rootpath'].'/conf/mail/welcome_email_en.txt');
 		}
 
+		$placeholders = array(
+			'{domain}' => "$domain",
+			'{email}' => $data["new"]["email"],
+			'{admin_mail}' => ($global_mail_config['admin_mail'] != '' ? $global_mail_config['admin_mail'] : 'root'),
+			'{admin_name}' => ($global_mail_config['admin_name'] != '' ? $global_mail_config['admin_name'] : ''),
+		);
+
 		//* Get from address
 		$parts = explode(':', trim($lines[0]));
 		unset($parts[0]);
 		$welcome_mail_from  = implode(':', $parts);
 		unset($lines[0]);
+		$welcome_mail_from = strtr($welcome_mail_from, $placeholders);
 
 		//* Get subject
 		$parts = explode(':', trim($lines[1]));
 		unset($parts[0]);
 		$welcome_mail_subject  = implode(':', $parts);
 		unset($lines[1]);
+		$welcome_mail_subject = strtr($welcome_mail_subject, $placeholders);
 
 		//* Get message
 		$welcome_mail_message = trim(implode($lines));
+		$welcome_mail_message = strtr($welcome_mail_message, $placeholders);
 		unset($tmp);
 
 		$mailHeaders      = "MIME-Version: 1.0" . "\n";
@@ -247,8 +258,15 @@ class mail_plugin {
 		$mailTarget       = $data["new"]["email"];
 		$mailSubject      = "=?utf-8?B?".base64_encode($welcome_mail_subject)."?=";
 
-		//* Send the welcome email only on the "master" mail server to avoid duplicate emails
-		if($conf['mirror_server_id'] == 0) mail($mailTarget, $mailSubject, $welcome_mail_message, $mailHeaders);
+		$additionalParameters = '';
+		if (preg_match('/\b([A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,63})\b/i', $welcome_mail_from, $matches)) {
+			$additionalParameters = '-f '.$matches[1];
+		}
+
+		// Send the welcome email only on a "master" mail server to avoid duplicate emails, and only send them when welcome emails are enabled.
+		// (bypass the normal ispcmail class when creating mail accounts)
+		$global_config = $app->getconf->get_global_config('mail');
+		if($conf['mirror_server_id'] == 0 && $global_config['enable_welcome_mail'] == 'y') mail($mailTarget, $mailSubject, $welcome_mail_message, $mailHeaders, $additionalParameters);
 
 	}
 
@@ -261,7 +279,7 @@ class mail_plugin {
 
 		// Maildir-Format must not be changed on this way !!
 		$data['new']['maildir_format'] = $data['old']['maildir_format'];
-		
+
 		$maildomain_path = $data['new']['maildir'];
 		$tmp_basepath = $data['new']['maildir'];
 		$tmp_basepath_parts = explode('/', $tmp_basepath);
@@ -315,7 +333,7 @@ class mail_plugin {
 				$app->system->exec_safe('mv -f ? ?'. $data['old']['maildir'], $data['new']['maildir']);
 				$app->log('Moved Maildir from: '.$data['old']['maildir'].' to '.$data['new']['maildir'], LOGLEVEL_DEBUG);
 			}
-				
+
 			//* Create the maildir, if it doesn not exist, set permissions, set quota.
 			if(!is_dir($data['new']['maildir'].'/mdbox')) {
 				$app->system->exec_safe("su -c 'doveadm mailbox create -u ? INBOX'", $data["new"]["email"]);
@@ -323,7 +341,7 @@ class mail_plugin {
 				$app->system->exec_safe("su -c 'doveadm mailbox create -u ? Trash'", $data["new"]["email"]);
 				$app->system->exec_safe("su -c 'doveadm mailbox create -u ? Junk'", $data["new"]["email"]);
 				$app->system->exec_safe("su -c 'doveadm mailbox create -u ? Drafts'", $data["new"]["email"]);
-					
+
 				$app->system->exec_safe("su -c 'doveadm mailbox subscribe -u ? INBOX'", $data["new"]["email"]);
 				$app->system->exec_safe("su -c 'doveadm mailbox subscribe -u ? Sent'", $data["new"]["email"]);
 				$app->system->exec_safe("su -c 'doveadm mailbox subscribe -u ? Trash'", $data["new"]["email"]);
@@ -338,18 +356,18 @@ class mail_plugin {
 				$app->log('Created Directory: '.$base_path, LOGLEVEL_DEBUG);
 				$maildomain_path .= '/Maildir';
 			}
-	
+
 			//* When the mail user dir exists but it is not a valid maildir, move it to corrupted maildir folder
 			if(!empty($maildomain_path) && is_dir($maildomain_path) && !is_dir($maildomain_path.'/new') && !is_dir($maildomain_path.'/cur')) {
 				if(!is_dir($mail_config['homedir_path'].'/corrupted/'.$data['new']['mailuser_id'])) $app->system->mkdirpath($mail_config['homedir_path'].'/corrupted/'.$data['new']['mailuser_id'], 0700, $mail_config['mailuser_name'], $mail_config['mailuser_group']);
 				$app->system->exec_safe("su -c ? ?", "mv -f ".$data['new']['maildir']." ".$mail_config['homedir_path'].'/corrupted/'.$data['new']['mailuser_id'], 'vmail');
 				$app->log('Moved invalid maildir to corrupted Maildirs folder: '.$data['new']['maildir'], LOGLEVEL_WARN);
 			}
-	
-			//* Create the maildir, if it doesn not exist, set permissions, set quota.
+
+			//* Create the maildir, if it does not exist, set permissions, set quota.
 			if(!empty($maildomain_path) && !is_dir($maildomain_path.'/new')) {
 				$app->system->maildirmake($maildomain_path, $user, '', $group);
-	
+
 				//* This is to fix the maildrop quota not being rebuilt after the quota is changed.
 				if($mail_config['pop3_imap_daemon'] != 'dovecot') {
 					if($data['new']['quota'] > 0) {
@@ -361,7 +379,7 @@ class mail_plugin {
 					}
 				}
 			}
-	
+
 			if(!is_dir($data['new']['maildir'].'/.Sent')) {
 				$app->system->maildirmake($maildomain_path, $user, 'Sent', $group);
 			}
@@ -374,11 +392,11 @@ class mail_plugin {
 			if(!is_dir($data['new']['maildir'].'/.Junk')) {
 				$app->system->maildirmake($maildomain_path, $user, 'Junk', $group);
 			}
-	
+
 			// Set permissions now recursive
 			$app->system->exec_safe('chown -R ?:? ?', $user, $group, $data['new']['maildir']);
 			$app->log('Set ownership on '.$data['new']['maildir'], LOGLEVEL_DEBUG);
-	
+
 			// Move mailbox, if domain has changed and delete old mailbox
 			if($data['new']['maildir'] != $data['old']['maildir'] && is_dir($data['old']['maildir'])) {
 				if(is_dir($data['new']['maildir'])) {
@@ -411,8 +429,19 @@ class mail_plugin {
 		$maildir_path_deleted = false;
 		$old_maildir_path = $data['old']['maildir'];
 		if($old_maildir_path != $mail_config['homedir_path'] && strlen($old_maildir_path) > strlen($mail_config['homedir_path']) && !stristr($old_maildir_path, '//') && !stristr($old_maildir_path, '..') && !stristr($old_maildir_path, '*') && strlen($old_maildir_path) >= 10) {
-			$app->system->exec_safe('rm -rf ?', $old_maildir_path);
-			$app->log('Deleted the Maildir: '.$data['old']['maildir'], LOGLEVEL_DEBUG);
+			if ($mail_config['mailbox_soft_delete'] == 'y') {
+				// Move it, adding a date based suffix. A cronjob should purge or archive.
+				$thrash_maildir_path = $old_maildir_path . '-deleted-' . date("YmdHis");
+				$app->system->exec_safe('mv ? ?', $old_maildir_path, $thrash_maildir_path);
+
+				// Update the dir's timestamp to make filtering on age easier in any cleanup cronjob.
+				$app->system->exec_safe('touch ?', $thrash_maildir_path);
+
+				$app->log('Renamed the Maildir: ' . $data['old']['maildir'] . ' to ' . $thrash_maildir_path, LOGLEVEL_DEBUG);
+			} else  {
+				$app->system->exec_safe('rm -rf ?', $old_maildir_path);
+				$app->log('Deleted the Maildir: '.$data['old']['maildir'], LOGLEVEL_DEBUG);
+			}
 			$maildir_path_deleted = true;
 		} else {
 			$app->log('Possible security violation when deleting the maildir: '.$data['old']['maildir'], LOGLEVEL_ERROR);
@@ -455,8 +484,19 @@ class mail_plugin {
 		//* Delete maildomain path
 		$old_maildomain_path = $mail_config['homedir_path'].'/'.$data['old']['domain'];
 		if($old_maildomain_path != $mail_config['homedir_path'] && !stristr($old_maildomain_path, '//') && !stristr($old_maildomain_path, '..') && !stristr($old_maildomain_path, '*') && !stristr($old_maildomain_path, '&') && strlen($old_maildomain_path) >= 10  && !empty($data['old']['domain'])) {
-			$app->system->exec_safe('rm -rf ?', $old_maildomain_path);
-			$app->log('Deleted the mail domain directory: '.$old_maildomain_path, LOGLEVEL_DEBUG);
+			if ($mail_config['mailbox_soft_delete'] == 'y') {
+				// Move it, adding a date based suffix. A cronjob should purge or archive.
+				$thrash_maildomain_path = $old_maildomain_path . '-deleted-' . date("YmdHis");
+				$app->system->exec_safe('mv ? ?', $old_maildomain_path, $thrash_maildomain_path);
+
+				// Update the dir's timestamp to make filtering on age easier in any cleanup cronjob.
+				$app->system->exec_safe('touch ?', $thrash_maildomain_path);
+
+				$app->log('Renamed the mail domain directory: ' . $old_maildomain_path . ' to ' . $thrash_maildomain_path, LOGLEVEL_DEBUG);
+			} else  {
+				$app->system->exec_safe('rm -rf ?', $old_maildomain_path);
+				$app->log('Deleted the mail domain directory: '.$old_maildomain_path, LOGLEVEL_DEBUG);
+			}
 			$maildomain_path_deleted = true;
 		} else {
 			$app->log('Possible security violation when deleting the mail domain directory: '.$old_maildomain_path, LOGLEVEL_ERROR);
@@ -470,7 +510,7 @@ class mail_plugin {
 		} else {
 			$app->log('Possible security violation when deleting the mail domain mailfilter directory: '.$old_maildomain_path, LOGLEVEL_ERROR);
 		}
-		
+
 		//* Delete the mail-backups
 		$server_config = $app->getconf->get_server_config($conf['server_id'], 'server');
 		$backup_dir = $server_config['backup_dir'];

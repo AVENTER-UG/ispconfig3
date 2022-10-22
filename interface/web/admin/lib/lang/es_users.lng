@@ -1,4 +1,5 @@
 <?php
+$wb['users_txt'] = 'Users';
 $wb['active_txt'] = 'Habilitado';
 $wb['app_theme_txt'] = 'Diseño';
 $wb['client_not_admin_err'] = 'Un usuario que pertenece a un cliente no puede ser del tipo: admin';
@@ -16,7 +17,7 @@ $wb['ort_txt'] = 'Ciudad';
 $wb['password_match_txt'] = 'Las contraseñas coinciden.';
 $wb['password_mismatch_txt'] = 'Las contraseñas no coinciden.';
 $wb['password_strength_txt'] = 'Fortaleza de la contraseña';
-$wb['passwort_txt'] = 'Contraseña';
+$wb['password_txt'] = 'Contraseña';
 $wb['plz_txt'] = 'Zona postal';
 $wb['repeat_password_txt'] = 'Repetir contraseña';
 $wb['startmodule_err'] = 'El módulo de inicio no se encuentra entre los módulos.';
@@ -33,4 +34,5 @@ $wb['username_txt'] = 'Nombre de usuario';
 $wb['username_unique'] = 'Ya existe un usuario con ese nombre de usuario.';
 $wb['vorname_txt'] = 'Primer nombre';
 $wb['no_user_insert'] = 'CP-Users of type -user- get added and updated automatically when you add a client or reseller.';
+$wb['otp_auth_txt'] = '2-Factor Authentication';
 ?>

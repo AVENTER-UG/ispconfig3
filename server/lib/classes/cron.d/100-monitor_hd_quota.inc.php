@@ -78,7 +78,7 @@ class cronjob_monitor_hd_quota extends cronjob {
 
 		//* ignore the first 5 lines, process the rest
 		for ($i = 5; $i <= sizeof($df); $i++) {
-			if ($df[$i] != '') {
+			if (isset($df[$i]) && $df[$i] != '') {
 				//* Make a array of the data
 				$s = preg_split('/[\s]+/', $df[$i]);
 				$username = $s[0];
@@ -106,19 +106,19 @@ class cronjob_monitor_hd_quota extends cronjob {
 
 		//* ignore the first 5 lines, process the rest
 		for ($i = 5; $i <= sizeof($df); $i++) {
-			if ($df[$i] != '') {
+			if (isset($df[$i]) && $df[$i] != '') {
 				//* Make a array of the data
 				$s = preg_split('/[\s]+/', $df[$i]);
 				$groupname = $s[0];
 				if (substr($groupname, 0, 6) == 'client') {
 					if (isset($data['group'][$groupname])) {
-						$data['group'][$groupname]['used'] += $s[1];
-						$data['group'][$groupname]['soft'] += $s[2];
-						$data['group'][$groupname]['hard'] += $s[3];
+						$data['group'][$groupname]['used'] += $s[2];
+						$data['group'][$groupname]['soft'] += $s[3];
+						$data['group'][$groupname]['hard'] += $s[4];
 					} else {
-						$data['group'][$groupname]['used'] = $s[1];
-						$data['group'][$groupname]['soft'] = $s[2];
-						$data['group'][$groupname]['hard'] = $s[3];
+						$data['group'][$groupname]['used'] = $s[2];
+						$data['group'][$groupname]['soft'] = $s[3];
+						$data['group'][$groupname]['hard'] = $s[4];
 					}
 				}
 			}

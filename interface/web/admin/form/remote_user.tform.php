@@ -45,7 +45,7 @@ if(is_array($modules)) {
 	}
 }
 
-$form["title"]    = "Remote user";
+$form["title"]    = "remote_user_txt";
 $form["description"]  = "";
 $form["name"]    = "remote_user";
 $form["action"]   = "remote_user_edit.php";
@@ -63,7 +63,7 @@ $form["auth_preset"]["perm_group"] = 'riud'; //r = read, i = insert, u = update,
 $form["auth_preset"]["perm_other"] = ''; //r = read, i = insert, u = update, d = delete
 
 $form["tabs"]['remote_user'] = array (
-	'title'  => "Remote User",
+	'title'  => "remote_user_txt",
 	'width'  => 100,
 	'template'  => "templates/remote_user_edit.htm",
 	'fields'  => array (
@@ -109,7 +109,7 @@ $form["tabs"]['remote_user'] = array (
 					'errmsg' => 'weak_password_txt'
 				)
 			),
-			'encryption' => 'MD5',
+			'encryption' => 'CRYPT',
 			'default' => '',
 			'value'  => '',
 			'width'  => '30',
@@ -124,11 +124,11 @@ $form["tabs"]['remote_user'] = array (
 		'remote_ips' => array (
 			'datatype'  => 'TEXT',
 			'formtype'  => 'TEXT',
-			'validators'  => array (  
+			'validators'  => array (
 				0 => array (
-					'type' => 'CUSTOM', 
-					'class' => 'validate_remote_user', 
-					'function' => 'valid_remote_ip', 
+					'type' => 'CUSTOM',
+					'class' => 'validate_remote_user',
+					'function' => 'valid_remote_ip',
 					'errmsg' => 'remote_user_error_ips'),
 			),
 			'default' => '',
@@ -146,6 +146,7 @@ $form["tabs"]['remote_user'] = array (
 			'separator' => ';',
 			'width'  => '',
 			'maxlength' => '',
+			'render_inline' => 'n',
 			'rows'  => '5',
 			'cols'  => '30'
 		)

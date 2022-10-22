@@ -45,8 +45,8 @@ $revision = str_replace(array('Revision:', '$', ' '), '', $svn_revision);
 
 //** Application
 define('ISPC_APP_TITLE', 'ISPConfig');
-define('ISPC_APP_VERSION', '3.1dev');
-define('DEVSYSTEM', 0);
+define('ISPC_APP_VERSION', '3.2dev');
+define('DEVSYSTEM', false);
 
 
 //** Database
@@ -105,7 +105,7 @@ define('CLASSES_ROOT', INCLUDE_ROOT.FS_DIV.'classes');
 //** Server
 $conf['app_title'] = ISPC_APP_TITLE;
 $conf['app_version'] = ISPC_APP_VERSION;
-$conf['app_link'] = 'http://www.howtoforge.com/forums/showthread.php?t=26988';
+$conf['app_link'] = 'https://www.howtoforge.com/forums/showthread.php?t=26988';
 $conf['modules_available'] = 'admin,mail,sites,monitor,client,dns,help';
 $conf['server_id'] = '1';
 
@@ -126,10 +126,6 @@ $conf['demo_mode'] = false;
 //** Logging
 $conf['log_file'] = $conf['ispconfig_log_dir'].'/ispconfig.log';
 $conf['log_priority'] = 0; // 0 = Debug, 1 = Warning, 2 = Error
-
-
-//** Allow software package installations
-$conf['software_updates_enabled'] = false;
 
 
 //** Themes
@@ -162,5 +158,8 @@ $conf['start_session'] = true;
 define('LOGLEVEL_DEBUG', 0);
 define('LOGLEVEL_WARN', 1);
 define('LOGLEVEL_ERROR', 2);
+
+//** Admin IP whitelist file
+$conf['admin_ip_whitelist_file'] = '/usr/local/ispconfig/security/admin_ip.whitelist';
 
 ?>

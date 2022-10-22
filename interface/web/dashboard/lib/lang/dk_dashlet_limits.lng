@@ -1,7 +1,6 @@
 <?php
 $wb['limits_txt'] = 'Konto begrænsninger';
 $wb['of_txt'] = 'af';
-$wb['unlimited_txt'] = 'Ubegrænset';
 $wb['limit_maildomain_txt'] = 'Antal af e-mail domæner';
 $wb['limit_mailmailinglist_txt'] = 'Antal af mail-lister';
 $wb['limit_mailbox_txt'] = 'Antal af mail-bokse';
@@ -31,4 +30,5 @@ $wb['limit_domain_txt'] = 'Antal af Domæner';
 $wb['limit_mailquota_txt'] = 'Assigned mailbox quota';
 $wb['limit_web_quota_txt'] = 'Assigned web quota';
 $wb['limit_database_quota_txt'] = 'Assigned database quota';
+$wb['limit_mail_wblist_txt'] = 'Number of email white / blacklist entries';
 ?>

@@ -3,7 +3,7 @@ $wb['recipient_id_txt'] = 'ID del Destinatario';
 $wb['sender_id_txt'] = 'ID del Mittente';
 $wb['subject_txt'] = 'Oggetto';
 $wb['message_txt'] = 'Messaggio';
-$wb['tstamp_txt'] = 'Timestamp';
+$wb['tstamp_txt'] = 'Data';
 $wb['reply_txt'] = 'Rispondi';
 $wb['date_txt'] = 'Data';
 $wb['support_request_subject_txt'] = 'Richiesta supporto';
@@ -12,5 +12,5 @@ $wb['answer_to_support_request_txt'] = 'Hai una risposta alla richiesta di suppo
 $wb['answer_to_support_request_sent_txt'] = 'La tua richiesta di supporto è stata trasmessa. Non rispondere a questa email.';
 $wb['support_request_sent_txt'] = 'La tua richiesta di supporto è stata trasmessa. Non rispondere a questa email.';
 $wb['recipient_or_sender_email_address_not_valid_txt'] = 'Impossibile trasmettere il messaggio. Destinatario non valido.';
-$wb['subject_is_empty'] = 'The subject can not be empty.';
+$wb['subject_is_empty'] = 'L\'oggetto non può essere vuoto.';
 ?>

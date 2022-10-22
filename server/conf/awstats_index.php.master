@@ -43,8 +43,13 @@ if ($handle = opendir('.'))
 arsort($awprev);
 
 $options = "";
-foreach ($awprev as $key => $value)
-{
+foreach ($awprev as $key => $value) {
+        // Define name for the index file
+        $awstatsindex = 'awsindex.html';
+        if(!file_exists($value.'/awsindex.html') && file_exists($value.'/goaindex.html')) {
+                $awstatsindex = 'goaindex.html';
+        }
+        // Set name for first entry in month list
 	if($key == $current) $options .= "<option selected=\"selected\" value=\"{$awstatsindex}\">{$value}</option>\n";
 	else $options .= "<option value=\"{$value}/{$awstatsindex}\">{$value}</option>\n";
 }
@@ -57,7 +62,7 @@ $html .= $script;
 $html .= "<div id=\"header\">{$yearmonth_text}\n";
 $html .= "<select name=\"awdate\" onchange=\"load_content(this.value)\">\n";
 $html .= $options;
-$html .= "</select>\n</div>\n<iframe src=\"{$awstatsindex}\" id=\"content\"></iframe>\n";
+$html .= "</select>\n</div>\n<iframe src=\"awsindex.html\" id=\"content\"></iframe>\n";
 $html .= "</body></html>";
 echo $html;
 ?>

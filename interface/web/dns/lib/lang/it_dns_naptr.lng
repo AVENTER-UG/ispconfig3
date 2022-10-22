@@ -1,0 +1,21 @@
+<?php
+$wb['server_id_txt'] = 'Server';
+$wb['zone_txt'] = 'Zona';
+$wb['name_txt'] = 'Hostname';
+$wb['order_txt'] = 'Ordine';
+$wb['pref_txt'] = 'Pref';
+$wb['flags_txt'] = 'Bandierine';
+$wb['service_txt'] = 'Servizio';
+$wb['regexp_txt'] = 'RegExp';
+$wb['replacement_txt'] = 'Rimpiazzo';
+$wb['ttl_txt'] = 'TTL';
+$wb['active_txt'] = 'Attivo';
+$wb['limit_dns_record_txt'] = 'Hai raggiunto il numero massimo di record DNS per il tuo profilo.';
+$wb['no_zone_perm'] = 'Non sei abilitato ad aggiungere record a questa zona DNS.';
+$wb['name_error_empty'] = 'il campo hostnome è vuoto.';
+$wb['name_error_regex'] = 'L\'hostname ha formato errato.';
+$wb['data_error_empty'] = 'Il record NAPTR è vuoto.';
+$wb['naptr_error_regex'] = 'record NAPTR non valido.  Il record NAPTR deve includere Ordine, Pref e o Regex oppure Rimpiazzo.';
+$wb['ttl_range_error'] = 'Minimo TTL è 60 secondi.';
+$wb['record_parse_error'] = 'Non ho posso gestire il record trovato nel database.';
+?>

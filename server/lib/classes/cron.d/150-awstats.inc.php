@@ -60,7 +60,6 @@ class cronjob_awstats extends cronjob {
 		$web_config = $app->getconf->get_server_config($conf['server_id'], 'web');
 
 		foreach($records as $rec) {
-			//$yesterday = date('Ymd',time() - 86400);
 			$yesterday = date('Ymd', strtotime("-1 day", time()));
 
 			$log_folder = 'log';
@@ -87,7 +86,14 @@ class cronjob_awstats extends cronjob {
 			$awstats_conf_dir = $web_config['awstats_conf_dir'];
 			$awstats_website_conf_file = $web_config['awstats_conf_dir'].'/awstats.'.$domain.'.conf';
 
-			if(is_file($awstats_website_conf_file)) unlink($awstats_website_conf_file);
+			$existing_awstats_conf_array = array();
+			if(is_file($awstats_website_conf_file)) {
+				$existing_awstats_conf = file($awstats_website_conf_file);
+				foreach ($existing_awstats_conf as $line) {
+					if(preg_match("/Lang=/",$line)) $existing_awstats_conf_array['Lang'] = implode('',parse_ini_string($line));
+				}
+				unlink($awstats_website_conf_file);
+			}
 
 			$sql = "SELECT domain FROM web_domain WHERE (type = 'alias' OR type = 'subdomain') AND parent_domain_id = ?";
 			$aliases = $app->db->queryAllRecords($sql, $rec['domain_id']);
@@ -109,6 +115,8 @@ class cronjob_awstats extends cronjob {
         LogFile="/var/log/ispconfig/httpd/'.$domain.'/yesterday-access.log"
         SiteDomain="'.$domain.'"
         HostAliases="www.'.$domain.' localhost 127.0.0.1'.$aliasdomain.'"';
+				if (array_key_exists('Lang',$existing_awstats_conf_array)) $awstats_conf_file_content .='
+		Lang="'.$existing_awstats_conf_array['Lang'].'"';
 				if (isset($include_file)) {
 					file_put_contents($awstats_website_conf_file, $awstats_conf_file_content);
 				} else {
@@ -135,10 +143,7 @@ class cronjob_awstats extends cronjob {
 				}
 			}
 
-			// awstats_buildstaticpages.pl -update -config=mydomain.com -lang=en -dir=/var/www/domain.com/'.$web_folder.'/stats -awstatsprog=/path/to/awstats.pl
-			// $command = "$awstats_buildstaticpages_pl -update -config='$domain' -lang=".$conf['language']." -dir='$statsdir' -awstatsprog='$awstats_pl'";
-
-			$command = escapeshellcmd($awstats_buildstaticpages_pl) . ' -month=' . escapeshellarg($awmonth) . ' -year=' . escapeshellarg($awyear) . ' -update -config=' . escapeshellarg($domain) . ' -lang=' . escapeshellarg($conf['language']) . ' -dir=' . escapeshellarg($statsdir) . ' -awstatsprog=' . escapeshellarg($awstats_pl);
+			$command = escapeshellcmd($awstats_buildstaticpages_pl) . ' -month=' . escapeshellarg($awmonth) . ' -year=' . escapeshellarg($awyear) . ' -update -config=' . escapeshellarg($domain) . ' -dir=' . escapeshellarg($statsdir) . ' -awstatsprog=' . escapeshellarg($awstats_pl);
 
 			if (date("d") == 2) {
 				$awmonth = date("m")-1;
@@ -152,8 +157,13 @@ class cronjob_awstats extends cronjob {
 					mkdir($statsdirold);
 				}
 				$files = scandir($statsdir);
+
+				if (($key = array_search('index.php', $files)) !== false) {
+					unset($files[$key]);
+				}
+
 				foreach ($files as $file) {
-					if (substr($file, 0, 1) != "." && !is_dir("$statsdir"."/"."$file") && substr($file, 0, 1) != "w" && substr($file, 0, 1) != "i") copy("$statsdir"."/"."$file", "$statsdirold"."$file");
+					if (substr($file, 0, 1) != "." && !is_dir("$statsdir"."/"."$file") && substr($file, 0, 1) != "w" && substr($file, 0, 1) != "i") $app->system->move("$statsdir"."/"."$file", "$statsdirold"."$file");
 				}
 			}
 

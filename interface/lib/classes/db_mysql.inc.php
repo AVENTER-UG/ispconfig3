@@ -82,6 +82,8 @@ class db
 		$this->dbClientFlags = ($flags !== NULL) ? $flags : $conf['db_client_flags'];
 		$this->_iConnId = mysqli_init();
 
+		mysqli_report(MYSQLI_REPORT_OFF);
+
 		mysqli_real_connect($this->_iConnId, $this->dbHost, $this->dbUser, $this->dbPass, '', (int)$this->dbPort, NULL, $this->dbClientFlags);
 		for($try=0;(!is_object($this->_iConnId) || mysqli_connect_errno()) && $try < 5;++$try) {
 			sleep($try);
@@ -171,14 +173,10 @@ class db
 					} elseif(is_null($sValue) || (is_string($sValue) && (strcmp($sValue, '#NULL#') == 0))) {
 						$sTxt = 'NULL';
 					} elseif(is_array($sValue)) {
-						if(isset($sValue['SQL'])) {
-							$sTxt = $sValue['SQL'];
-						} else {
-							$sTxt = '';
-							foreach($sValue as $sVal) $sTxt .= ',\'' . $this->escape($sVal) . '\'';
-							$sTxt = '(' . substr($sTxt, 1) . ')';
-							if($sTxt == '()') $sTxt = '(0)';
-						}
+						$sTxt = '';
+						foreach($sValue as $sVal) $sTxt .= ',\'' . $this->escape($sVal) . '\'';
+						$sTxt = '(' . substr($sTxt, 1) . ')';
+						if($sTxt == '()') $sTxt = '(0)';
 					} else {
 						$sTxt = '\'' . $this->escape($sValue) . '\'';
 					}
@@ -259,6 +257,8 @@ class db
 	private function _query($sQuery = '') {
 		global $app;
 
+		$aArgs = func_get_args();
+
 		if ($sQuery == '') {
 			$this->_sqlerror('Keine Anfrage angegeben / No query given');
 			return false;
@@ -297,7 +297,6 @@ class db
 			}
 		} while($ok == false);
 
-		$aArgs = func_get_args();
 		$sQuery = call_user_func_array(array(&$this, '_build_query_string'), $aArgs);
 		$this->securityScan($sQuery);
 		$this->_iQueryId = mysqli_query($this->_iConnId, $sQuery);
@@ -353,10 +352,17 @@ class db
 	 * @return array result row or NULL if none found
 	 */
 	public function queryOneRecord($sQuery = '') {
-		if(!preg_match('/limit \d+\s*(,\s*\d+)?$/i', $sQuery)) $sQuery .= ' LIMIT 0,1';
 
 		$aArgs = func_get_args();
-		$oResult = call_user_func_array(array(&$this, 'query'), $aArgs);
+		if(!empty($aArgs)) {
+			$sQuery = array_shift($aArgs);
+			if($sQuery && !preg_match('/limit \d+(\s*,\s*\d+)?$/i', $sQuery)) {
+				$sQuery .= ' LIMIT 0,1';
+		}
+		array_unshift($aArgs, $sQuery);
+		}
+
+		$oResult = call_user_func_array([&$this, 'query'], $aArgs);
 		if(!$oResult) return null;
 
 		$aReturn = $oResult->get();
@@ -520,7 +526,7 @@ class db
 			$sString = '';
 		}
 
-		$cur_encoding = mb_detect_encoding($sString);
+		$cur_encoding = mb_detect_encoding($sString, "auto");
 		if($cur_encoding != "UTF-8") {
 			if($cur_encoding != 'ASCII') {
 				if(is_object($app) && method_exists($app, 'log')) $app->log('String ' . substr($sString, 0, 25) . '... is ' . $cur_encoding . '.', LOGLEVEL_DEBUG);
@@ -742,7 +748,7 @@ class db
 			foreach($insert_data as $key => $val) {
 				$key_str .= '??,';
 				$params[] = $key;
-				
+
 				$val_str .= '?,';
 				$v_params[] = $val;
 			}
@@ -756,7 +762,7 @@ class db
 			$this->query("INSERT INTO ?? $insert_data_str", $tablename);
 			$app->log("deprecated use of passing values to datalogInsert() - table " . $tablename, 1);
 		}
-		
+
 		$old_rec = array();
 		$index_value = $this->insertID();
 		if(!$index_value && isset($insert_data[$index_field])) {
@@ -1098,6 +1104,76 @@ class db
 		}
 	}
 
+	/**
+	 * Get the database type (mariadb or mysql)
+	 *
+	 * @access public
+	 * @return string 'mariadb' or string 'mysql'
+	 */
+
+	public function getDatabaseType() {
+		$tmp = $this->queryOneRecord('SELECT VERSION() as version');
+		if(stristr($tmp['version'],'mariadb')) {
+			return 'mariadb';
+		} else {
+			return 'mysql';
+		}
+	}
+
+	/**
+	 * Get the database version
+	 *
+	 * @access public
+	 * @param bool   $major_version_only = true will return the major version only, e.g. 8 for MySQL 8
+	 * @return string version number
+	 */
+
+	public function getDatabaseVersion($major_version_only = false) {
+		$tmp = $this->queryOneRecord('SELECT VERSION() as version');
+		$version = explode('-', $tmp['version']);
+		if($major_version_only == true) {
+			$version_parts = explode('.', $version[0]);
+			return $version_parts[0];
+		} else {
+			return $version[0];
+		}
+	}
+
+	/**
+	 * Get a mysql password hash
+	 *
+	 * @access public
+	 * @param string   cleartext password
+	 * @return string  Password hash
+	 */
+
+	public function getPasswordHash($password) {
+
+		$password_type = 'password';
+
+		/* Disabled until caching_sha2_password is implemented
+		if($this->getDatabaseType() == 'mysql' && $this->getDatabaseVersion(true) >= 8) {
+			// we are in MySQL 8 mode
+			$tmp = $this->queryOneRecord("show variables like 'default_authentication_plugin'");
+			if($tmp['default_authentication_plugin'] == 'caching_sha2_password') {
+				$password_type = 'caching_sha2_password';
+			}
+		}
+		*/
+
+		if($password_type == 'caching_sha2_password') {
+			/*
+				caching_sha2_password hashing needs to be implemented, have not
+				found valid PHP implementation for the new password hash type.
+			*/
+		} else {
+			$password_hash = '*'.strtoupper(sha1(sha1($password, true)));
+		}
+
+		return $password_hash;
+	}
+
+
 }
 
 /**
@@ -1300,7 +1376,7 @@ class fakedb_result {
 
 		if(!is_array($this->aLimitedData)) return $aItem;
 
-		if(list($vKey, $aItem) = each($this->aLimitedData)) {
+		foreach($this->aLimitedData as $vKey => $aItem) {
 			if(!$aItem) $aItem = null;
 		}
 		return $aItem;

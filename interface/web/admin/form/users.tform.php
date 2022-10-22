@@ -60,8 +60,8 @@ EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 */
 
-$form['title']   = 'Users';
-$form['description']  = 'Form to edit systemusers.';
+$form['title']   = 'users_txt';
+//$form['description']  = 'Form to edit systemusers.';
 $form['name']   = 'users';
 $form['action']  = 'users_edit.php';
 $form['db_table'] = 'sys_user';
@@ -93,6 +93,11 @@ while ($file = @readdir($handle)) {
 		}
 	}
 }
+
+$otp_method_list = array(
+	'none' => 'none',
+	'email' => 'email',
+);
 
 //* Load themes
 $themes_list = array();
@@ -129,7 +134,7 @@ if(is_array($tmp_records)) {
 }
 
 $form['tabs']['users'] = array (
-	'title'  => 'Users',
+	'title'  => 'users_txt',
 	'width'  => 80,
 	'template'  => 'templates/users_user_edit.htm',
 	'fields'  => array (
@@ -246,7 +251,7 @@ $form['tabs']['users'] = array (
 			'formtype' => 'CHECKBOX',
 			'regex'  => '',
 			'errmsg' => '',
-			'default' => '',
+                       'default' => '1',
 			'value'  => array(0 => 0, 1 => 1),
 			'separator' => '',
 			'width'  => '30',
@@ -254,6 +259,25 @@ $form['tabs']['users'] = array (
 			'rows'  => '',
 			'cols'  => ''
 		),
+		'otp_type' => array(
+				'datatype' => 'VARCHAR',
+				'formtype' => 'SELECT',
+				'validators' => array (  0 => array (    'type' => 'NOTEMPTY',
+						'errmsg'=> 'otp_auth_empty'),
+					1 => array (    'type' => 'REGEX',
+						'regex' => '/^[a-z0-9\_]{0,64}$/',
+						'errmsg'=> 'otp_auth_regex'),
+					),
+				'regex'  => '',
+				'errmsg' => '',
+				'default' => '',
+				'value'  => $otp_method_list,
+				'separator' => '',
+				'width'  => '30',
+				'maxlength' => '255',
+				'rows'  => '',
+				'cols'  => ''
+				),
 		'language' => array (
 			'datatype' => 'VARCHAR',
 			'formtype' => 'SELECT',

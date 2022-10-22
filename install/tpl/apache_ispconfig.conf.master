@@ -1,3 +1,12 @@
+# Important: A copy of this file exists in server/conf/ folder.
+# Edit both files when applying changes.
+
+################################################
+# ISPConfig General Apache Options
+################################################
+ServerTokens ProductOnly
+ServerSignature Off
+DirectoryIndex index.html index.cgi index.pl index.php index.xhtml index.htm standard_index.html
 
 ################################################
 # ISPConfig Logfile configuration for vlogger
@@ -7,10 +16,10 @@ SetEnvIf Request_URI "^/datalogstatus.php$" dontlog
 
 LogFormat "%v %h %l %u %t \"%r\" %>s %O \"%{Referer}i\" \"%{User-Agent}i\"" combined_ispconfig
 <tmpl_if name='logging' op='==' value='anon'>
-CustomLog "| /usr/local/ispconfig/server/scripts/vlogger -p -s access.log -t \"%Y%m%d-access.log\" /var/log/ispconfig/httpd" combined_ispconfig env=!dontlog
+CustomLog "| /usr/local/ispconfig/server/scripts/vlogger -p -s access.log -t \"%Y%m%d-access.log\" /var/log/ispconfig/httpd" combined_ispconfig
 </tmpl_if>
 <tmpl_if name='logging' op='==' value='yes'>
-CustomLog "| /usr/local/ispconfig/server/scripts/vlogger -s access.log -t \"%Y%m%d-access.log\" /var/log/ispconfig/httpd" combined_ispconfig env=!dontlog
+CustomLog "| /usr/local/ispconfig/server/scripts/vlogger -s access.log -t \"%Y%m%d-access.log\" /var/log/ispconfig/httpd" combined_ispconfig
 </tmpl_if>
 
 <Directory /var/www/clients>
@@ -33,6 +42,10 @@ CustomLog "| /usr/local/ispconfig/server/scripts/vlogger -s access.log -t \"%Y%m
 	Order Deny,Allow
 	Deny from all
 	</tmpl_if>
+</Directory>
+
+<Directory /var/www>
+  Options -Indexes
 </Directory>
 
 <Directory /var/www/conf>
@@ -123,22 +136,36 @@ CustomLog "| /usr/local/ispconfig/server/scripts/vlogger -s access.log -t \"%Y%m
 
 Alias /awstats-icon "/usr/share/awstats/icon"
 
-Alias /.well-known/acme-challenge /usr/local/ispconfig/interface/acme/.well-known/acme-challenge
-<Directory /usr/local/ispconfig/interface/acme/.well-known/acme-challenge>
-		<tmpl_if name='apache_version' op='>' value='2.2' format='version'>
-		Require all granted
-		<tmpl_else>
-        Order allow,deny
-        Allow from all
-		</tmpl_if>
-        <IfModule mpm_itk_module>
-           AssignUserId www-data www-data
-        </IfModule>
+<tmpl_if name='apache_version' op='<' value='2.4' format='version'>
+  NameVirtualHost *:80
+  NameVirtualHost *:443
+  <tmpl_loop name="ip_adresses">
+  NameVirtualHost {tmpl_var name="ip_address"}:{tmpl_var name="port"}
+  </tmpl_loop>
+</tmpl_if>
+
+<tmpl_if name='apache_version' op='>=' value='2.3.3' format='version'>
+<IfModule mod_ssl.c>
+  <tmpl_var name="ssl_comment">SSLStaplingCache shmcb:/var/run/ocsp(128000)
+</IfModule>
+</tmpl_if>
+
+<Directory /var/www/php-cgi-scripts>
+  AllowOverride None
+  <tmpl_if name='apache_version' op='>' value='2.2' format='version'>
+  Require all denied
+  <tmpl_else>
+  Order Deny,Allow
+  Deny from all
+  </tmpl_if>
 </Directory>
 
-NameVirtualHost *:80
-NameVirtualHost *:443
-<tmpl_loop name="ip_adresses">
-NameVirtualHost {tmpl_var name="ip_address"}:{tmpl_var name="port"}
-</tmpl_loop>
-
+<Directory /var/www/php-fcgi-scripts>
+  AllowOverride None
+  <tmpl_if name='apache_version' op='>' value='2.2' format='version'>
+  Require all denied
+  <tmpl_else>
+  Order Deny,Allow
+  Deny from all
+  </tmpl_if>
+</Directory>

@@ -1,6 +1,3 @@
-<div class='page-header'><h1><tmpl_var name="list_head_txt"></h1></div>
-<p><tmpl_var name="list_desc_txt"></p>
-
 <div class="form-group">
 	<label for="ca_list" class="col-sm-2 control-label">{tmpl_var name='ca_list_txt'}</label>
 	<div class="col-sm-4"><select name="ca_list" id="ca_list" class="form-control">{tmpl_var name='ca_list'}</select></div>
@@ -54,7 +51,7 @@ For future use.  At this time, CA’s do not recognize any other flag values as 
 
 <div class="clear"><div class="right">
 	<button class="btn btn-default formbutton-success" type="button" value="{tmpl_var name='btn_save_txt'}" data-submit-form="pageForm" data-form-action="dns/dns_caa_edit.php">{tmpl_var name='btn_save_txt'}</button>
-	<button class="btn btn-default formbutton-default" type="button" value="{tmpl_var name='btn_cancel_txt'}" data-load-content="dns/dns_soa_edit.php?id={tmpl_var name='zone'}">{tmpl_var name='btn_cancel_txt'}</button>
+	<button class="btn btn-default formbutton-default" type="button" value="{tmpl_var name='btn_cancel_txt'}" data-load-content="dns/dns_soa_edit.php?id={tmpl_var name='zone'}&next_tab=dns_records">{tmpl_var name='btn_cancel_txt'}</button>
 </div></div>
 
 <script language="JavaScript" type="text/javascript">

@@ -8,17 +8,28 @@
   <meta name='viewport' content='width=device-width, user-scalable=yes'>
   <meta name='description' lang='en' content='' />
   <meta name='keywords' lang='en' content='' />
-  <meta name='robots' content='index, follow' />
+  <meta name='robots' content='noindex, nofollow' />
+
+  <link rel='apple-touch-icon' sizes='180x180' href='/themes/<tmpl_var name='current_theme'>/assets/favicon/apple-touch-icon.png'>
+  <link rel='icon' type='image/png' sizes='32x32' href='/themes/<tmpl_var name='current_theme'>/assets/favicon/favicon-32x32.png'>
+  <link rel='icon' type='image/png' sizes='16x16' href='/themes/<tmpl_var name='current_theme'>/assets/favicon/favicon-16x16.png'>
+  <link rel='manifest' href='/themes/<tmpl_var name='current_theme'>/assets/favicon/site.webmanifest'>
+  <link rel='mask-icon' href='/themes/<tmpl_var name='current_theme'>/assets/favicon/safari-pinned-tab.svg' color='#cc151c'>
+  <link rel='shortcut icon' href='/themes/<tmpl_var name='current_theme'>/assets/favicon/favicon.ico'>
+  <meta name='msapplication-TileColor' content='#cc151c'>
+  <meta name='msapplication-config' content='/themes/<tmpl_var name='current_theme'>/assets/favicon/browserconfig.xml'>
+  <meta name='theme-color' content='#cc151c'>
 
   <link rel='stylesheet' href='themes/<tmpl_var name='current_theme'>/assets/stylesheets/bootstrap.min.css' />
   <link rel='stylesheet' href='themes/<tmpl_var name='current_theme'>/assets/stylesheets/fonts.min.css' />
-  <link rel='stylesheet' href='themes/<tmpl_var name='current_theme'>/assets/stylesheets/ispconfig.css' />
+  <link rel='stylesheet' href='themes/<tmpl_var name='current_theme'>/assets/stylesheets/ispconfig.css?ver=3.2.2' />
   <link rel='stylesheet' href='themes/<tmpl_var name='current_theme'>/assets/stylesheets/pushy.min.css' />
   <link rel='stylesheet' href='themes/<tmpl_var name='current_theme'>/assets/stylesheets/bootstrap-datetimepicker.min.css' />
   <link rel='stylesheet' href='themes/<tmpl_var name='current_theme'>/assets/stylesheets/responsive.min.css' />
   <link rel='stylesheet' href='themes/<tmpl_var name='current_theme'>/assets/stylesheets/themes/default/theme.min.css' />
   <link rel='stylesheet' href='themes/<tmpl_var name='current_theme'>/assets/stylesheets/select2.css' />
   <link rel='stylesheet' href='themes/<tmpl_var name='current_theme'>/assets/stylesheets/select2-bootstrap.css' />
+  <link rel='stylesheet' href='themes/<tmpl_var name='current_theme'>/assets/stylesheets/font-awesome-4.7.0/css/font-awesome.min.css' />
   <tmpl_if name='logged_in' value='n'><link rel='stylesheet' href='themes/<tmpl_var name='current_theme'>/assets/stylesheets/login.css' /></tmpl_if>
 </head>
 
@@ -47,9 +58,9 @@
 					  <div>
 						<div>
 						  <div class='input-group'>
-							<input id='globalsearch' type='text' class='form-control' placeholder='Search' />
+							<input id='globalsearch' type='text' class='form-control' placeholder='{tmpl_var name="globalsearch_searchfield_watermark_txt"}' />
 							<span class='input-group-btn'>
-							  <button class='btn btn-default' title='Search…'>
+                <button class='btn btn-default' title='{tmpl_var name="globalsearch_searchfield_watermark_txt"}'>
 								<span class='icon icon-lens'></span>
 							  </button>
 							</span>
@@ -79,7 +90,7 @@
 				    </ul>
 			      </div>
 			      <div class="modal-footer">
-			        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+			        <button type="button" class="btn btn-default" data-dismiss="modal">{tmpl_var name="datalog_changes_close_txt"}</button>
 			      </div>
 			    </div>
 			  </div>
@@ -91,6 +102,7 @@
 		<div class='clear'>
           <!-- content -->
           <div id='content' class='right'>
+			<noscript>This page needs JavaScript to be enabled.</noscript>
 			<form method="post" action="" id="pageForm" name="pageForm" enctype="multipart/form-data" class='form-horizontal' role='form'>
 				<div id="pageContent" data-startpage="{tmpl_var name="startpage"}"><!-- AJAX CONTENT --></div>
 			</form>
@@ -123,15 +135,15 @@
   <script>
   <!--
 	//$('.ttip').tipsy({live: true, gravity: 'ne', html: true});
-	
+
 	ISPConfig.tabChangeDiscard = '<tmpl_var name="tabchange_discard_enabled">';
 	ISPConfig.tabChangeWarning = '<tmpl_var name="tabchange_warning_enabled">';
 	ISPConfig.tabChangeWarningTxt = '<tmpl_var name="global_tabchange_warning_txt">';
 	ISPConfig.tabChangeDiscardTxt = '<tmpl_var name="global_tabchange_discard_txt">';
-	
+
 	<tmpl_if name="use_loadindicator" value="y">ISPConfig.setOption('useLoadIndicator', true);</tmpl_if>
 	<tmpl_if name="use_combobox" value="y">ISPConfig.setOption('useComboBox', true);</tmpl_if>
-	
+
 	$(document).ready(function() {
 		$('#globalsearch').ispconfigSearch({
 			dataSrc: '/dashboard/ajax_get_json.php?type=globalsearch',
@@ -141,6 +153,8 @@
 			searchFieldWatermark: '<tmpl_var name="globalsearch_searchfield_watermark_txt">',
 			resultBoxPosition: ''
 		});
+
+    ISPConfig.loadInitContent();
 
 	});
   //-->

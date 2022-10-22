@@ -13,6 +13,10 @@ $autoinstall['http_server'] = 'nginx'; // apache (default), nginx
 $autoinstall['ispconfig_port'] = '8080'; // default: 8080
 $autoinstall['ispconfig_use_ssl'] = 'y'; // y (default), n
 $autoinstall['ispconfig_admin_password'] = 'admin'; // default: admin
+$autoinstall['create_ssl_server_certs'] = 'y';
+$autoinstall['ignore_hostname_dns'] = 'n';
+$autoinstall['ispconfig_postfix_ssl_symlink'] = 'y';
+$autoinstall['ispconfig_pureftpd_ssl_symlink'] = 'y';
 
 /* SSL Settings */
 $autoinstall['ssl_cert_country'] = 'AU';
@@ -25,7 +29,7 @@ $autoinstall['ssl_cert_email'] = 'hostmaster@'.$autoinstall['hostname'];
 
 /* optional expert mode settings, needed only for expert mode */
 $autoinstall['mysql_ispconfig_user'] = 'ispconfig'; // default: ispconfig
-$autoinstall['mysql_ispconfig_password'] = md5(uniqid(rand()));
+$autoinstall['mysql_ispconfig_password'] = bin2hex(random_bytes(20));
 $autoinstall['join_multiserver_setup'] = 'n'; // y, n (default)
 $autoinstall['mysql_master_hostname'] = 'master.example.com';
 $autoinstall['mysql_master_root_user'] = 'root';
@@ -52,6 +56,10 @@ $autoupdate['reconfigure_services'] = 'yes'; // yes (default), no
 $autoupdate['ispconfig_port'] = '8080'; // default: 8080
 $autoupdate['create_new_ispconfig_ssl_cert'] = 'no'; // no (default), yes
 $autoupdate['reconfigure_crontab'] = 'yes'; // yes (default), no
+$autoupdate['create_ssl_server_certs'] = 'y';
+$autoupdate['ignore_hostname_dns'] = 'n';
+$autoupdate['ispconfig_postfix_ssl_symlink'] = 'y';
+$autoupdate['ispconfig_pureftpd_ssl_symlink'] = 'y';
 
 /* These are for service-detection (defaulting to old behaviour where alle changes were automatically accepted) */
 $autoupdate['svc_detect_change_mail_server'] = 'yes'; // yes (default), no

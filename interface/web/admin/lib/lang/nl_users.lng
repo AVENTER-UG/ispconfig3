@@ -1,9 +1,10 @@
 <?php
+$wb['users_txt'] = 'Gebruikers';
 $wb['username_txt'] = 'Gebruikersnaam';
 $wb['username_err'] = 'De gebruikersnaam is te lang of bevat ongeldige karakters.';
 $wb['username_empty'] = 'De gebruikersnaam is niet ingvuld.';
 $wb['username_unique'] = 'Er is al een een gebruiker met deze gebruikersnaam.';
-$wb['passwort_txt'] = 'Wachtwoord';
+$wb['password_txt'] = 'Wachtwoord';
 $wb['password_strength_txt'] = 'Wachtwoord sterkte';
 $wb['modules_txt'] = 'Module';
 $wb['startmodule_txt'] = 'Startmodule';
@@ -33,4 +34,5 @@ $wb['username_error_collision'] = 'The username may not be web or web plus a num
 $wb['client_not_admin_err'] = 'A user that belongs to a client can not be set to type: admin';
 $wb['lost_password_function_txt'] = 'Forgot password function is available';
 $wb['no_user_insert'] = 'CP-Users of type -user- get added and updated automatically when you add a client or reseller.';
+$wb['otp_auth_txt'] = 'Twee-factor authenticatie';
 ?>

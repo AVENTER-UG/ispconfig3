@@ -172,16 +172,18 @@ class remoteaction_core_module {
 		/*
 		 * Do the update
 		 */
-		exec("aptitude update");
-		exec("aptitude safe-upgrade -y");
+		 //Guess this is not wanted here?
+		 //exec("aptitude update");
+		 //exec("aptitude safe-upgrade -y");
 
 		//TODO : change this when distribution information has been integrated into server record
 		if(file_exists('/etc/gentoo-release')) {
 			exec("glsa-check -f --nocolor affected");
-		}
-		else {
-			exec("aptitude update");
-			exec("aptitude safe-upgrade -y");
+		} elseif(file_exists('/etc/redhat-release')) {
+			exec("which dnf &> /dev/null && dnf -y update || yum -y update");
+		} else {
+			exec("apt-get update");
+			exec("apt-get -y upgrade");
 		}
 
 		/*
@@ -192,14 +194,14 @@ class remoteaction_core_module {
 
 	private function _doIspCUpdate($action) {
 		global $app;
-		
+
 		// Ensure that this code is not executed twice as this would cause a loop in case of a failure
 		$this->_actionDone($action['action_id'], 'ok');
 
 		/*
 		 * Get the version-number of the newest version
 		 */
-		$new_version = @file_get_contents('http://www.ispconfig.org/downloads/ispconfig3_version.txt');
+		$new_version = @file_get_contents('https://www.ispconfig.org/downloads/ispconfig3_version.txt');
 		$new_version = trim($new_version);
 
 		/*
@@ -215,7 +217,7 @@ class remoteaction_core_module {
 		exec("rm /tmp/ispconfig3_install -R");
 
 		/* get the newest version */
-		$app->system->exec_safe("wget ?", "http://www.ispconfig.org/downloads/ISPConfig-" . $new_version . ".tar.gz");
+		$app->system->exec_safe("wget ?", "https://www.ispconfig.org/downloads/ISPConfig-" . $new_version . ".tar.gz");
 
 		/* extract the files */
 		$app->system->exec_safe("tar xvfz ?", "ISPConfig-" . $new_version . ".tar.gz");

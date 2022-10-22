@@ -9,30 +9,30 @@ var ISPConfig = {
 	registeredHooks: new Array(),
 	new_tpl_add_id: 0,
 	dataLogTimer: 0,
-	
+
 	options: {
 		useLoadIndicator: false,
 		useComboBox: false
 	},
-	
+
 	setOption: function(key, value) {
 		ISPConfig.options[key] = value;
 	},
-	
+
 	setOptions: function(opts) {
 		$.extend(ISPConfig.options, opts);
 	},
-	
+
 	reportError: function(request) {
-		
+
 	},
-	
+
 	registerHook: function(name, callback) {
 		if(!ISPConfig.registeredHooks[name]) ISPConfig.registeredHooks[name] = new Array();
 		var newindex = ISPConfig.registeredHooks[name].length;
 		ISPConfig.registeredHooks[name][newindex] = callback;
 	},
-	
+
 	callHook: function(name, params) {
 		if(!ISPConfig.registeredHooks[name]) return;
 		for(var i = 0; i < ISPConfig.registeredHooks[name].length; i++) {
@@ -40,14 +40,14 @@ var ISPConfig = {
 			callback(name, params);
 		}
 	},
-	
+
 	resetFormChanged: function() {
 		ISPConfig.pageFormChanged = false;
 	},
 
 	showLoadIndicator: function() {
 		document.body.style.cursor = 'wait';
-		
+
 		if(ISPConfig.options.useLoadIndicator == true) {
 			ISPConfig.requestsRunning += 1;
 
@@ -86,7 +86,6 @@ var ISPConfig = {
 		if(ISPConfig.options.useComboBox == true) {
 			$('#sidebar').find("select:not(.chosen-select)").select2({
 				placeholder: '',
-				width: 'element',
 				selectOnBlur: true,
 				allowClear: true
 			});
@@ -96,11 +95,10 @@ var ISPConfig = {
 	onAfterContentLoad: function(url, data) {
 		if(!data) data = '';
 		else data = '&' + data;
-		
+
 		if(ISPConfig.options.useComboBox == true) {
 			$('#pageContent').find("select:not(.chosen-select)").select2({
 				placeholder: '',
-				width: 'element',
 				selectOnBlur: true,
 				allowClear: true,
 				formatResult: function(o, cont, qry, escapeMarkup) {
@@ -119,7 +117,7 @@ var ISPConfig = {
 				}
 			});
 		}
-		
+
 		$('input[data-input-element="date"]').datetimepicker({
 			'language': 'en', // TODO
 			'todayHighlight': true,
@@ -139,23 +137,26 @@ var ISPConfig = {
 		});
 		$('[data-toggle="tooltip"]').tooltip({
 		});
+
+		$('input[autofocus]').focus();
+
 		// grab all password fields and set the readonly prop to prevent password managers to fill in new password
 		$('input[type="password"]').each(function() {
 			$(this).prop('readonly', true)
 			.tooltip({title: "Click to set", placement: "left"});
 		});
-		$('input[type="password"]').on('click focus', function() { 
+		$('input[type="password"]').on('click focus', function() {
 			$(this).prop('readonly', false);
 			$(this).tooltip('destroy');
 		});
-		
+
 		ISPConfig.callHook('onAfterContentLoad', {'url': url, 'data': data });
 	},
 
 	submitForm: function(formname, target, confirmation) {
 		var successMessage = arguments[3];
 		if(!confirmation) confirmation = false;
-		
+
 		if(!confirmation || window.confirm(confirmation)) {
 			var submitFormObj = $.ajax({
 				type: "POST",
@@ -172,13 +173,13 @@ var ISPConfig = {
 						ISPConfig.loadContent(parts[1]);
 					} else if (jqXHR.responseText.indexOf('LOGIN_REDIRECT:') > -1) {
 						// Go to the login page
-						document.location.href = '/index.php';
+						document.location.href = './index.php';
 					} else {
 						$('#pageContent').html(jqXHR.responseText);
 						ISPConfig.onAfterContentLoad(target, $('#'+formname).serialize());
 						ISPConfig.pageFormChanged = false;
 					}
-					clearTimeout(dataLogTimer);
+					clearTimeout(ISPConfig.dataLogTimer);
 					ISPConfig.dataLogNotification();
 					ISPConfig.hideLoadIndicator();
 				},
@@ -210,19 +211,19 @@ var ISPConfig = {
 			if(errormsg){
 				msg = msg+'<div id="errorMsg">'+errormsg+'</div>';
 			}
-			
+
 			var csrf_key = $response.find('input[name="_csrf_key"]').val();
 			var csrf_id = $response.find('input[name="_csrf_id"]').val();
-			
+
 			msg = msg + '<input type="hidden" name="_csrf_id" value="' + csrf_id + '" /><input type="hidden" name="_csrf_key" value="' + csrf_key + '" />';
-			
+
 			return msg;
 
 		};
 
 		var frame_id = 'ajaxUploader-iframe-' + Math.round(new Date().getTime() / 1000);
 		$('body').append('<iframe width="0" height="0" style="display:none;" name="'+frame_id+'" id="'+frame_id+'"/>');
-		$('#'+frame_id).load(function() {
+		$('#'+frame_id).on("load", function() {
 			var msg = handleResponse(this);
 			$('#errorMsg').remove();
 			$('#OKMsg').remove();
@@ -264,7 +265,7 @@ var ISPConfig = {
 			}
 		});
 	},
-	
+
 	loadContent: function(pagename) {
 		var params = arguments[1];
 		var pageContentObject2 = $.ajax({
@@ -287,7 +288,7 @@ var ISPConfig = {
 					ISPConfig.onAfterContentLoad(pagename, (params ? params : null));
 					ISPConfig.pageFormChanged = false;
 				}
-				clearTimeout(dataLogTimer); // clear running dataLogTimer
+				clearTimeout(ISPConfig.dataLogTimer); // clear running dataLogTimer
 				ISPConfig.dataLogNotification();
 				ISPConfig.hideLoadIndicator();
 			},
@@ -350,7 +351,7 @@ var ISPConfig = {
 				ISPConfig.reportError('Ajax Request was not successful. 114');
 			}
 		});
-		
+
 		ISPConfig.loadMenus();
 		ISPConfig.keepalive();
 		ISPConfig.dataLogNotification();
@@ -358,11 +359,11 @@ var ISPConfig = {
 			try {
 				$('form#pageForm').find('input[name="username"]').focus();
 			} catch (e) {
-			
+
 			}
 		}, 1000);
 	},
-	
+
 	loadMenus: function() {
 		var sideNavObject = $.ajax({
 			type: "GET",
@@ -409,7 +410,7 @@ var ISPConfig = {
 			console.log('tab change interrupted, request still running.');
 			return false;
 		}
-	
+
 		document.pageForm.next_tab.value = tab;
 
 		var idel = $('form#pageForm').find('[name="id"]');
@@ -487,7 +488,7 @@ var ISPConfig = {
 			}
 		});
 	},
-	
+
 	keepalive: function() {
 		var pageContentObject3 = $.ajax({
 			type: "GET",
@@ -516,12 +517,12 @@ var ISPConfig = {
 					$('.modal-body').html(dataLogItems.join(""));
 					$('.notification_text').text(data['count']);
 					$('.notification').css('display','');
-					dataLogTimer = setTimeout( function() { ISPConfig.dataLogNotification(); }, 2000 );
+					ISPConfig.dataLogTimer = setTimeout( function() { ISPConfig.dataLogNotification(); }, 2000 );
 				} else {
 					$('.notification').css('display','none');
 					$('.modal-body').html('');
 					$('#datalogModal').modal('hide');
-					dataLogTimer = setTimeout( function() { ISPConfig.dataLogNotification(); }, 5000 );
+					ISPConfig.dataLogTimer = setTimeout( function() { ISPConfig.dataLogNotification(); }, 5000 );
 				}
 			},
 			error: function() {
@@ -618,13 +619,13 @@ $(document).on('click', 'a[data-load-content],button[data-load-content]', functi
 		console.log('preventing click because there is still a request running.');
 		return;
 	}
-	
+
 	$page.on('scroll mousedown wheel DOMMouseScroll mousewheel keyup touchmove', function() { $page.stop(); });
 	$page.animate({scrollTop: 0}, 1000, function() { $page.off('scroll mousedown wheel DOMMouseScroll mousewheel keyup touchmove', function() { $page.stop(); }); });
-	
+
 	var content_to_load = $(this).attr('data-load-content');
 	if(!content_to_load) return this;
-	
+
 	ISPConfig.loadContent(content_to_load);
 });
 
@@ -634,13 +635,13 @@ $(document).on('click', 'a[data-capp],button[data-capp]', function(e) {
 		console.log('preventing click because there is still a request running.');
 		return;
 	}
-	
+
 	$page.on('scroll mousedown wheel DOMMouseScroll mousewheel keyup touchmove', function() { $page.stop(); });
 	$page.animate({scrollTop: 0}, 1000, function() { $page.off('scroll mousedown wheel DOMMouseScroll mousewheel keyup touchmove', function() { $page.stop(); }); });
-	
+
 	var content_to_load = $(this).attr('data-capp');
 	if(!content_to_load) return this;
-	
+
 	ISPConfig.capp(content_to_load);
 });
 
@@ -650,14 +651,14 @@ $(document).on('click', 'a[data-submit-form],button[data-submit-form]', function
 		console.log('preventing click because there is still a request running.');
 		return;
 	}
-	
+
 	$page.on('scroll mousedown wheel DOMMouseScroll mousewheel keyup touchmove', function() { $page.stop(); });
 	$page.animate({scrollTop: 0}, 1000, function() { $page.off('scroll mousedown wheel DOMMouseScroll mousewheel keyup touchmove', function() { $page.stop(); }); });
-	
+
 	var $el = $(this);
 	var act = $el.attr('data-form-action');
 	var form = $el.attr('data-submit-form');
-	
+
 	if($el.attr('data-form-upload') == 'true') ISPConfig.submitUploadForm(form, act);
 	else ISPConfig.submitForm(form, act);
 });
@@ -679,28 +680,28 @@ $(document).on('click', 'th[data-column]', function(e) {
 	var $self = $(this);
 	var column = $self.attr('data-column');
 	if(!column) return this;
-	
+
 	if($("#pageForm .table #Filter").length > 0 && $self.attr('data-sortable') != 'false') {
 		var $el = $('#Filter');
 		var act = $el.attr('data-form-action');
 		var form = $el.attr('data-submit-form');
-		
+
 		var dir = $self.attr('data-ordered');
-		
+
 		var separator = '?';
 		if(act.indexOf("?") >= 0){
 			separator = '&';
 		}
 		act = act + separator + 'orderby=' + column;
 		ISPConfig.submitForm(form, act);
-		
+
 		$(document).ajaxComplete(function() {
 			var $self = $('#pageForm .table th[data-column="' + column + '"]');
 			$self.parent().children('th[data-column]').removeAttr('data-ordered');
 			if(dir && dir == 'asc') $self.attr('data-ordered', 'desc');
 			else $self.attr('data-ordered', 'asc');
 		});
-		
+
 	}
 });
 
@@ -738,7 +739,7 @@ $(document).on("click", "[data-uncheck-fields] > input[type='checkbox']", functi
 	}
 });
 
-$(document).on('ready', function () {
+$(document).ready(function() {
 	$.fn.extend({
 		insertAtCaret: function(myValue){
 			return this.each(function(i) {
@@ -765,25 +766,23 @@ $(document).on('ready', function () {
 			})
 		}
 	});
-	
+
 	// Animierter Ladefortschritt
 	$('.progress .progress-bar').css('width', function () {
 		return $(this).attr('aria-valuenow') + '%';
 	});
-	
-	ISPConfig.loadInitContent();
 
 	$('#searchform').submit(function(e) {
 		e.preventDefault();
 	});
-	
+
 	$("#pageForm").submit(function(e){
 		//Prevent form submit: e.preventDefault() in lists
 		if ($("#pageForm .table #Filter").length > 0) {
 			e.preventDefault();
 		}
 	});
-	
+
 	$.fn.setCursorPosition = function(pos) {
 		var self = $(this).get(0);
 		if(self.setSelectionRange) {
@@ -799,11 +798,11 @@ $(document).on('ready', function () {
 			range.select();
 		}
 	};
-	
+
 	$.fn.getCursorPosition = function() {
 		var iCaretPos = 0;
 		var self = $(this).get(0);
-		
+
 		if(typeof self.selectionStart === 'number') {
 			iCaretPos = self.selectionDirection == 'backward' ? self.selectionStart : self.selectionEnd;
 		} else if(document.selection) {
@@ -815,4 +814,3 @@ $(document).on('ready', function () {
 		return iCaretPos;
 	};
 });
-

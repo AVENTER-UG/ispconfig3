@@ -33,6 +33,11 @@ class cronjob_backup_mail extends cronjob {
 	protected $_schedule = '0 0 * * *';
 	private $tmp_backup_dir = '';
 
+	/**
+	 * The maximum number of backups that ISPConfig can store.
+	 */
+	const max_backups = 30;
+
 	/* this function is optional if it contains no custom code */
 	public function onPrepare() {
 		global $app;
@@ -73,8 +78,7 @@ class cronjob_backup_mail extends cronjob {
 				} else {
 					chmod($backup_dir, $backup_dir_permissions);
 				}
-				system('which pigz > /dev/null', $ret);
-				if($ret === 0) {
+				if($app->system->is_installed('pigz')) {
 					$use_pigz = true;
 				} else {
 					$use_pigz = false;
@@ -122,7 +126,7 @@ class cronjob_backup_mail extends cronjob {
 						if ($rec['maildir_format'] == 'mdbox') {
 							if (empty($this->tmp_backup_dir)) $this->tmp_backup_dir = $rec['maildir'];
 							// Create temporary backup-mailbox
-							$app->system->exec_safe("su -c ?", 'dsync backup -u "'.$rec["email"].'" mdbox:' . $this->tmp_backup_dir . '/backup');
+							$app->system->exec_safe("su -c ?", 'dsync -o plugin/acl= -o plugin/quota= backup -u "'.$rec["email"].'" mdbox:' . $this->tmp_backup_dir . '/backup');
 		
 							if($backup_mode == 'userzip') {
 								$mail_backup_file.='.zip';
@@ -204,7 +208,7 @@ class cronjob_backup_mail extends cronjob {
 						}
 						$dir_handle->close();
 						rsort($files);
-						for ($n = $backup_copies; $n <= 10; $n++) {
+						for ($n = $backup_copies; $n <= self::max_backups; $n++) {
 							if(isset($files[$n]) && is_file($mail_backup_dir.'/'.$files[$n])) {
 								unlink($mail_backup_dir.'/'.$files[$n]);
 								$sql = "DELETE FROM mail_backup WHERE server_id = ? AND parent_domain_id = ? AND filename = ?";

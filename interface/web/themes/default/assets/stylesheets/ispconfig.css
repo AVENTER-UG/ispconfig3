@@ -1,5 +1,6 @@
 body {
-  overflow-y: scroll; }
+  overflow-y: scroll;
+  overflow-x: hidden; }
 
 .left {
   float: left; }
@@ -35,6 +36,10 @@ body {
 
 .control-label-plain:after {
     content: ""; }
+
+.inlineLabel {
+  font-weight: 400;
+}
 
 .formbutton-default {
   padding: 6px 10px;
@@ -110,7 +115,7 @@ body {
     padding: 0 12px;
     height: 70px;
     border-bottom-style: solid;
-    botder-bottom-width: 2px;
+    border-bottom-width: 1px;
     transition: all ease 500ms; }
   #main-navigation .icon {
     font-size: 32px; }
@@ -122,6 +127,10 @@ body {
   border-right-width: 0; }
   .btn-group-justified .btn:last-of-type {
     border-right-width: 1px; }
+
+.dns-record-btn {
+  margin-top: 3px;
+}
 
 #content {
   width: 78%; }
@@ -140,7 +149,9 @@ body {
 
 #sidebar {
   margin-top: 27px;
-  width: 18%;
+  min-width: 18%;
+  max-width: 21%;
+  width: auto;
   border-style: solid;
   border-width: 1px;
   border-radius: 4px; }
@@ -269,8 +280,27 @@ body {
 .progress {
   display: inline-block;
   margin-bottom: 0;
-  width: 150px;
-  height: 10px; }
+  width: 100%;
+  height: 20px;
+  background-color: #ababab;
+  font-weight: bold;
+  position: relative;
+}
+
+.progress-bar-danger, .progress-bar-warning, .progress-bar-success {
+    text-align: center;
+    color: white;
+    height: 100%;
+}
+
+.progress span {
+  position: absolute;
+  left: 0;
+  width: 100%;
+  text-align: center;
+  z-index: 2;
+  color: white;
+}
 
 p.fieldset-legend {
   display: none; }
@@ -310,34 +340,30 @@ thead.dark th.tiny-col {
   text-overflow: ellipsis; }
 
 thead.dark th[data-column] {
-  cursor: pointer;
+    cursor: pointer;
+    position: relative;
+}
+
+thead.dark th[data-column]:before {
+    content: "⇅";
+    position: absolute;
+    right: 15px;
+    vertical-align: middle;
+    line-height: inherit;
+    color: #aaa;
 }
 
 thead.dark th[data-column][data-ordered] {
-	font-weight: bold;
-	position: relative;
+    background: linear-gradient(to top, #57646d, #3e474e);
 }
 
 thead.dark th[data-column][data-ordered]:before {
-	content: "";
-	display: block;
-	position: absolute;
-	right: 5px;
-	top: 16px;
-	width: 0;
-	height: 0;
-	vertical-align: middle;
-	border-bottom: 5px solid #fff;
-	border-top: 5px solid transparent;
-	border-right: 5px solid transparent;
-	border-left: 6px solid transparent;
-	line-height: inherit;
+    color: #fff;
+    content: "🡫";
 }
 
 thead.dark th[data-column][data-ordered="desc"]:before {
-	top: 21px;
-	border-bottom: 5px solid transparent;
-	border-top: 5px solid #fff;
+    content: "🡩";
 }
 
 thead.dark td input,
@@ -421,7 +447,7 @@ ul.gs-resultbox li.gs-cheader p.gs-cheader-limit {
 ul.df-resultbox li.df-cdata img,
 ul.gs-resultbox li.gs-cdata img {
   margin-right: 12px; }
-    
+
 ul.df-resultbox li.df-cdata p span.df-cdata-title,
 ul.gs-resultbox li.gs-cdata p span.gs-cdata-title {
   font-weight: bold; }
@@ -772,6 +798,12 @@ input[type="password"].form-control[readonly] {
 .systemmonitor-state.state-info .statusMsg {
     display: none;
 }
+.systemmonitor-state .online {
+	color: green;
+}
+.systemmonitor-state .offline {
+	color: red;
+}
 
 span.notification_text {
     display: block;
@@ -782,6 +814,14 @@ span.notification_text {
     font-family: inherit;
     color: white;
 }
+span.company_name {
+  font-weight: bold;
+}
+
+span.tmp_account_name {
+  font-size: 0.9em;
+}
+
 .finediff {
 	font-family: monospace;
 }
@@ -794,4 +834,7 @@ span.notification_text {
 	color: red;
 	background: #fdd;
 	text-decoration: none;
+}
+#apache_directives, #nginx_directives, #proxy_directives {
+	font-family: Consolas, "Courier New", Courier, monospace;
 }

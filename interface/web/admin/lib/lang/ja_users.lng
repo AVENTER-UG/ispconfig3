@@ -1,9 +1,10 @@
 <?php
+$wb['users_txt'] = 'Users';
 $wb['username_txt'] = 'ユーザー名';
 $wb['username_err'] = 'ユーザー名が長すぎるか、または不正な文字を含んでいます。';
 $wb['username_empty'] = 'ユーザー名を入力してください。';
 $wb['username_unique'] = '既に登録済みのユーザー名です。別の名前を選んでください。';
-$wb['passwort_txt'] = 'パスワード';
+$wb['password_txt'] = 'パスワード';
 $wb['password_strength_txt'] = 'パスワードの強度';
 $wb['modules_txt'] = 'モジュール';
 $wb['startmodule_txt'] = 'ログイン直後のモジュール';
@@ -33,4 +34,5 @@ $wb['username_error_collision'] = 'The username may not be web or web plus a num
 $wb['client_not_admin_err'] = 'A user that belongs to a client can not be set to type: admin';
 $wb['lost_password_function_txt'] = 'Forgot password function is available';
 $wb['no_user_insert'] = 'CP-Users of type -user- get added and updated automatically when you add a client or reseller.';
+$wb['otp_auth_txt'] = '2-Factor Authentication';
 ?>

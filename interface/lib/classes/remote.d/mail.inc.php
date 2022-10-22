@@ -60,7 +60,7 @@ class remoting_mail extends remoting {
 			throw new SoapFault('permission_denied', 'You do not have the permissions to access this function.');
 			return false;
 		}
-		$primary_id = $this->insertQuery('../mail/form/mail_domain.tform.php', $client_id, $params);
+		$primary_id = $this->insertQuery('../mail/form/mail_domain.tform.php', $client_id, $params, 'mail:mail_domain:on_after_insert');
 		return $primary_id;
 	}
 
@@ -71,7 +71,7 @@ class remoting_mail extends remoting {
 			throw new SoapFault('permission_denied', 'You do not have the permissions to access this function.');
 			return false;
 		}
-		$affected_rows = $this->updateQuery('../mail/form/mail_domain.tform.php', $client_id, $primary_id, $params);
+		$affected_rows = $this->updateQuery('../mail/form/mail_domain.tform.php', $client_id, $primary_id, $params, 'mail:mail_domain:on_after_update');
 		return $affected_rows;
 	}
 
@@ -82,7 +82,7 @@ class remoting_mail extends remoting {
 			throw new SoapFault('permission_denied', 'You do not have the permissions to access this function.');
 			return false;
 		}
-		$affected_rows = $this->deleteQuery('../mail/form/mail_domain.tform.php', $primary_id);
+		$affected_rows = $this->deleteQuery('../mail/form/mail_domain.tform.php', $primary_id, 'mail:mail_domain:on_after_delete');
 		return $affected_rows;
 	}
 
@@ -196,6 +196,24 @@ class remoting_mail extends remoting {
 		return $app->remoting_lib->getDataRecord($primary_id);
 	}
 
+	//* Get mail user details for all account that belong to a client.
+	public function mail_user_get_all_by_client($session_id, $client_id)
+	{
+		global $app;
+
+		if(!$this->checkPerm($session_id, 'mail_user_get_all_by_client')) {
+			throw new SoapFault('permission_denied', 'You do not have the permissions to access this function.');
+			return false;
+		}
+		$app->uses('remoting_lib');
+		$sql = "SELECT u.* FROM `mail_user` u
+			LEFT JOIN `sys_group` g ON (u.sys_groupid=g.groupid)
+			WHERE g.client_id=?";
+		$params[] = $client_id;
+
+		$result = $app->db->queryAllRecords($sql, true, $params);
+		return $result;
+	}
 
 	//* Add mail domain
 	public function mail_user_add($session_id, $client_id, $params){
@@ -205,12 +223,15 @@ class remoting_mail extends remoting {
 			throw new SoapFault('permission_denied', 'You do not have the permissions to access this function.');
 			return false;
 		}
+		
+		// Email addresses must always be lower case
+		$params['email'] = strtolower($params['email']);
 
 		//* Check if mail domain exists
 		$email_parts = explode('@', $params['email']);
-		$tmp = $app->db->queryOneRecord("SELECT domain FROM mail_domain WHERE domain = ?", $email_parts[1]);
+		$tmp = $app->db->queryOneRecord("SELECT domain FROM mail_domain WHERE domain = ? AND domain NOT IN (SELECT SUBSTR(source,2) FROM mail_forwarding WHERE type = 'aliasdomain')", $email_parts[1]);
 		if($tmp['domain'] != $email_parts[1]) {
-			throw new SoapFault('mail_domain_does_not_exist', 'Mail domain - '.$email_parts[1].' - does not exist.');
+			throw new SoapFault('mail_domain_does_not_exist', 'Mail domain - '.$email_parts[1].' - does not exist as primary.');
 			return false;
 		}
 
@@ -219,8 +240,8 @@ class remoting_mail extends remoting {
 		if (!isset($params['gid'])) $params['gid'] = -1;
 		if (!isset($params['maildir_format'])) $params['maildir_format'] = 'maildir';
 
-		$affected_rows = $this->insertQuery('../mail/form/mail_user.tform.php', $client_id, $params);
-		return $affected_rows;
+		$mailuser_id = $this->insertQuery('../mail/form/mail_user.tform.php', $client_id, $params, 'mail:mail_user:on_after_insert');
+		return $mailuser_id;
 	}
 
 	//* Update mail user
@@ -234,15 +255,15 @@ class remoting_mail extends remoting {
 			return false;
 		}
 
-		//* Check if mail domain exists
+		//* Check if mail domain exists, and is not used as aliasdomain
 		$email_parts = explode('@', $params['email']);
-		$tmp = $app->db->queryOneRecord("SELECT domain FROM mail_domain WHERE domain = ?", $email_parts[1]);
+		$tmp = $app->db->queryOneRecord("SELECT domain FROM mail_domain WHERE domain = ? AND domain NOT IN (SELECT SUBSTR(source,2) FROM mail_forwarding WHERE type = 'aliasdomain')", $email_parts[1]);
 		if($tmp['domain'] != $email_parts[1]) {
-			throw new SoapFault('mail_domain_does_not_exist', 'Mail domain - '.$email_parts[1].' - does not exist.');
+			throw new SoapFault('mail_domain_does_not_exist', 'Mail domain - '.$email_parts[1].' - does not exist as primary.');
 			return false;
 		}
 
-		$affected_rows = $this->updateQuery('../mail/form/mail_user.tform.php', $client_id, $primary_id, $params);
+		$affected_rows = $this->updateQuery('../mail/form/mail_user.tform.php', $client_id, $primary_id, $params, 'mail:mail_user:on_after_update');
 		return $affected_rows;
 	}
 
@@ -255,7 +276,7 @@ class remoting_mail extends remoting {
 			throw new SoapFault('permission_denied', 'You do not have the permissions to access this function.');
 			return false;
 		}
-		$affected_rows = $this->deleteQuery('../mail/form/mail_user.tform.php', $primary_id);
+		$affected_rows = $this->deleteQuery('../mail/form/mail_user.tform.php', $primary_id, 'mail:mail_user:on_after_delete');
 		return $affected_rows;
 	}
 
@@ -410,7 +431,7 @@ class remoting_mail extends remoting {
 		}
 		unset($tmp);
 
-		$affected_rows = $this->insertQuery('../mail/form/mail_alias.tform.php', $client_id, $params);
+		$affected_rows = $this->insertQuery('../mail/form/mail_alias.tform.php', $client_id, $params, 'mail:mail_alias:on_after_insert');
 		return $affected_rows;
 	}
 
@@ -432,7 +453,7 @@ class remoting_mail extends remoting {
 		}
 		unset($tmp);
 
-		$affected_rows = $this->updateQuery('../mail/form/mail_alias.tform.php', $client_id, $primary_id, $params);
+		$affected_rows = $this->updateQuery('../mail/form/mail_alias.tform.php', $client_id, $primary_id, $params, 'mail:mail_alias:on_after_update');
 		return $affected_rows;
 	}
 
@@ -443,7 +464,7 @@ class remoting_mail extends remoting {
 			throw new SoapFault('permission_denied', 'You do not have the permissions to access this function.');
 			return false;
 		}
-		$affected_rows = $this->deleteQuery('../mail/form/mail_alias.tform.php', $primary_id);
+		$affected_rows = $this->deleteQuery('../mail/form/mail_alias.tform.php', $primary_id, 'mail:mail_alias:on_after_delete');
 		return $affected_rows;
 	}
 
@@ -469,7 +490,7 @@ class remoting_mail extends remoting {
 			throw new SoapFault('permission_denied', 'You do not have the permissions to access this function.');
 			return false;
 		}
-		$affected_rows = $this->insertQuery('../mail/form/mail_forward.tform.php', $client_id, $params);
+		$affected_rows = $this->insertQuery('../mail/form/mail_forward.tform.php', $client_id, $params, 'mail:mail_forward:on_after_insert');
 		return $affected_rows;
 	}
 
@@ -481,7 +502,7 @@ class remoting_mail extends remoting {
 			throw new SoapFault('permission_denied', 'You do not have the permissions to access this function.');
 			return false;
 		}
-		$affected_rows = $this->updateQuery('../mail/form/mail_forward.tform.php', $client_id, $primary_id, $params);
+		$affected_rows = $this->updateQuery('../mail/form/mail_forward.tform.php', $client_id, $primary_id, $params, 'mail:mail_forward:on_after_update');
 		return $affected_rows;
 	}
 
@@ -493,7 +514,7 @@ class remoting_mail extends remoting {
 			throw new SoapFault('permission_denied', 'You do not have the permissions to access this function.');
 			return false;
 		}
-		$affected_rows = $this->deleteQuery('../mail/form/mail_forward.tform.php', $primary_id);
+		$affected_rows = $this->deleteQuery('../mail/form/mail_forward.tform.php', $primary_id, 'mail:mail_forward:on_after_delete');
 		return $affected_rows;
 	}
 
@@ -660,7 +681,7 @@ class remoting_mail extends remoting {
 		return $app->remoting_lib->getDataRecord($primary_id);
 	}
 
-	//* biała lista e-mail
+	//* add spamfilter whitelist entry
 	public function mail_spamfilter_whitelist_add($session_id, $client_id, $params)
 	{
 		if (!$this->checkPerm($session_id, 'mail_spamfilter_whitelist_add'))
@@ -760,7 +781,7 @@ class remoting_mail extends remoting {
 		return $app->remoting_lib->getDataRecord($primary_id);
 	}
 
-	//* filtr spamu użytkowników e-mail
+	//* Add new spamfilter_users
 	public function mail_spamfilter_user_add($session_id, $client_id, $params)
 	{
 		if (!$this->checkPerm($session_id, 'mail_spamfilter_user_add'))

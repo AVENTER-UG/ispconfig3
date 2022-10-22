@@ -28,6 +28,8 @@ NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
 EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
+require_once __DIR__.'/../compatibility.inc.php';
+
 //* The purpose of this library is to provide some general functions.
 //* This class is loaded automatically by the ispconfig framework.
 
@@ -61,7 +63,7 @@ class functions {
 		if(is_string($to) && strpos($to, ',') !== false) {
 				$to = preg_split('/\s*,\s*/', $to);
 		}
-		
+
 		$app->ispcmail->send($to);
 		$app->ispcmail->finish();
 
@@ -234,7 +236,7 @@ class functions {
 				if(preg_match($regex, $result['ip'])) $ips[] = $result['ip'];
 			}
 		}
-		
+
 		$results = $app->db->queryAllRecords("SELECT remote_ips FROM web_database WHERE remote_ips != ''");
 		if(!empty($results) && is_array($results)){
 			foreach($results as $result){
@@ -290,6 +292,34 @@ class functions {
 		return round(pow(1024, $base-floor($base)), $precision).$suffixes[floor($base)];
 	}
 
+
+	/**
+	 * Normalize a path and strip duplicate slashes from it
+	 *
+	 * This will also remove all /../ from the path, reducing the preceding path elements
+	 *
+	 * @param string $path
+	 * @return string
+	 */
+	public function normalize_path($path) {
+		$path = preg_replace('~[/]{2,}~', '/', $path);
+		$parts = explode('/', $path);
+		$return_parts = array();
+
+		foreach($parts as $current_part) {
+			if($current_part === '..') {
+				if(!empty($return_parts) && end($return_parts) !== '') {
+					array_pop($return_parts);
+				}
+			} else {
+				$return_parts[] = $current_part;
+			}
+		}
+
+		return implode('/', $return_parts);
+	}
+
+
 	/** IDN converter wrapper.
 	 * all converter classes should be placed in ISPC_CLASS_PATH.'/idn/'
 	 */
@@ -302,6 +332,14 @@ class functions {
 		if(strpos($domain, '@') !== false) {
 			$user_part = substr($domain, 0, strrpos($domain, '@'));
 			$domain = substr($domain, strrpos($domain, '@') + 1);
+		}
+
+		// idn_to_* chokes on leading dots, but we need them for amavis, so remove it for later
+		if(substr($domain, 0, 1) === '.') {
+			$leading_dot = true;
+			$domain = substr($domain, 1);
+		} else {
+			$leading_dot = false;
 		}
 
 		if($encode == true) {
@@ -348,6 +386,10 @@ class functions {
 			}
 		}
 
+		if($leading_dot == true) {
+			$domain = '.' . $domain;
+		}
+
 		if($user_part !== false) return $user_part . '@' . $domain;
 		else return $domain;
 	}
@@ -370,49 +412,49 @@ class functions {
 
 	public function is_allowed_user($username, $restrict_names = false) {
 		global $app;
-		
+
 		$name_blacklist = array('root','ispconfig','vmail','getmail');
 		if(in_array($username,$name_blacklist)) return false;
-		
+
 		if(preg_match('/^[a-zA-Z0-9\.\-_]{1,32}$/', $username) == false) return false;
-		
+
 		if($restrict_names == true && preg_match('/^web\d+$/', $username) == false) return false;
-		
+
 		return true;
 	}
-	
+
 	public function is_allowed_group($groupname, $restrict_names = false) {
 		global $app;
-		
+
 		$name_blacklist = array('root','ispconfig','vmail','getmail');
 		if(in_array($groupname,$name_blacklist)) return false;
-		
+
 		if(preg_match('/^[a-zA-Z0-9\.\-_]{1,32}$/', $groupname) == false) return false;
-		
+
 		if($restrict_names == true && preg_match('/^client\d+$/', $groupname) == false) return false;
-		
+
 		return true;
 	}
-	
+
 	public function getimagesizefromstring($string){
 		if (!function_exists('getimagesizefromstring')) {
 			$uri = 'data://application/octet-stream;base64,' . base64_encode($string);
 			return getimagesize($uri);
 		} else {
 			return getimagesizefromstring($string);
-		}		
+		}
 	}
-	
+
 	public function password($minLength = 10, $special = false){
 		global $app;
-	
+
 		$iteration = 0;
 		$password = "";
 		$maxLength = $minLength + 5;
-		$length = $this->getRandomInt($minLength, $maxLength);
+		$length = random_int($minLength, $maxLength);
 
 		while($iteration < $length){
-			$randomNumber = (floor(((mt_rand() / mt_getrandmax()) * 100)) % 94) + 33;
+			$randomNumber = random_int(33, 126);
 			if(!$special){
 				if (($randomNumber >=33) && ($randomNumber <=47)) { continue; }
 				if (($randomNumber >=58) && ($randomNumber <=64)) { continue; }
@@ -427,10 +469,6 @@ class functions {
 		return $password;
 	}
 
-	public function getRandomInt($min, $max){
-		return floor((mt_rand() / mt_getrandmax()) * ($max - $min + 1)) + $min;
-	}
-	
 	public function generate_customer_no(){
 		global $app;
 		// generate customer no.
@@ -438,27 +476,30 @@ class functions {
 		while($app->db->queryOneRecord("SELECT client_id FROM client WHERE customer_no = ?", $customer_no)) {
 			$customer_no = mt_rand(100000, 999999);
 		}
-		
+
 		return $customer_no;
 	}
-	
+
 	public function generate_ssh_key($client_id, $username = ''){
 		global $app;
-		
+
 		// generate the SSH key pair for the client
-		$id_rsa_file = '/tmp/'.uniqid('',true);
+		if (! $tmpdir = $app->system->exec_safe('mktemp -dt id_rsa.XXXXXXXX')) {
+			$app->log("mktemp failed, cannot create SSH keypair for ".$username, LOGLEVEL_WARN);
+		}
+		$id_rsa_file = $tmpdir . uniqid('',true);
 		$id_rsa_pub_file = $id_rsa_file.'.pub';
 		if(file_exists($id_rsa_file)) unset($id_rsa_file);
 		if(file_exists($id_rsa_pub_file)) unset($id_rsa_pub_file);
 		if(!file_exists($id_rsa_file) && !file_exists($id_rsa_pub_file)) {
 			$app->system->exec_safe('ssh-keygen -t rsa -C ? -f ? -N ""', $username.'-rsa-key-'.time(), $id_rsa_file);
 			$app->db->query("UPDATE client SET created_at = UNIX_TIMESTAMP(), id_rsa = ?, ssh_rsa = ? WHERE client_id = ?", @file_get_contents($id_rsa_file), @file_get_contents($id_rsa_pub_file), $client_id);
-			$app->system->exec_safe('rm -f ? ?', $id_rsa_file, $id_rsa_pub_file);
+			$app->system->rmdir($tmpdir, true);
 		} else {
 			$app->log("Failed to create SSH keypair for ".$username, LOGLEVEL_WARN);
 		}
 	}
-	
+
 	public function htmlentities($value) {
 		global $conf;
 
@@ -474,10 +515,10 @@ class functions {
 		} else {
 			$out = htmlentities($value, ENT_QUOTES, $conf["html_content_encoding"]);
 		}
-		
+
 		return $out;
 	}
-	
+
 	// Function to check paths before we use it as include. Use with absolute paths only.
 	public function check_include_path($path) {
 		if(strpos($path,'//') !== false) die('Include path seems to be an URL: '.$this->htmlentities($path));
@@ -488,7 +529,7 @@ class functions {
 		if(substr($path,0,strlen(ISPC_ROOT_PATH)) != ISPC_ROOT_PATH) die('Path '.$this->htmlentities($path).' is outside of ISPConfig installation directory.');
 		return $path;
 	}
-	
+
 	// Function to check language strings
 	public function check_language($language) {
 		global $app;
@@ -496,10 +537,121 @@ class functions {
 			 return $language;
 		} else {
 			$app->log('Wrong language string: '.$this->htmlentities($language),1);
-			return 'en';	
+			return 'en';
 		}
 	}
-	
+
+        // Function to lock a client
+	public function func_client_lock($client_id,$locked) {
+		global $app;
+		$client_data = $app->db->queryOneRecord('SELECT `tmp_data` FROM `client` WHERE `client_id` = ?', $client_id);
+		if($client_data['tmp_data'] == '') $tmp_data = array();
+		else $tmp_data = unserialize($client_data['tmp_data']);
+		if(!is_array($tmp_data)) $tmp_data = array();
+		$to_disable = array('cron' => 'id',
+							'ftp_user' => 'ftp_user_id',
+							'mail_domain' => 'domain_id',
+							'mail_user' => 'mailuser_id',
+							'mail_user_smtp' => 'mailuser_id',
+							'mail_forwarding' => 'forwarding_id',
+							'mail_get' => 'mailget_id',
+							'openvz_vm' => 'vm_id',
+							'shell_user' => 'shell_user_id',
+							'webdav_user' => 'webdav_user_id',
+							'web_database' => 'database_id',
+							'web_domain' => 'domain_id',
+							'web_folder' => 'web_folder_id',
+							'web_folder_user' => 'web_folder_user_id'
+							);
+		$udata = $app->db->queryOneRecord('SELECT `userid` FROM `sys_user` WHERE `client_id` = ?', $client_id);
+		$gdata = $app->db->queryOneRecord('SELECT `groupid` FROM `sys_group` WHERE `client_id` = ?', $client_id);
+		$sys_groupid = $gdata['groupid'];
+		$sys_userid = $udata['userid'];
+		if($locked == 'y') {
+			$prev_active = array();
+			$prev_sysuser = array();
+			foreach($to_disable as $current => $keycolumn) {
+				$active_col = 'active';
+				$reverse = false;
+				if($current == 'mail_user') {
+						$active_col = 'postfix';
+				} elseif($current == 'mail_user_smtp') {
+						$current = 'mail_user';
+						$active_col = 'disablesmtp';
+						$reverse = true;
+				}
+
+				if(!isset($prev_active[$current])) $prev_active[$current] = array();
+				if(!isset($prev_sysuser[$current])) $prev_sysuser[$current] = array();
+
+				$entries = $app->db->queryAllRecords('SELECT ?? as `id`, `sys_userid`, ?? FROM ?? WHERE `sys_groupid` = ?', $keycolumn, $active_col, $current, $sys_groupid);
+				foreach($entries as $item) {
+
+						if($item[$active_col] != 'y' && $reverse == false) $prev_active[$current][$item['id']][$active_col] = 'n';
+						elseif($item[$active_col] == 'y' && $reverse == true) $prev_active[$current][$item['id']][$active_col] = 'y';
+						if($item['sys_userid'] != $sys_userid) $prev_sysuser[$current][$item['id']] = $item['sys_userid'];
+						// we don't have to store these if y, as everything without previous state gets enabled later
+
+						//$app->db->datalogUpdate($current, array($active_col => ($reverse == true ? 'y' : 'n'), 'sys_userid' => $_SESSION["s"]["user"]["userid"]), $keycolumn, $item['id']);
+						$app->db->datalogUpdate($current, array($active_col => ($reverse == true ? 'y' : 'n'), 'sys_userid' => $sys_userid), $keycolumn, $item['id']);
+				}
+			}
+
+			$tmp_data['prev_active'] = $prev_active;
+			$tmp_data['prev_sys_userid'] = $prev_sysuser;
+			$app->db->query("UPDATE `client` SET `tmp_data` = ? WHERE `client_id` = ?", serialize($tmp_data), $client_id);
+			unset($prev_active);
+			unset($prev_sysuser);
+		} elseif ($locked == 'n') {
+			foreach($to_disable as $current => $keycolumn) {
+				$active_col = 'active';
+				$reverse = false;
+				if($current == 'mail_user') {
+						$active_col = 'postfix';
+				} elseif($current == 'mail_user_smtp') {
+						$current = 'mail_user';
+						$active_col = 'disablesmtp';
+						$reverse = true;
+				}
+
+				$entries = $app->db->queryAllRecords('SELECT ?? as `id` FROM ?? WHERE `sys_groupid` = ?', $keycolumn, $current, $sys_groupid);
+				foreach($entries as $item) {
+						$set_active = ($reverse == true ? 'n' : 'y');
+						$set_inactive = ($reverse == true ? 'y' : 'n');
+						$set_sysuser = $sys_userid;
+						if(array_key_exists('prev_active', $tmp_data) == true
+								&& array_key_exists($current, $tmp_data['prev_active']) == true
+								&& array_key_exists($item['id'], $tmp_data['prev_active'][$current]) == true
+								&& $tmp_data['prev_active'][$current][$item['id']][$active_col] == $set_inactive) $set_active = $set_inactive;
+						if(array_key_exists('prev_sysuser', $tmp_data) == true
+								&& array_key_exists($current, $tmp_data['prev_sysuser']) == true
+								&& array_key_exists($item['id'], $tmp_data['prev_sysuser'][$current]) == true
+								&& $tmp_data['prev_sysuser'][$current][$item['id']] != $sys_userid) $set_sysuser = $tmp_data['prev_sysuser'][$current][$item['id']];
+						$app->db->datalogUpdate($current, array($active_col => $set_active, 'sys_userid' => $set_sysuser), $keycolumn, $item['id']);
+				}
+			}
+			if(array_key_exists('prev_active', $tmp_data)) unset($tmp_data['prev_active']);
+			$app->db->query("UPDATE `client` SET `tmp_data` = ? WHERE `client_id` = ?", serialize($tmp_data), $client_id);
+		}
+		unset($tmp_data);
+		unset($entries);
+		unset($to_disable);
+    }
+    // Function to cancel disable/enable a client
+	public function func_client_cancel($client_id,$cancel) {
+		global $app;
+		if ($cancel == 'y') {
+			$sql = "UPDATE sys_user SET active = '0' WHERE client_id = ?";
+			$result = $app->db->query($sql, $client_id);
+		} elseif($cancel == 'n') {
+			$sql = "UPDATE sys_user SET active = '1' WHERE client_id = ?";
+			$result = $app->db->query($sql, $client_id);
+		} else {
+			$result = false;
+		}
+		return $result;
+	}	
+
 }
 
 ?>

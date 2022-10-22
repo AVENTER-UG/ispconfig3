@@ -152,6 +152,12 @@ class page_action extends tform_actions {
 			$app->tpl->setVar("database_name_prefix", $app->tools_sites->getPrefix($this->dataRecord['database_name_prefix'], $dbname_prefix, $global_config['dbname_prefix']), true);
 		}
 
+		if($global_config['disable_client_remote_dbserver'] == 'y' && $_SESSION["s"]["user"]["typ"] != 'admin') {
+			$app->tpl->setVar("disable_remote_db", 1);
+		} else {
+			$app->tpl->setVar("disable_remote_db", 0);
+		}
+
 		if($this->id > 0) {
 			//* we are editing a existing record
 			$edit_disabled = @($_SESSION["s"]["user"]["typ"] == 'admin')? 0 : 1; //* admin can change the database-name
@@ -204,6 +210,11 @@ class page_action extends tform_actions {
 					unset($tmp);
 					unset($global_config);
 					unset($dbname_prefix);
+				}
+
+				//* ensure that quota value is not 0 when quota is set for client
+				if($client['limit_database_quota'] > 0 && isset($_POST["database_quota"]) && $_POST["database_quota"] == 0) {
+					$app->tform->errorMessage .= $app->tform->lng("limit_database_quota_not_0_txt")."<br>";
 				}
 
 				if($client['parent_client_id'] > 0) {
@@ -351,9 +362,18 @@ class page_action extends tform_actions {
 		if($tmp['server_id'] && $tmp['server_id'] != $this->dataRecord['server_id']) {
 			// we need remote access rights for this server, so get it's ip address
 			$server_config = $app->getconf->get_server_config($tmp['server_id'], 'server');
+
+			// Add default remote_ips from Main Configuration.
+			if(empty($global_config['default_remote_dbserver'])) {
+				$remote_ips = array();
+			} else {
+				$remote_ips = explode(",", $global_config['default_remote_dbserver']);
+			}
+			if (!in_array($server_config['ip_address'], $default_remote_db)) { $remote_ips[] = $server_config['ip_address']; }
+
 			if($server_config['ip_address']!='') {
 				if($this->dataRecord['remote_access'] != 'y'){
-					$this->dataRecord['remote_ips'] = $server_config['ip_address'];
+					$this->dataRecord['remote_ips'] = implode(',', $remote_ips);
 					$this->dataRecord['remote_access'] = 'y';
 				} else {
 					if($this->dataRecord['remote_ips'] != ''){
@@ -361,6 +381,7 @@ class page_action extends tform_actions {
 							$this->dataRecord['remote_ips'] .= ',' . $server_config['ip_address'];
 						}
 						$tmp = preg_split('/\s*,\s*/', $this->dataRecord['remote_ips']);
+						$tmp = array_merge($tmp, $remote_ips);
 						$tmp = array_unique($tmp);
 						$this->dataRecord['remote_ips'] = implode(',', $tmp);
 						unset($tmp);
@@ -368,7 +389,7 @@ class page_action extends tform_actions {
 				}
 			}
 		}
-		
+
 		if ($app->tform->errorMessage == '') {
 			// force update of the used database user
 			if($this->dataRecord['database_user_id']) {
@@ -430,9 +451,19 @@ class page_action extends tform_actions {
 		if($tmp['server_id'] && $tmp['server_id'] != $this->dataRecord['server_id']) {
 			// we need remote access rights for this server, so get it's ip address
 			$server_config = $app->getconf->get_server_config($tmp['server_id'], 'server');
+
+			// Add default remote_ips from Main Configuration.
+			if(empty($global_config['default_remote_dbserver'])) {
+				$remote_ips = array();
+			} else {
+				$remote_ips = explode(",", $global_config['default_remote_dbserver']);
+			}
+			
+			if (!in_array($server_config['ip_address'], $default_remote_db)) { $remote_ips[] = $server_config['ip_address']; }
+
 			if($server_config['ip_address']!='') {
 				if($this->dataRecord['remote_access'] != 'y'){
-					$this->dataRecord['remote_ips'] = $server_config['ip_address'];
+					$this->dataRecord['remote_ips'] = implode(',', $remote_ips);
 					$this->dataRecord['remote_access'] = 'y';
 				} else {
 					if($this->dataRecord['remote_ips'] != ''){
@@ -440,6 +471,7 @@ class page_action extends tform_actions {
 							$this->dataRecord['remote_ips'] .= ',' . $server_config['ip_address'];
 						}
 						$tmp = preg_split('/\s*,\s*/', $this->dataRecord['remote_ips']);
+						$tmp = array_merge($tmp, $remote_ips);
 						$tmp = array_unique($tmp);
 						$this->dataRecord['remote_ips'] = implode(',', $tmp);
 						unset($tmp);

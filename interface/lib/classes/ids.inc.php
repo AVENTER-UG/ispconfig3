@@ -68,7 +68,7 @@ class ids {
 		
 		// Get whitelist
 		$whitelist_path = '/usr/local/ispconfig/security/ids.whitelist';
-		if(is_file('/usr/local/ispconfig/security/ids.whitelist.custom')) $whitelist_path = '/usr/local/ispconfig/security/ids.whitelist.custom';
+		if(is_readable('/usr/local/ispconfig/security/ids.whitelist.custom')) $whitelist_path = '/usr/local/ispconfig/security/ids.whitelist.custom';
 		if(!is_file($whitelist_path)) $whitelist_path = realpath(ISPC_ROOT_PATH.'/../security/ids.whitelist');
 		
 		$whitelist_lines = file($whitelist_path);
@@ -77,7 +77,7 @@ class ids {
 				$line = trim($line);
 				if(substr($line,0,1) != '#') {
 					list($user,$path,$varname) = explode(':',$line);
-					if($current_script_name == $path) {
+					if($current_script_name == $path || $path == '*') {
 						if($user = 'any' 
 							|| ($user == 'user' && ($_SESSION['s']['user']['typ'] == 'user' || $_SESSION['s']['user']['typ'] == 'admin')) 
 							|| ($user == 'admin' && $_SESSION['s']['user']['typ'] == 'admin')) {
@@ -91,7 +91,7 @@ class ids {
 		
 		// Get HTML fields
 		$htmlfield_path = '/usr/local/ispconfig/security/ids.htmlfield';
-		if(is_file('/usr/local/ispconfig/security/ids.htmlfield.custom')) $htmlfield_path = '/usr/local/ispconfig/security/ids.htmlfield.custom';
+		if(is_readable('/usr/local/ispconfig/security/ids.htmlfield.custom')) $htmlfield_path = '/usr/local/ispconfig/security/ids.htmlfield.custom';
 		if(!is_file($htmlfield_path)) $htmlfield_path = realpath(ISPC_ROOT_PATH.'/../security/ids.htmlfield');
 		
 		$htmlfield_lines = file($htmlfield_path);
@@ -100,7 +100,7 @@ class ids {
 				$line = trim($line);
 				if(substr($line,0,1) != '#') {
 					list($user,$path,$varname) = explode(':',$line);
-					if($current_script_name == $path) {
+					if($current_script_name == $path || $path == '*') {
 						if($user = 'any' 
 							|| ($user == 'user' && ($_SESSION['s']['user']['typ'] == 'user' || $_SESSION['s']['user']['typ'] == 'admin')) 
 							|| ($user == 'admin' && $_SESSION['s']['user']['typ'] == 'admin')) {

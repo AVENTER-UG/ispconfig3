@@ -7,6 +7,14 @@ class dashlet_quota {
 
 		//* Loading Template
 		$app->uses('tpl,quota_lib');
+		if (!$app->auth->verify_module_permissions('sites')) {
+				return;
+		}
+
+		$modules = explode(',', $_SESSION['s']['user']['modules']);
+		if(!in_array('sites', $modules)) {
+			return '';
+		}
 
 		$tpl = new tpl;
 		$tpl->newTemplate("dashlets/templates/quota.htm");
@@ -27,6 +35,12 @@ class dashlet_quota {
 
 		$has_quota = false;
 		if(is_array($sites) && !empty($sites)){
+			foreach($sites as &$site) {
+				$site['domain'] = $app->functions->idn_decode($site['domain']);
+				$site['progressbar'] = $site['hd_quota'];
+			}
+			unset($site);
+
 			$sites = $app->functions->htmlentities($sites);
 			$tpl->setloop('quota', $sites);
 			$has_quota = isset($sites[0]['used']);

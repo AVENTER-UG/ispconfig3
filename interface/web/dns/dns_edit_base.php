@@ -44,6 +44,29 @@ class dns_page_action extends tform_actions {
 		return false;
 	}
 
+	protected function zoneFileEscape( $str ) {
+		// escape backslash and double quotes
+		$ret = str_replace( '\\', '\\\\', $str );
+		$ret = str_replace( '"', '\\"', $ret );
+		return $ret;
+	}
+
+	protected function zoneFileUnescape( $str ) {
+		// escape sequence can be rfc 1035 '\DDD' (backslash, 3 digits) or '\X' (backslash, non-digit char)
+		return preg_replace_callback(  '/\\\\(\d\d\d|\D)/',
+			function( $Matches ) {
+				if (preg_match( '/\d{3}/', $Matches[1] )) {
+					return chr( $Matches[1] );
+				} elseif (preg_match( '/\D/', $Matches[1])) {
+					return $Matches[1];
+				} else {
+					return $Matches[0];
+				}
+			},
+			$str
+		);
+	}
+
 	function onShowNew() {
 		global $app, $conf;
 
@@ -81,7 +104,7 @@ class dns_page_action extends tform_actions {
 			$client_group_id = intval($_SESSION["s"]["user"]["default_group"]);
 			$client = $app->db->queryOneRecord("SELECT limit_dns_record FROM sys_group, client WHERE sys_group.client_id = client.client_id and sys_group.groupid = ?", $client_group_id);
 
-			// Check if the user may add another mailbox.
+			// Check if the user may add another record.
 			if($this->id == 0 && $client["limit_dns_record"] >= 0) {
 				$tmp = $app->db->queryOneRecord("SELECT count(id) as number FROM dns_rr WHERE sys_groupid = ?", $client_group_id);
 				if($tmp["number"] >= $client["limit_dns_record"]) {
@@ -89,7 +112,17 @@ class dns_page_action extends tform_actions {
 				}
 			}
 		} // end if user is not admin
-		
+
+		// Replace @ to example.com.
+		if($this->dataRecord["name"] === '@') {
+			$this->dataRecord["name"] = $soa['origin'];
+		}
+
+		// Replace * to *.example.com.
+		if($this->dataRecord["name"] === '*') {
+			$this->dataRecord["name"] = '*.' . $soa['origin'];
+		}
+
 		if($this->checkDuplicate()) $app->tform->errorMessage .= $app->tform->lng("data_error_duplicate")."<br>";
 
 		// Set the server ID of the rr record to the same server ID as the parent record.

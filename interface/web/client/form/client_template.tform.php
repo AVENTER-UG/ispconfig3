@@ -256,6 +256,20 @@ $form["tabs"]['limits'] = array (
 			'rows'  => '',
 			'cols'  => ''
 		),
+		'limit_mail_wblist' => array (
+			'datatype' => 'INTEGER',
+			'formtype' => 'TEXT',
+			'validators' => array (  0 => array ( 'type' => 'ISINT',
+					'errmsg'=> 'limit_mail_wblist_error_notint'),
+			),
+			'default' => '-1',
+			'value'  => '',
+			'separator' => '',
+			'width'  => '10',
+			'maxlength' => '10',
+			'rows'  => '',
+			'cols'  => ''
+		),
 		'limit_mailfilter' => array (
 			'datatype' => 'INTEGER',
 			'formtype' => 'TEXT',
@@ -339,7 +353,22 @@ $form["tabs"]['limits'] = array (
 			'maxlength' => '10',
 			'rows'  => '',
 			'cols'  => ''
-		),/*
+		),
+		'limit_mail_backup' => array (
+			'datatype' => 'VARCHAR',
+			'formtype' => 'CHECKBOX',
+			'default' => 'y',
+			'valuelimit' => 'client:limit_mail_backup',
+			'value'  => array(0 => 'n', 1 => 'y')
+		),
+		'limit_relayhost' => array (
+			'datatype' => 'VARCHAR',
+			'formtype' => 'CHECKBOX',
+			'default' => 'n',
+			'valuelimit' => 'client:limit_relayhost',
+			'value'  => array(0 => 'n', 1 => 'y')
+		),
+		/*
         'default_xmppserver' => array (
             'datatype' => 'INTEGER',
             'formtype' => 'SELECT',
@@ -401,42 +430,49 @@ $form["tabs"]['limits'] = array (
             'datatype' => 'VARCHAR',
             'formtype' => 'CHECKBOX',
             'default' => 'n',
+			'valuelimit' => 'client:limit_xmpp_muc',
             'value'  => array(0 => 'n', 1 => 'y')
         ),
         'limit_xmpp_anon' => array(
             'datatype' => 'VARCHAR',
             'formtype' => 'CHECKBOX',
             'default' => 'n',
+			'valuelimit' => 'client:limit_xmpp_anon',
             'value'  => array(0 => 'n', 1 => 'y')
         ),
         'limit_xmpp_vjud' => array(
             'datatype' => 'VARCHAR',
             'formtype' => 'CHECKBOX',
             'default' => 'n',
+			'valuelimit' => 'client:limit_xmpp_vjud',
             'value'  => array(0 => 'n', 1 => 'y')
         ),
         'limit_xmpp_proxy' => array(
             'datatype' => 'VARCHAR',
             'formtype' => 'CHECKBOX',
             'default' => 'n',
+			'valuelimit' => 'client:limit_xmpp_proxy',
             'value'  => array(0 => 'n', 1 => 'y')
         ),
         'limit_xmpp_status' => array(
             'datatype' => 'VARCHAR',
             'formtype' => 'CHECKBOX',
             'default' => 'n',
+			'valuelimit' => 'client:limit_xmpp_status',
             'value'  => array(0 => 'n', 1 => 'y')
         ),
         'limit_xmpp_pastebin' => array(
             'datatype' => 'VARCHAR',
             'formtype' => 'CHECKBOX',
             'default' => 'n',
+			'valuelimit' => 'client:limit_xmpp_pastebin',
             'value'  => array(0 => 'n', 1 => 'y')
         ),
         'limit_xmpp_httparchive' => array(
             'datatype' => 'VARCHAR',
             'formtype' => 'CHECKBOX',
             'default' => 'n',
+			'valuelimit' => 'client:limit_xmpp_httparchive',
             'value'  => array(0 => 'n', 1 => 'y')
         ),/*
 		'default_webserver' => array (
@@ -495,67 +531,77 @@ $form["tabs"]['limits'] = array (
 			'formtype' => 'CHECKBOXARRAY',
 			'default' => '',
 			'separator' => ',',
-			'valuelimit' => 'system:sites:web_php_options',
+			'valuelimit' => 'system:sites:web_php_options;client:web_php_options',
 			'value'  => array('no' => 'Disabled', 'fast-cgi' => 'Fast-CGI', 'cgi' => 'CGI', 'mod' => 'Mod-PHP', 'suphp' => 'SuPHP', 'php-fpm' => 'PHP-FPM', 'hhvm' => 'HHVM')
 		),
 		'limit_cgi' => array (
 			'datatype' => 'VARCHAR',
 			'formtype' => 'CHECKBOX',
 			'default' => 'n',
+			'valuelimit' => 'client:limit_cgi',
 			'value'  => array(0 => 'n', 1 => 'y')
 		),
 		'limit_ssi' => array (
 			'datatype' => 'VARCHAR',
 			'formtype' => 'CHECKBOX',
 			'default' => 'n',
+			'valuelimit' => 'client:limit_ssi',
 			'value'  => array(0 => 'n', 1 => 'y')
 		),
 		'limit_perl' => array (
 			'datatype' => 'VARCHAR',
 			'formtype' => 'CHECKBOX',
 			'default' => 'n',
+			'valuelimit' => 'client:limit_perl',
 			'value'  => array(0 => 'n', 1 => 'y')
 		),
 		'limit_ruby' => array (
 			'datatype' => 'VARCHAR',
 			'formtype' => 'CHECKBOX',
 			'default' => 'n',
+			'valuelimit' => 'client:limit_ruby',
 			'value'  => array(0 => 'n', 1 => 'y')
 		),
 		'limit_python' => array (
 			'datatype' => 'VARCHAR',
 			'formtype' => 'CHECKBOX',
 			'default' => 'n',
+			'valuelimit' => 'client:limit_python',
 			'value'  => array(0 => 'n', 1 => 'y')
 		),
 		'force_suexec' => array (
 			'datatype' => 'VARCHAR',
 			'formtype' => 'CHECKBOX',
 			'default' => 'y',
+			'valuelimit' => 'client:force_suexec',
 			'value'  => array(0 => 'n', 1 => 'y')
 		),
 		'limit_hterror' => array (
 			'datatype' => 'VARCHAR',
 			'formtype' => 'CHECKBOX',
 			'default' => 'n',
+			'valuelimit' => 'client:limit_hterror',
 			'value'  => array(0 => 'n', 1 => 'y')
 		),
 		'limit_wildcard' => array (
 			'datatype' => 'VARCHAR',
 			'formtype' => 'CHECKBOX',
 			'default' => 'n',
+			'valuelimit' => 'client:limit_wildcard',
 			'value'  => array(0 => 'n', 1 => 'y')
 		),
 		'limit_ssl' => array (
 			'datatype' => 'VARCHAR',
 			'formtype' => 'CHECKBOX',
 			'default' => 'n',
+			'valuelimit' => 'client:limit_ssl',
 			'value'  => array(0 => 'n', 1 => 'y')
 		),
 		'limit_ssl_letsencrypt' => array (
 			'datatype' => 'VARCHAR',
 			'formtype' => 'CHECKBOX',
 			'default' => 'n',
+			'valuelimit' => 'client:limit_ssl_letsencrypt',
 			'value'  => array(0 => 'n', 1 => 'y')
 		),
 		'limit_web_aliasdomain' => array (
@@ -646,12 +692,14 @@ $form["tabs"]['limits'] = array (
 			'datatype' => 'VARCHAR',
 			'formtype' => 'CHECKBOX',
 			'default' => 'y',
+			'valuelimit' => 'client:limit_backup',
 			'value'  => array(0 => 'n', 1 => 'y')
 		),
 		'limit_directive_snippets' => array (
 			'datatype' => 'VARCHAR',
 			'formtype' => 'CHECKBOX',
 			'default' => 'n',
+			'valuelimit' => 'client:limit_directive_snippets',
 			'value'  => array(0 => 'n', 1 => 'y')
 		),/*
 		'default_dnsserver' => array (
@@ -830,6 +878,7 @@ $form["tabs"]['limits'] = array (
 			'datatype'  => 'VARCHAR',
 			'formtype'  => 'SELECT',
 			'default'   => '',
+			'valuelimit' => 'client:limit_cron_type',
 			'value'     => array('full' => 'Full Cron', 'chrooted' => 'Chrooted Cron', 'url' => 'URL Cron')
 		),
 		'limit_cron_frequency' => array (
@@ -883,6 +932,7 @@ $form["tabs"]['limits'] = array (
 				'keyfield'=> 'template_id',
 				'valuefield'=> 'template_name'
 			),
+			'valuelimit' => 'client:limit_openvz_vm_template_id',
 			'value'  => array(0 => ' ')
 		),
 		'limit_aps' => array (

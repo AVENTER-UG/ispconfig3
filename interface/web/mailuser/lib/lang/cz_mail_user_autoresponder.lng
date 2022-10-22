@@ -10,4 +10,3 @@ $wb['autoresponder_end_date_isgreater'] = 'Datum ukončení musí být nastaven 
 $wb['autoresponder_active'] = 'Povolit automatický odpovídač';
 $wb['now_txt'] = 'Nyní';
 $wb['autoresponder_subject_txt'] = 'Předmět e-mailu';
-?>

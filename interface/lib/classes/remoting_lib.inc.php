@@ -131,7 +131,7 @@ class remoting_lib extends tform_base {
 			$this->sys_userid            = $user['userid'];
 			$this->sys_default_group     = $user['default_group'];
 			$this->sys_groups             = $user['groups'];
-			// we have to force admin priveliges for the remoting API as some function calls might fail otherwise.
+			// we have to force admin privileges for the remoting API as some function calls might fail otherwise.
 			if($client_login == false) $_SESSION["s"]["user"]["typ"] = 'admin';
 		}
 
@@ -232,7 +232,7 @@ class remoting_lib extends tform_base {
 		if(@is_numeric($primary_id)) {
 			if($primary_id > 0) {
 				// Return a single record
-				return parent::getDataRecord($primary_id);
+				return parent::getDataRecord(intval($primary_id));
 			} elseif($primary_id == -1) {
 				// Return a array with all records
 				$sql = "SELECT * FROM ??";
@@ -255,8 +255,8 @@ class remoting_lib extends tform_base {
 				} else {
 					$sql_where .= "?? = ? AND ";
 				}
-				$params[] = $key;
-				$params[] = $val;
+				$params[] = (string)$key;
+				$params[] = (string)$val;
 			}
 			$sql_where = substr($sql_where, 0, -5);
 			if($sql_where == '') $sql_where = '1';
@@ -309,6 +309,7 @@ class remoting_lib extends tform_base {
 		$username = $params["username"];
 		$clear_password = $params["password"];
 		$language = $params['language'];
+		$modules = $params['modules'];
 		$client_id = $app->functions->intval($client_id);
 
 		if(!isset($params['_ispconfig_pw_crypted']) || $params['_ispconfig_pw_crypted'] != 1) $password = $app->auth->crypt_password(stripslashes($clear_password));
@@ -327,8 +328,14 @@ class remoting_lib extends tform_base {
 			$params[] = $language;
 		}
 
+		$modulesstring = '';
+		if (!empty($modules)) {
+			$modulesstring = ', modules = ?';
+			$params[] = $modules;
+		}
+
 		$params[] = $client_id;
-		$sql = "UPDATE sys_user set username = ? $pwstring $langstring WHERE client_id = ?";
+		$sql = "UPDATE sys_user set username = ? $pwstring $langstring $modulesstring WHERE client_id = ?";
 		$app->db->query($sql, true, $params);
 	}
 

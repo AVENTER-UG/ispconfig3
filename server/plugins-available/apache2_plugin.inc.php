@@ -37,6 +37,8 @@ class apache2_plugin {
 	var $action = '';
 	var $ssl_certificate_changed = false;
 	var $update_letsencrypt = false;
+	var $website = null;
+	var $jailkit_config = null;
 
 	//* This function is called during ispconfig installation to determine
 	//  if a symlink shall be created for this plugin.
@@ -73,7 +75,7 @@ class apache2_plugin {
 		$app->plugins->registerEvent('server_ip_insert', $this->plugin_name, 'server_ip');
 		$app->plugins->registerEvent('server_ip_update', $this->plugin_name, 'server_ip');
 		$app->plugins->registerEvent('server_ip_delete', $this->plugin_name, 'server_ip');
-		
+
 		$app->plugins->registerEvent('server_insert', $this->plugin_name, 'server_ip');
 		$app->plugins->registerEvent('server_update', $this->plugin_name, 'server_ip');
 
@@ -97,22 +99,26 @@ class apache2_plugin {
 
 	private function get_master_php_ini_content($web_data) {
 		global $app, $conf;
-		
+
 		$app->uses('getconf');
 		$web_config = $app->getconf->get_server_config($conf['server_id'], 'web');
 		$fastcgi_config = $app->getconf->get_server_config($conf['server_id'], 'fastcgi');
-		
+
 		$php_ini_content = '';
 		$master_php_ini_path = '';
-		
+
 		if($web_data['php'] == 'mod') {
 			$master_php_ini_path = $web_config['php_ini_path_apache'];
 		} else {
 			// check for custom php
-			if($web_data['fastcgi_php_version'] != '') {
-				$tmp = explode(':', $web_data['fastcgi_php_version']);
-				if(isset($tmp[2])) {
-					$tmppath = $tmp[2];
+			if($web_data['server_php_id'] != 0) {
+				$tmp = $app->db->queryOneRecord('SELECT * FROM server_php WHERE server_php_id = ?', $web_data['server_php_id']);
+				$ini_key = 'php_fastcgi_ini_dir';
+				if($web_data['php'] === 'php-fpm') {
+					$ini_key = 'php_fpm_ini_dir';
+				}
+				if($tmp && $tmp[$ini_key]) {
+					$tmppath = $tmp[$ini_key];
 					if(substr($tmppath, -7) != 'php.ini') {
 						if(substr($tmppath, -1) != '/') $tmppath .= '/';
 						$tmppath .= 'php.ini';
@@ -135,7 +141,7 @@ class apache2_plugin {
 				}
 			}
 		}
-		
+
 		// Resolve inconsistant path settings
 		if($master_php_ini_path != '' && is_dir($master_php_ini_path) && is_file($master_php_ini_path.'/php.ini')) {
 			$master_php_ini_path .= '/php.ini';
@@ -145,7 +151,7 @@ class apache2_plugin {
 		if($master_php_ini_path != '' && substr($master_php_ini_path, -7) == 'php.ini' && is_file($master_php_ini_path)) {
 			$php_ini_content .= $app->system->file_get_contents($master_php_ini_path)."\n";
 		}
-		
+
 		return $php_ini_content;
 	}
 
@@ -169,21 +175,21 @@ class apache2_plugin {
 			$qrystr .= " AND php = 'mod'";
 		} elseif($data['mode'] == 'fast-cgi') {
 			$qrystr .= " AND php = 'fast-cgi'";
-			if($data['php_version']) {
-				$qrystr .= " AND fastcgi_php_version LIKE ?";
-				$param = '%:' . $data['php_version'];
+			if(isset($data['php_version'])) {
+				$qrystr .= " AND server_php_id = ?";
+				$param = $data['php_version'];
 			}
 		} elseif($data['mode'] == 'php-fpm') {
 			$qrystr .= " AND php = 'php-fpm'";
-			if($data['php_version']) {
-				$qrystr .= " AND fastcgi_php_version LIKE ?";
-				$param = '%:' . $data['php_version'] . ':%';
+			if(isset($data['php_version'])) {
+				$qrystr .= " AND server_php_id = ?";
+				$param = $data['php_version'];
 			}
 		} elseif($data['mode'] == 'hhvm') {
 			$qrystr .= " AND php = 'hhvm'";
-			if($data['php_version']) {
-				$qrystr .= " AND fastcgi_php_version LIKE ?";
-				$param = '%:' . $data['php_version'] . ':%';
+			if(isset($data['php_version'])) {
+				$qrystr .= " AND server_php_id = ?";
+				$param = $data['php_version'];
 			}
 		} else {
 			$qrystr .= " AND php != 'mod' AND php != 'fast-cgi'";
@@ -200,11 +206,11 @@ class apache2_plugin {
 				$custom_php_ini_dir .= '_' . $web_folder;
 			}
 			if(!is_dir($web_config['website_basedir'].'/conf')) $app->system->mkdir($web_config['website_basedir'].'/conf');
-			
+
 			if(!is_dir($custom_php_ini_dir)) $app->system->mkdir($custom_php_ini_dir);
-			
+
 			$php_ini_content = $this->get_master_php_ini_content($web_data);
-			
+
 			if(intval($web_data['directive_snippets_id']) > 0){
 				$snippet = $app->db->queryOneRecord("SELECT * FROM directive_snippets WHERE directive_snippets_id = ? AND type = 'apache' AND active = 'y' AND customer_viewable = 'y'", intval($web_data['directive_snippets_id']));
 				if(isset($snippet['required_php_snippets']) && trim($snippet['required_php_snippets']) != ''){
@@ -223,7 +229,7 @@ class apache2_plugin {
 					}
 				}
 			}
-		
+
 			$php_ini_content .= str_replace("\r", '', trim($web_data['custom_php_ini']));
 			$app->system->file_put_contents($custom_php_ini_dir.'/php.ini', $php_ini_content);
 			$app->log('Info: rewrote custom php.ini for web ' . $web_data['domain_id'] . ' (' . $web_data['domain'] . ').', LOGLEVEL_DEBUG);
@@ -272,7 +278,6 @@ class apache2_plugin {
 		$ssl_dir = $data['new']['document_root'].'/ssl';
 		$domain = ($data['new']['ssl_domain'] != '') ? $data['new']['ssl_domain'] : $data['new']['domain'];
 		$key_file = $ssl_dir.'/'.$domain.'.key';
-		$key_file2 = $ssl_dir.'/'.$domain.'.key.org';
 		$csr_file = $ssl_dir.'/'.$domain.'.csr';
 		$crt_file = $ssl_dir.'/'.$domain.'.crt';
 		$bundle_file = $ssl_dir.'/'.$domain.'.bundle';
@@ -287,24 +292,13 @@ class apache2_plugin {
 				$app->system->rename($key_file, $key_file.'.bak');
 				$app->system->chmod($key_file.'.bak', 0400);
 			}
-			if(file_exists($key_file2)){
-				$app->system->rename($key_file2, $key_file2.'.bak');
-				$app->system->chmod($key_file2.'.bak', 0400);
-			}
 			if(file_exists($csr_file)) $app->system->rename($csr_file, $csr_file.'.bak');
 			if(file_exists($crt_file)) $app->system->rename($crt_file, $crt_file.'.bak');
 
 			$rand_file = $ssl_dir.'/random_file';
-			$rand_data = md5(uniqid(microtime(), 1));
-			for($i=0; $i<1000; $i++) {
-				$rand_data .= md5(uniqid(microtime(), 1));
-				$rand_data .= md5(uniqid(microtime(), 1));
-				$rand_data .= md5(uniqid(microtime(), 1));
-				$rand_data .= md5(uniqid(microtime(), 1));
-			}
-			$app->system->file_put_contents($rand_file, $rand_data);
+			$app->system->exec_safe('dd if=/dev/urandom of=? bs=256 count=1', $rand_file);
 
-			$ssl_password = substr(md5(uniqid(microtime(), 1)), 0, 15);
+			$ssl_password = bin2hex(random_bytes(12));
 
 			$ssl_cnf = "        RANDFILE               = $rand_file
 
@@ -329,50 +323,50 @@ class apache2_plugin {
         [ req_attributes ]
         ";//challengePassword              = A challenge password";
 
+			$ext_cnf = "
+        subjectAltName         = @alt_names
+
+        [alt_names]
+        DNS.1                  = .$domain";
+
 			$ssl_cnf_file = $ssl_dir.'/openssl.conf';
 			$app->system->file_put_contents($ssl_cnf_file, $ssl_cnf);
+			$ssl_ext_file = $ssl_dir.'/v3.ext';
+			$app->system->file_put_contents($ssl_ext_file, $ext_cnf);
 
-			$rand_file = $rand_file;
-			$key_file2 = $key_file2;
-			$openssl_cmd_key_file2 = $key_file2;
-			if(substr($domain, 0, 2) == '*.' && strpos($key_file2, '/ssl/\*.') !== false) $key_file2 = str_replace('/ssl/\*.', '/ssl/*.', $key_file2); // wildcard certificate
-			$key_file = $key_file;
 			$openssl_cmd_key_file = $key_file;
 			if(substr($domain, 0, 2) == '*.' && strpos($key_file, '/ssl/\*.') !== false) $key_file = str_replace('/ssl/\*.', '/ssl/*.', $key_file); // wildcard certificate
 			$ssl_days = 3650;
-			$csr_file = $csr_file;
 			$openssl_cmd_csr_file = $csr_file;
 			if(substr($domain, 0, 2) == '*.' && strpos($csr_file, '/ssl/\*.') !== false) $csr_file = str_replace('/ssl/\*.', '/ssl/*.', $csr_file); // wildcard certificate
 			$config_file = $ssl_cnf_file;
-			$crt_file = $crt_file;
 			$openssl_cmd_crt_file = $crt_file;
 			if(substr($domain, 0, 2) == '*.' && strpos($crt_file, '/ssl/\*.') !== false) $crt_file = str_replace('/ssl/\*.', '/ssl/*.', $crt_file); // wildcard certificate
 
 			if(is_file($ssl_cnf_file) && !is_link($ssl_cnf_file)) {
-
-				$app->system->exec_safe("openssl genrsa -des3 -rand ? -passout pass:? -out ? 2048", $rand_file, $ssl_password, $openssl_cmd_key_file2);
-				$app->system->exec_safe("openssl req -new -sha256 -passin pass:? -passout pass:? -key ? -out ? -days ? -config ?", $ssl_password, $ssl_password, $openssl_cmd_key_file2, $openssl_cmd_csr_file, $ssl_days, $config_file);
-				$app->system->exec_safe("openssl rsa -passin pass:? -in ? -out ?", $ssl_password, $openssl_cmd_key_file2, $openssl_cmd_key_file);
+				$openssl_cmd = 'openssl req -nodes -newkey rsa:4096 -x509 -days ? -keyout ? -out ? -config ?';
+				$app->system->exec_safe($openssl_cmd, $ssl_days, $openssl_cmd_key_file, $openssl_cmd_crt_file, $config_file);
+				$app->system->exec_safe("openssl req -new -sha256 -key ? -out ? -days ? -config ?", $openssl_cmd_key_file, $openssl_cmd_csr_file, $ssl_days, $config_file);
 
 				if(file_exists($web_config['CA_path'].'/openssl.cnf'))
 				{
-					$app->system->exec_safe("openssl ca -batch -out ? -config ? -passin pass:? -in ?", $openssl_cmd_crt_file, $web_config['CA_path']."/openssl.cnf", $web_config['CA_pass'], $openssl_cmd_csr_file);
+					$app->system->exec_safe("openssl ca -batch -out ? -config ? -passin pass:? -in ? -extfile ?", $openssl_cmd_crt_file, $web_config['CA_path']."/openssl.cnf", $web_config['CA_pass'], $openssl_cmd_csr_file, $ssl_ext_file);
 					$app->log("Creating CA-signed SSL Cert for: $domain", LOGLEVEL_DEBUG);
 					if(filesize($crt_file) == 0 || !file_exists($crt_file)) {
-						$app->log("CA-Certificate signing failed.  openssl ca -out $openssl_cmd_crt_file -config " . $web_config['CA_path'] . "/openssl.cnf -passin pass:" . $web_config['CA_pass'] . " -in $openssl_cmd_csr_file", LOGLEVEL_ERROR);
+						$app->log("CA-Certificate signing failed.  openssl ca -out $openssl_cmd_crt_file -config " . $web_config['CA_path'] . "/openssl.cnf -passin pass:" . $web_config['CA_pass'] . " -in $openssl_cmd_csr_file -extfile $ssl_ext_file", LOGLEVEL_ERROR);
 					}
-				};
+				}
 				if (@filesize($crt_file)==0 || !file_exists($crt_file)){
-					$app->system->exec_safe("openssl req -x509 -passin pass:? -passout pass:? -key ? -in ? -out ? -days ? -config ? ", $ssl_password, $ssl_password, $openssl_cmd_key_file2, $openssl_cmd_csr_file, $openssl_cmd_crt_file, $ssl_days, $config_file);
+					$app->system->exec_safe($openssl_cmd, $ssl_days, $openssl_cmd_key_file, $openssl_cmd_crt_file, $config_file);
 					$app->log("Creating self-signed SSL Cert for: $domain", LOGLEVEL_DEBUG);
-				};
+				}
 
 			}
 
-			$app->system->chmod($key_file2, 0400);
 			$app->system->chmod($key_file, 0400);
 			@$app->system->unlink($config_file);
 			@$app->system->unlink($rand_file);
+			@$app->system->unlink($ssl_ext_file);
 			$ssl_request = $app->system->file_get_contents($csr_file);
 			$ssl_cert = $app->system->file_get_contents($crt_file);
 			$ssl_key = $app->system->file_get_contents($key_file);
@@ -383,15 +377,15 @@ class apache2_plugin {
 			$app->dbmaster->query("UPDATE web_domain SET ssl_request = ?, ssl_cert = ?, ssl_key = ? WHERE domain = ?", $ssl_request, $ssl_cert, $ssl_key, $data['new']['domain']);
 			$app->dbmaster->query("UPDATE web_domain SET ssl_action = '' WHERE domain = ?", $data['new']['domain']);
 		}
-		
+
 		//* Check that the SSL key is not password protected
 		if($data["new"]["ssl_action"] == 'save') {
 			if(stristr($data["new"]["ssl_key"],'Proc-Type: 4,ENCRYPTED')) {
 				$data["new"]["ssl_action"] = '';
-			
+
 				$app->log('SSL Certificate not saved. The SSL key is encrypted.', LOGLEVEL_WARN);
 				$app->dbmaster->datalogError('SSL Certificate not saved. The SSL key is encrypted.');
-			
+
 				/* Update the DB of the (local) Server */
 				$app->db->query("UPDATE web_domain SET ssl_action = '' WHERE domain = ?", $data['new']['domain']);
 
@@ -399,7 +393,7 @@ class apache2_plugin {
 				$app->dbmaster->query("UPDATE web_domain SET ssl_action = '' WHERE domain = ?", $data['new']['domain']);
 			}
 		}
-		
+
 		//* and check that SSL cert does not contain subdomain of domain acme.invalid
 		if($data["new"]["ssl_action"] == 'save') {
 			$tmp = array();
@@ -409,10 +403,10 @@ class apache2_plugin {
 			$crt_data = implode("\n",$tmp);
 			if(stristr($crt_data,'.acme.invalid')) {
 				$data["new"]["ssl_action"] = '';
-			
+
 				$app->log('SSL Certificate not saved. The SSL cert contains domain acme.invalid.', LOGLEVEL_WARN);
 				$app->dbmaster->datalogError('SSL Certificate not saved. The SSL cert contains domain acme.invalid.');
-			
+
 				/* Update the DB of the (local) Server */
 				$app->db->query("UPDATE web_domain SET ssl_action = '' WHERE domain = ?", $data['new']['domain']);
 
@@ -429,10 +423,6 @@ class apache2_plugin {
 			if(file_exists($key_file)){
 				$app->system->copy($key_file, $key_file.'~');
 				$app->system->chmod($key_file.'~', 0400);
-			}
-			if(file_exists($key_file2)){
-				$app->system->copy($key_file2, $key_file2.'~');
-				$app->system->chmod($key_file2.'~', 0400);
 			}
 			if(file_exists($csr_file)) $app->system->copy($csr_file, $csr_file.'~');
 			if(file_exists($crt_file)) $app->system->copy($crt_file, $crt_file.'~');
@@ -536,7 +526,7 @@ class apache2_plugin {
 		$app->uses('getconf');
 		$web_config = $app->getconf->get_server_config($conf['server_id'], 'web');
 
-		//* Check if this is a chrooted setup
+		//* Check if apache is using a chrooted setup
 		if($web_config['website_basedir'] != '' && @is_file($web_config['website_basedir'].'/etc/passwd')) {
 			$apache_chrooted = true;
 			$app->log('Info: Apache is chrooted.', LOGLEVEL_DEBUG);
@@ -550,7 +540,7 @@ class apache2_plugin {
 		}
 		if($app->system->is_allowed_user($data['new']['system_user'], $app->system->is_user($data['new']['system_user']), true) == false
 			|| $app->system->is_allowed_group($data['new']['system_group'], $app->system->is_group($data['new']['system_group']), true) == false) {
-			$app->log('Websites cannot be owned by the root user or group. User: '.$data['new']['system_user'].' Group: '.$data['new']['system_group'], LOGLEVEL_WARN);
+			$app->log('Problem with website user or group.  Websites cannot be owned by root or an existing user/group. User: '.$data['new']['system_user'].' Group: '.$data['new']['system_group'], LOGLEVEL_WARN);
 			return 0;
 		}
 		if(trim($data['new']['domain']) == '') {
@@ -570,7 +560,12 @@ class apache2_plugin {
 			$web_folder = $data['new']['web_folder'];
 			$log_folder .= '/' . $subdomain_host;
 			unset($tmp);
-			
+
+			if($app->system->is_blacklisted_web_path($web_folder)) {
+				$app->log('Vhost ' . $subdomain_host . ' is using a blacklisted web folder: ' . $web_folder, LOGLEVEL_ERROR);
+				return 0;
+			}
+
 			if(isset($data['old']['parent_domain_id'])) {
 				// old one
 				$tmp = $app->db->queryOneRecord('SELECT `domain` FROM web_domain WHERE domain_id = ?', $data['old']['parent_domain_id']);
@@ -639,7 +634,7 @@ class apache2_plugin {
 					$tmp_symlink = str_replace('[website_domain]', $data['old']['domain'], $tmp_symlink);
 					// Remove trailing slash
 					if(substr($tmp_symlink, -1, 1) == '/') $tmp_symlink = substr($tmp_symlink, 0, -1);
-					// create the symlinks, if not exist
+					// remove the old symlinks if they exist
 					if(is_link($tmp_symlink)) {
 						$app->system->exec_safe('rm -f ?', $tmp_symlink);
 						$app->log('Removed symlink: rm -f '.$tmp_symlink, LOGLEVEL_DEBUG);
@@ -666,15 +661,13 @@ class apache2_plugin {
 					$app->system->rename($data['new']['document_root'], $data['new']['document_root'].'_bak_'.date('Y_m_d_H_i_s'));
 					$app->log('Renaming existing directory in new docroot location. mv '.$data['new']['document_root'].' '.$data['new']['document_root'].'_bak_'.date('Y_m_d_H_i_s'), LOGLEVEL_DEBUG);
 				}
-				
+
 				//* Unmount the old log directory bfore we move the log dir
-				$app->system->exec_safe('umount ?', $data['old']['document_root'].'/log');
+				$app->system->exec_safe('umount -l ?', $data['old']['document_root'].'/log');
 
 				//* Create new base directory, if it does not exist yet
 				if(!is_dir($new_dir)) $app->system->mkdirpath($new_dir);
-				$app->system->web_folder_protection($data['old']['document_root'], false);
 				$app->system->exec_safe('mv ? ?', $data['old']['document_root'], $new_dir);
-				//$app->system->rename($data['old']['document_root'],$new_dir);
 				$app->log('Moving site to new document root: mv '.$data['old']['document_root'].' '.$new_dir, LOGLEVEL_DEBUG);
 
 				// Handle the change in php_open_basedir
@@ -694,17 +687,8 @@ class apache2_plugin {
 			if($apache_chrooted) $app->system->exec_safe('chroot ? ?', $web_config['website_basedir'], $command);
 
 			//* Change the log mount
-			/*
-			$fstab_line = '/var/log/ispconfig/httpd/'.$data['old']['domain'].' '.$data['old']['document_root'].'/'.$old_log_folder.'    none    bind';
-			$app->system->removeLine('/etc/fstab', $fstab_line);
-			$fstab_line = '/var/log/ispconfig/httpd/'.$data['old']['domain'].' '.$data['old']['document_root'].'/'.$old_log_folder.'    none    bind,nobootwait';
-			$app->system->removeLine('/etc/fstab', $fstab_line);
-			$fstab_line = '/var/log/ispconfig/httpd/'.$data['old']['domain'].' '.$data['old']['document_root'].'/'.$old_log_folder.'    none    bind,nobootwait';
-			$app->system->removeLine('/etc/fstab', $fstab_line);
-			*/
-			
 			$fstab_line_old = '/var/log/ispconfig/httpd/'.$data['old']['domain'].' '.$data['old']['document_root'].'/'.$old_log_folder.'    none    bind';
-			
+
 			if($web_config['network_filesystem'] == 'y') {
 				$fstab_line = '/var/log/ispconfig/httpd/'.$data['new']['domain'].' '.$data['new']['document_root'].'/'.$log_folder.'    none    bind,nofail,_netdev    0 0';
 				$app->system->replaceLine('/etc/fstab', $fstab_line_old, $fstab_line, 0, 1);
@@ -712,24 +696,29 @@ class apache2_plugin {
 				$fstab_line = '/var/log/ispconfig/httpd/'.$data['new']['domain'].' '.$data['new']['document_root'].'/'.$log_folder.'    none    bind,nofail    0 0';
 				$app->system->replaceLine('/etc/fstab', $fstab_line_old, $fstab_line, 0, 1);
 			}
-			
-			$app->system->exec_safe('mount --bind ? ?', '/var/log/ispconfig/httpd/'.$data['new']['domain'], $data['new']['document_root'].'/'.$log_folder);
-			
-		}
 
-		//print_r($data);
+			$app->system->exec_safe('mount --bind ? ?', '/var/log/ispconfig/httpd/'.$data['new']['domain'], $data['new']['document_root'].'/'.$log_folder);
+
+		}
 
 		// Check if the directories are there and create them if necessary.
 		$app->system->web_folder_protection($data['new']['document_root'], false);
 
-		if(!is_dir($data['new']['document_root'].'/' . $web_folder)) $app->system->mkdirpath($data['new']['document_root'].'/' . $web_folder);
+		if(!is_dir($data['new']['document_root'].'/' . $web_folder)) {
+			if($web_folder !== 'web') { //vhost sub/alias
+				$app->system->mkdirpath($data['new']['document_root'].'/' . $web_folder, 0755, $username, $groupname);
+			} else {
+				$app->system->mkdirpath($data['new']['document_root'].'/' . $web_folder);
+			}
+		}
 		if(!is_dir($data['new']['document_root'].'/' . $web_folder . '/error') and $data['new']['errordocs']) $app->system->mkdirpath($data['new']['document_root'].'/' . $web_folder . '/error');
 		if($data['new']['stats_type'] != '' && !is_dir($data['new']['document_root'].'/' . $web_folder . '/stats')) $app->system->mkdirpath($data['new']['document_root'].'/' . $web_folder . '/stats');
 		if(!is_dir($data['new']['document_root'].'/ssl')) $app->system->mkdirpath($data['new']['document_root'].'/ssl');
 		if(!is_dir($data['new']['document_root'].'/cgi-bin')) $app->system->mkdirpath($data['new']['document_root'].'/cgi-bin');
-		if(!is_dir($data['new']['document_root'].'/tmp')) $app->system->mkdirpath($data['new']['document_root'].'/tmp');
+		if(!is_dir($data['new']['document_root'].'/tmp')) $app->system->mkdirpath($data['new']['document_root'].'/tmp', 0770);
 		if(!is_dir($data['new']['document_root'].'/webdav')) $app->system->mkdirpath($data['new']['document_root'].'/webdav');
-		
+		if(!is_dir($data['new']['document_root'].'/backup')) $app->system->mkdirpath($data['new']['document_root'].'/backup');
+
 		if(!is_dir($data['new']['document_root'].'/.ssh')) {
 			$app->system->mkdirpath($data['new']['document_root'].'/.ssh');
 			$app->system->chmod($data['new']['document_root'].'/.ssh', 0700);
@@ -745,6 +734,87 @@ class apache2_plugin {
 			$app->system->chgrp($data['new']['document_root'].'/private', $groupname);
 		}
 
+		// load jailkit server config
+		$jailkit_config = $app->getconf->get_server_config($conf['server_id'], 'jailkit');
+
+		// website overrides
+		if (isset($data['new']['jailkit_chroot_app_sections']) && $data['new']['jailkit_chroot_app_sections'] != '' ) {
+			$jailkit_config['jailkit_chroot_app_sections'] = $data['new']['jailkit_chroot_app_sections'];
+		}
+		if (isset($data['new']['jailkit_chroot_app_programs']) && $data['new']['jailkit_chroot_app_programs'] != '' ) {
+			$jailkit_config['jailkit_chroot_app_programs'] = $data['new']['jailkit_chroot_app_programs'];
+		}
+
+		$last_updated = preg_split('/[\s,]+/', $jailkit_config['jailkit_chroot_app_sections']
+						  .' '.$jailkit_config['jailkit_chroot_app_programs']
+						  .' '.$jailkit_config['jailkit_chroot_cron_programs']);
+		$last_updated = array_unique($last_updated, SORT_REGULAR);
+		sort($last_updated, SORT_STRING);
+		$update_hash = hash('md5', implode(' ', $last_updated));
+		$check_for_jailkit_updates=false;
+
+		$create_jail_conditions= ($data['old']['php_fpm_chroot'] != 'y' ||
+			! is_dir($data['new']['document_root'].'/etc/jailkit') ||
+			($data['old']['php'] != $data['new']['php'] && $data['new']['php'] != 'no'));
+
+		// Create jailkit chroot if needed and when enabling php_fpm_chroot
+		if($data['new']['php_fpm_chroot'] == 'y' && $create_jail_conditions && $data['new']['php'] != 'no') {
+			$website = $app->db->queryOneRecord('SELECT * FROM web_domain WHERE domain_id = ?', $data['new']['domain_id']);
+			$this->website = array_merge($website, $data['new'], array('new_jailkit_hash' => $update_hash));
+			$this->jailkit_config = $jailkit_config;
+			$this->_setup_jailkit_chroot();
+			$this->_add_jailkit_user();
+		// else delete if unused
+		} elseif (($data['new']['delete_unused_jailkit'] == 'y' && $data['new']['php_fpm_chroot'] != 'y') ||
+			($data['new']['delete_unused_jailkit'] == 'y' && $data['new']['php'] == 'no')) {
+			$check_for_jailkit_updates=false;
+			$this->_delete_jailkit_if_unused($data['new']['domain_id']);
+			if(is_dir($data['new']['document_root'].'/etc/jailkit')) {
+				$check_for_jailkit_updates=true;
+			}
+		// else update if needed
+		} elseif ($data['new']['delete_unused_jailkit'] != 'y') {
+			$check_for_jailkit_updates=true;
+		}
+
+		// If jail exists (and wasn't deleted), we may need to update it
+		if($check_for_jailkit_updates &&
+		   ( ($data['old']['jailkit_chroot_app_sections'] != $data['new']['jailkit_chroot_app_sections']) ||
+		     ($data['old']['jailkit_chroot_app_programs'] != $data['new']['jailkit_chroot_app_programs']) ) )
+		{
+
+			if (isset($jailkit_config['jailkit_hardlinks'])) {
+				if ($jailkit_config['jailkit_hardlinks'] == 'yes') {
+					$options = array('hardlink');
+				} elseif ($jailkit_config['jailkit_hardlinks'] == 'no') {
+					$options = array();
+				}
+			} else {
+				$options = array('allow_hardlink');
+			}
+
+			$options[] = 'force';
+
+			$sections = $jailkit_config['jailkit_chroot_app_sections'];
+			$programs = $jailkit_config['jailkit_chroot_app_programs'] . ' '
+				  . $jailkit_config['jailkit_chroot_cron_programs'];
+
+			$records = $app->db->queryAllRecords('SELECT web_folder FROM `web_domain` WHERE `parent_domain_id` = ? AND `document_root` = ? AND web_folder != \'\' AND web_folder IS NOT NULL AND `server_id` = ?', $data['new']['domain_id'], $data['new']['document_root'], $conf['server_id']);
+			foreach ($records as $record) {
+				$options[] = 'skip='.$record['web_folder'];
+			}
+
+			// don't update if last_jailkit_hash is the same
+			$tmp = $app->db->queryOneRecord('SELECT `last_jailkit_hash` FROM web_domain WHERE domain_id = ?', $data['new']['parent_domain_id']);
+			if ($update_hash != $tmp['last_jailkit_hash']) {
+				$app->system->update_jailkit_chroot($data['new']['document_root'], $sections, $programs, $options);
+
+				// this gets last_jailkit_update out of sync with master db, but that is ok,
+				// as it is only used as a timestamp to moderate the frequency of updating on the slaves
+				$app->db->query("UPDATE `web_domain` SET `last_jailkit_update` = NOW(), `last_jailkit_hash` = ? WHERE `document_root` = ?", $update_hash, $data['new']['document_root']);
+			}
+			unset($tmp);
+		}
 
 		// Remove the symlink for the site, if site is renamed
 		if($this->action == 'update' && $data['old']['domain'] != '' && $data['new']['domain'] != $data['old']['domain']) {
@@ -756,7 +826,7 @@ class apache2_plugin {
 			$app->system->removeLine('/etc/fstab', $fstab_line);
 
 			//* Unmount log directory
-			$app->system->exec_safe('umount ?', $data['old']['document_root'].'/'.$old_log_folder);
+			$app->system->exec_safe('umount -l ?', $data['old']['document_root'].'/'.$old_log_folder);
 		}
 
 		//* Create the log dir if nescessary and mount it
@@ -769,7 +839,7 @@ class apache2_plugin {
 			$app->system->chmod($data['new']['document_root'].'/'.$log_folder, 0755);
 			$app->system->exec_safe('mount --bind ? ?', '/var/log/ispconfig/httpd/'.$data['new']['domain'], $data['new']['document_root'].'/'.$log_folder);
 			//* add mountpoint to fstab
-			$fstab_line = '/var/log/ispconfig/httpd/'.$data['new']['domain'].' '.$data['new']['document_root'].'/'.$log_folder.'    none    bind,nobootwait';
+			$fstab_line = '/var/log/ispconfig/httpd/'.$data['new']['domain'].' '.$data['new']['document_root'].'/'.$log_folder.'    none    bind,nofail';
 			$fstab_line .= @($web_config['network_filesystem'] == 'y')?',_netdev    0 0':'    0 0';
 			$app->system->replaceLine('/etc/fstab', $fstab_line, $fstab_line, 1, 1);
 		}
@@ -790,7 +860,7 @@ class apache2_plugin {
 					$tmp_symlink = str_replace('[website_domain]', $data['old']['domain'], $tmp_symlink);
 					// Remove trailing slash
 					if(substr($tmp_symlink, -1, 1) == '/') $tmp_symlink = substr($tmp_symlink, 0, -1);
-					// remove the symlinks, if not exist
+					// remove the old symlinks if they exist
 					if(is_link($tmp_symlink)) {
 						$app->system->exec_safe('rm -f ?', $tmp_symlink);
 						$app->log('Removed symlink: rm -f '.$tmp_symlink, LOGLEVEL_DEBUG);
@@ -851,11 +921,11 @@ class apache2_plugin {
 				$app->system->exec_safe('chmod -R a+r ?', $error_page_path);
 			}
 
-			//* Copy the web skeleton files only when there is no index.ph or index.html file yet
-			if(!file_exists($data['new']['document_root'].'/'.$web_folder.'/index.html') && !file_exists($data['new']['document_root'].'/'.$web_folder.'/index.php')) {
+			//* Copy the web skeleton files only when there is no index.php, standard_index.html or index.html file yet
+			if(!file_exists($data['new']['document_root'].'/'.$web_folder.'/index.html') && !file_exists($data['new']['document_root'].'/'.$web_folder.'/index.php') && !file_exists($data['new']['document_root'].'/'.$web_folder.'/standard_index.html')) {
 				if (file_exists($conf['rootpath'] . '/conf-custom/index/standard_index.html_'.substr($conf['language'], 0, 2))) {
-					if(!file_exists($data['new']['document_root'] . '/' . $web_folder . '/index.html')) {
-						$app->system->exec_safe('cp ? ?', $conf['rootpath'] . '/conf-custom/index/standard_index.html_' . substr($conf['language'], 0, 2), $data['new']['document_root'] . '/' . $web_folder . '/index.html');
+					if(!file_exists($data['new']['document_root'] . '/' . $web_folder . '/standard_index.html')) {
+						$app->system->exec_safe('cp ? ?', $conf['rootpath'] . '/conf-custom/index/standard_index.html_' . substr($conf['language'], 0, 2), $data['new']['document_root'] . '/' . $web_folder . '/standard_index.html');
 					}
 
 					if(is_file($conf['rootpath'] . '/conf-custom/index/favicon.ico')) {
@@ -866,13 +936,13 @@ class apache2_plugin {
 					}
 				} else {
 					if (file_exists($conf['rootpath'] . '/conf-custom/index/standard_index.html')) {
-						if(!file_exists($data['new']['document_root'].'/' . $web_folder . '/index.html')) $app->system->exec_safe('cp ? ?', $conf['rootpath'] . '/conf-custom/index/standard_index.html', $data['new']['document_root'].'/' . $web_folder . '/index.html');
+						if(!file_exists($data['new']['document_root'].'/' . $web_folder . '/standard_index.html')) $app->system->exec_safe('cp ? ?', $conf['rootpath'] . '/conf-custom/index/standard_index.html', $data['new']['document_root'].'/' . $web_folder . '/standard_index.html');
 					} else {
-						if(!file_exists($data['new']['document_root'].'/' . $web_folder . '/index.html')) $app->system->exec_safe('cp ? ?', $conf['rootpath'] . '/conf/index/standard_index.html_'.substr($conf['language'], 0, 2), $data['new']['document_root'].'/' . $web_folder . '/index.html');
-						if(is_file($conf['rootpath'] . '/conf/index/favicon.ico')){
+						if(!file_exists($data['new']['document_root'].'/' . $web_folder . '/standard_index.html')) $app->system->exec_safe('cp ? ?', $conf['rootpath'] . '/conf/index/standard_index.html_'.substr($conf['language'], 0, 2), $data['new']['document_root'].'/' . $web_folder . '/standard_index.html');
+						if(is_file($conf['rootpath'] . '/conf/index/favicon.ico')) {
 							if(!file_exists($data['new']['document_root'].'/' . $web_folder . '/favicon.ico')) $app->system->exec_safe('cp ? ?', $conf['rootpath'] . '/conf/index/favicon.ico', $data['new']['document_root'].'/' . $web_folder . '/');
 						}
-						if(is_file($conf['rootpath'] . '/conf/index/robots.txt')){
+						if(is_file($conf['rootpath'] . '/conf/index/robots.txt')) {
 							if(!file_exists($data['new']['document_root'].'/' . $web_folder . '/robots.txt')) $app->system->exec_safe('cp ? ?', $conf['rootpath'] . '/conf/index/robots.txt', $data['new']['document_root'].'/' . $web_folder . '/');
 						}
 					}
@@ -1093,7 +1163,7 @@ class apache2_plugin {
 			$app->system->chgrp('/var/log/ispconfig/httpd/'.$data['new']['domain'].'/error.log', 'root');
 		}
 
-		//* Write the custom php.ini file, if custom_php_ini fieled is not empty
+		//* Write the custom php.ini file, if custom_php_ini field is not empty
 		$custom_php_ini_dir = $web_config['website_basedir'].'/conf/'.$data['new']['system_user'];
 		if($data['new']['type'] == 'vhostsubdomain' || $data['new']['type'] == 'vhostalias') $custom_php_ini_dir .= '_' . $web_folder;
 		if(!is_dir($web_config['website_basedir'].'/conf')) $app->system->mkdir($web_config['website_basedir'].'/conf');
@@ -1104,21 +1174,35 @@ class apache2_plugin {
 		}
 
 		$fastcgi_config = $app->getconf->get_server_config($conf['server_id'], 'fastcgi');
+		$custom_fastcgi_php_executable = '';
 
-		if(trim($data['new']['fastcgi_php_version']) != ''){
-			list($custom_fastcgi_php_name, $custom_fastcgi_php_executable, $custom_fastcgi_php_ini_dir) = explode(':', trim($data['new']['fastcgi_php_version']));
-			if(is_file($custom_fastcgi_php_ini_dir)) $custom_fastcgi_php_ini_dir = dirname($custom_fastcgi_php_ini_dir);
-			if(substr($custom_fastcgi_php_ini_dir, -1) == '/') $custom_fastcgi_php_ini_dir = substr($custom_fastcgi_php_ini_dir, 0, -1);
+		if($data['new']['server_php_id'] != 0){
+			$tmp_php = $app->db->queryOneRecord('SELECT * FROM server_php WHERE server_php_id = ?', $data['new']['server_php_id']);
+			if($tmp_php) {
+				if($data['new']['php'] === 'php-fpm') {
+					$custom_fastcgi_php_ini_dir = $tmp_php['php_fpm_ini_dir'];
+					$custom_fastcgi_php_executable = $tmp_php['php_fpm_init_script'];
+				} else {
+					$custom_fastcgi_php_ini_dir = $tmp_php['php_fastcgi_ini_dir'];
+					$custom_fastcgi_php_executable = $tmp_php['php_fastcgi_binary'];
+				}
+				if(is_file($custom_fastcgi_php_ini_dir)) $custom_fastcgi_php_ini_dir = dirname($custom_fastcgi_php_ini_dir);
+				if(substr($custom_fastcgi_php_ini_dir, -1) == '/') $custom_fastcgi_php_ini_dir = substr($custom_fastcgi_php_ini_dir, 0, -1);
+			}
 		}
 
 		//* Create custom php.ini
-		if(trim($data['new']['custom_php_ini']) != '') {
+		# Because of custom default PHP directives from snippet
+		# php.ini custom values order os: 1. general settings 2. Directive Snippets settings 3. custom php.ini settings defined in domain settings
+		if(trim($data['new']['custom_php_ini']) != '' || $data['new']['directive_snippets_id'] > "0") {
 			$has_custom_php_ini = true;
+			$custom_sendmail_path = false;
 			if(!is_dir($custom_php_ini_dir)) $app->system->mkdirpath($custom_php_ini_dir);
-			
+
 			$php_ini_content = $this->get_master_php_ini_content($data['new']);
-			$php_ini_content .= str_replace("\r", '', trim($data['new']['custom_php_ini']));
-			
+
+			$php_ini_content .= "\n".str_replace("\r", '', trim($data['new']['custom_php_ini']));
+
 			if(intval($data['new']['directive_snippets_id']) > 0){
 				$snippet = $app->db->queryOneRecord("SELECT * FROM directive_snippets WHERE directive_snippets_id = ? AND type = 'apache' AND active = 'y' AND customer_viewable = 'y'", intval($data['new']['directive_snippets_id']));
 				if(isset($snippet['required_php_snippets']) && trim($snippet['required_php_snippets']) != ''){
@@ -1130,6 +1214,7 @@ class apache2_plugin {
 								$php_snippet = $app->db->queryOneRecord("SELECT * FROM directive_snippets WHERE directive_snippets_id = ? AND type = 'php' AND active = 'y'", $required_php_snippet);
 								$php_snippet['snippet'] = trim($php_snippet['snippet']);
 								if($php_snippet['snippet'] != ''){
+									$php_snippet['snippet'] = str_replace("\r", '', $php_snippet['snippet']);
 									$php_ini_content .= "\n".$php_snippet['snippet'];
 								}
 							}
@@ -1137,7 +1222,14 @@ class apache2_plugin {
 					}
 				}
 			}
-		
+
+			$custom_sendmail_path = false;
+			$line = strtok($php_ini_content, '\n');
+			while ($line !== false) {
+				if (strpos($line, 'sendmail_path') === 0) $custom_sendmail_path = true;
+				$line = strtok('\n');
+			}
+
 			$app->system->file_put_contents($custom_php_ini_dir.'/php.ini', $php_ini_content);
 		} else {
 			$has_custom_php_ini = false;
@@ -1171,26 +1263,31 @@ class apache2_plugin {
 				$vhost_data['apache_directives'] = $snippet['snippet'];
 			}
 		}
+
+		if(!$vhost_data['apache_directives']) {
+			$vhost_data['apache_directives'] = ''; // ensure it is not null
+		}
+
 		// Make sure we only have Unix linebreaks
 		$vhost_data['apache_directives'] = str_replace("\r\n", "\n", $vhost_data['apache_directives']);
 		$vhost_data['apache_directives'] = str_replace("\r", "\n", $vhost_data['apache_directives']);
 		$trans = array(
 			'{DOCROOT}' => $vhost_data['web_document_root_www'],
-			'{DOCROOT_CLIENT}' => $vhost_data['web_document_root']
+			'{DOCROOT_CLIENT}' => $vhost_data['web_document_root'],
+			'{DOMAIN}' => $vhost_data['domain']
 		);
 		$vhost_data['apache_directives'] = strtr($vhost_data['apache_directives'], $trans);
-		
+
 		$app->uses('letsencrypt');
 		// Check if a SSL cert exists
 		$tmp = $app->letsencrypt->get_website_certificate_paths($data);
 		$domain = $tmp['domain'];
 		$key_file = $tmp['key'];
-		$key_file2 = $tmp['key2'];
 		$csr_file = $tmp['csr'];
 		$crt_file = $tmp['crt'];
 		$bundle_file = $tmp['bundle'];
 		unset($tmp);
-		
+
 		$data['new']['ssl_domain'] = $domain;
 		$vhost_data['ssl_domain'] = $domain;
 		$vhost_data['ssl_crt_file'] = $crt_file;
@@ -1222,20 +1319,9 @@ class apache2_plugin {
 				$app->dbmaster->query("UPDATE web_domain SET `ssl` = ?, `ssl_letsencrypt` = ? WHERE `domain` = ? AND `server_id` = ?", $data['new']['ssl'], 'n', $data['new']['domain'], $conf['server_id']);
  			}
 		}
-		
+
 		// Use separate bundle file only for apache versions < 2.4.8
 		if(@is_file($bundle_file) && version_compare($app->system->getapacheversion(true), '2.4.8', '<')) $vhost_data['has_bundle_cert'] = 1;
-
-		// HTTP/2.0 ?
-		$vhost_data['enable_http2']  = 'n';
-		if($vhost_data['enable_spdy'] == 'y'){
-			// check if apache supports http_v2
-			exec("2>&1 apachectl -M | grep http2_module", $tmp_output, $tmp_retval);
-			if($tmp_retval == 0){
-				$vhost_data['enable_http2']  = 'y';
-			}
-			unset($tmp_output, $tmp_retval);
-		}
 
 		// Set SEO Redirect
 		if($data['new']['seo_redirect'] != ''){
@@ -1251,6 +1337,8 @@ class apache2_plugin {
 		} else {
 			$vhost_data['seo_redirect_enabled'] = 0;
 		}
+
+		$vhost_data['custom_sendmail_path'] = (isset($custom_sendmail_path) && $custom_sendmail_path) ? 'y' : 'n';
 
 		$tpl->setVar($vhost_data);
 		$tpl->setVar('apache_version', $app->system->getapacheversion());
@@ -1275,15 +1363,17 @@ class apache2_plugin {
 
 			switch($data['new']['subdomain']) {
 			case 'www':
-				$rewrite_rules[] = array( 'rewrite_domain'  => '^'.$this->_rewrite_quote($data['new']['domain']),
+				$rewrite_rules[] = array('rewrite_domain'  => '^'.$this->_rewrite_quote($data['new']['domain']),
 					'rewrite_type'   => ($data['new']['redirect_type'] == 'no')?'':'['.$data['new']['redirect_type'].']',
 					'rewrite_target'  => $rewrite_target,
+					'rewrite_target_is_ssl' => ('https://' === substr($rewrite_target, 0, 8) ? 'y' : 'n'),
 					'rewrite_target_ssl' => $rewrite_target_ssl,
 					'rewrite_is_url'    => ($this->_is_url($rewrite_target) ? 'y' : 'n'),
 					'rewrite_add_path' => (substr($rewrite_target, -1) == '/' ? 'y' : 'n'));
-				$rewrite_rules[] = array( 'rewrite_domain'  => '^' . $this->_rewrite_quote('www.'.$data['new']['domain']),
+				$rewrite_rules[] = array('rewrite_domain'  => '^' . $this->_rewrite_quote('www.'.$data['new']['domain']),
 					'rewrite_type'   => ($data['new']['redirect_type'] == 'no')?'':'['.$data['new']['redirect_type'].']',
 					'rewrite_target'  => $rewrite_target,
+					'rewrite_target_is_ssl' => ('https://' === substr($rewrite_target, 0, 8) ? 'y' : 'n'),
 					'rewrite_target_ssl' => $rewrite_target_ssl,
 					'rewrite_is_url'    => ($this->_is_url($rewrite_target) ? 'y' : 'n'),
 					'rewrite_add_path' => (substr($rewrite_target, -1) == '/' ? 'y' : 'n'));
@@ -1292,6 +1382,7 @@ class apache2_plugin {
 				$rewrite_wildcard_rules[] = array( 'rewrite_domain'  => '(^|\.)'.$this->_rewrite_quote($data['new']['domain']),
 					'rewrite_type'   => ($data['new']['redirect_type'] == 'no')?'':'['.$data['new']['redirect_type'].']',
 					'rewrite_target'  => $rewrite_target,
+					'rewrite_target_is_ssl' => ('https://' === substr($rewrite_target, 0, 8) ? 'y' : 'n'),
 					'rewrite_target_ssl' => $rewrite_target_ssl,
 					'rewrite_is_url'    => ($this->_is_url($rewrite_target) ? 'y' : 'n'),
 					'rewrite_add_path' => (substr($rewrite_target, -1) == '/' ? 'y' : 'n'));
@@ -1300,6 +1391,7 @@ class apache2_plugin {
 				$rewrite_rules[] = array( 'rewrite_domain'  => '^'.$this->_rewrite_quote($data['new']['domain']),
 					'rewrite_type'   => ($data['new']['redirect_type'] == 'no')?'':'['.$data['new']['redirect_type'].']',
 					'rewrite_target'  => $rewrite_target,
+					'rewrite_target_is_ssl' => ('https://' === substr($rewrite_target, 0, 8) ? 'y' : 'n'),
 					'rewrite_target_ssl' => $rewrite_target_ssl,
 					'rewrite_is_url'    => ($this->_is_url($rewrite_target) ? 'y' : 'n'),
 					'rewrite_add_path' => (substr($rewrite_target, -1) == '/' ? 'y' : 'n'));
@@ -1425,13 +1517,17 @@ class apache2_plugin {
 		} else {
 			$tpl->setVar('alias', '');
 		}
-		
+
 		if (count($rewrite_wildcard_rules) > 0) $rewrite_rules = array_merge($rewrite_rules, $rewrite_wildcard_rules); // Append wildcard rules to the end of rules
 
 		if(count($rewrite_rules) > 0 || $vhost_data['seo_redirect_enabled'] > 0 || count($alias_seo_redirects) > 0 || $data['new']['rewrite_to_https'] == 'y') {
 			$tpl->setVar('rewrite_enabled', 1);
 		} else {
 			$tpl->setVar('rewrite_enabled', 0);
+		}
+
+		if($data['new']['ssl'] == 'n') {
+			$tpl->setVar('rewrite_to_https', 'n');
 		}
 
 		//$tpl->setLoop('redirects',$rewrite_rules);
@@ -1468,7 +1564,7 @@ class apache2_plugin {
 			$fcgi_tpl->setVar('apache_version', $app->system->getapacheversion());
 
 			// Support for multiple PHP versions (FastCGI)
-			if(trim($data['new']['fastcgi_php_version']) != ''){
+			if($data['new']['server_php_id'] != 0){
 				$default_fastcgi_php = false;
 				if(substr($custom_fastcgi_php_ini_dir, -1) != '/') $custom_fastcgi_php_ini_dir .= '/';
 			} else {
@@ -1499,6 +1595,7 @@ class apache2_plugin {
 			$fcgi_tpl->setVar('open_basedir', $php_open_basedir);
 
 			$fcgi_starter_script = $fastcgi_starter_path.$fastcgi_config['fastcgi_starter_script'].(($data['new']['type'] == 'vhostsubdomain' || $data['new']['type'] == 'vhostalias') ? '_web' . $data['new']['domain_id'] : '');
+			$app->system->set_immutable($fcgi_starter_script, false);
 			$app->system->file_put_contents($fcgi_starter_script, $fcgi_tpl->grab());
 			unset($fcgi_tpl);
 
@@ -1511,6 +1608,7 @@ class apache2_plugin {
 			}
 			$app->system->chown($fcgi_starter_script, $data['new']['system_user']);
 			$app->system->chgrp($fcgi_starter_script, $data['new']['system_group']);
+			$app->system->set_immutable($fcgi_starter_script, true);
 
 			$tpl->setVar('fastcgi_alias', $fastcgi_config['fastcgi_alias']);
 			$tpl->setVar('fastcgi_starter_path', $fastcgi_starter_path);
@@ -1524,6 +1622,7 @@ class apache2_plugin {
 			if ($data['old']['php'] == 'fast-cgi') {
 				$fastcgi_starter_path = str_replace('[system_user]', $data['old']['system_user'], $fastcgi_config['fastcgi_starter_path']);
 				$fastcgi_starter_path = str_replace('[client_id]', $client_id, $fastcgi_starter_path);
+				$app->system->set_immutable($fastcgi_starter_path, false, true);
 				if($data['old']['type'] == 'vhost') {
 					if(is_file($fastcgi_starter_script)) @unlink($fastcgi_starter_script);
 					if (is_dir($fastcgi_starter_path)) @rmdir($fastcgi_starter_path);
@@ -1539,21 +1638,30 @@ class apache2_plugin {
 		 * PHP-FPM
 		 */
 		// Support for multiple PHP versions
+		$default_php_fpm = true;
 		if($data['new']['php'] == 'php-fpm'){
-			if(trim($data['new']['fastcgi_php_version']) != ''){
-				$default_php_fpm = false;
-				list($custom_php_fpm_name, $custom_php_fpm_init_script, $custom_php_fpm_ini_dir, $custom_php_fpm_pool_dir) = explode(':', trim($data['new']['fastcgi_php_version']));
-				if(substr($custom_php_fpm_ini_dir, -1) != '/') $custom_php_fpm_ini_dir .= '/';
-			} else {
-				$default_php_fpm = true;
+			if($data['new']['server_php_id'] != 0){
+				$tmp_php = $app->db->queryOneRecord('SELECT * FROM server_php WHERE server_php_id = ?', $data['new']['server_php_id']);
+				if($tmp_php) {
+					$default_php_fpm = false;
+					$custom_php_fpm_ini_dir = $tmp_php['php_fpm_ini_dir'];
+					$custom_php_fpm_init_script = $tmp_php['php_fpm_init_script'];
+					$custom_php_fpm_pool_dir = $tmp_php['php_fpm_pool_dir'];
+					$custom_php_fpm_socket_dir = $tmp_php['php_fpm_socket_dir'];
+					if(substr($custom_php_fpm_ini_dir, -1) != '/') $custom_php_fpm_ini_dir .= '/';
+				}
 			}
 		} else {
-			if(trim($data['old']['fastcgi_php_version']) != '' && ($data['old']['php'] == 'php-fpm' || $data['old']['php'] == 'hhvm')){
-				$default_php_fpm = false;
-				list($custom_php_fpm_name, $custom_php_fpm_init_script, $custom_php_fpm_ini_dir, $custom_php_fpm_pool_dir) = explode(':', trim($data['old']['fastcgi_php_version']));
-				if(substr($custom_php_fpm_ini_dir, -1) != '/') $custom_php_fpm_ini_dir .= '/';
-			} else {
-				$default_php_fpm = true;
+			if($data['old']['server_php_id'] != 0 && ($data['old']['php'] == 'php-fpm' || $data['old']['php'] == 'hhvm')){
+				$tmp_php = $app->db->queryOneRecord('SELECT * FROM server_php WHERE server_php_id = ?', $data['old']['server_php_id']);
+				if($tmp_php) {
+					$default_php_fpm = false;
+					$custom_php_fpm_ini_dir = $tmp_php['php_fpm_ini_dir'];
+					$custom_php_fpm_init_script = $tmp_php['php_fpm_init_script'];
+					$custom_php_fpm_pool_dir = $tmp_php['php_fpm_pool_dir'];
+					$custom_php_fpm_socket_dir = $tmp_php['php_fpm_socket_dir'];
+					if(substr($custom_php_fpm_ini_dir, -1) != '/') $custom_php_fpm_ini_dir .= '/';
+				}
 			}
 		}
 
@@ -1566,9 +1674,14 @@ class apache2_plugin {
 
 		if(substr($pool_dir, -1) != '/') $pool_dir .= '/';
 		$pool_name = 'web'.$data['new']['domain_id'];
-		$socket_dir = $web_config['php_fpm_socket_dir'];
+
+		if (!$default_php_fpm && !empty($custom_php_fpm_socket_dir)) {
+			$socket_dir = $custom_php_fpm_socket_dir;
+		} else {
+			$socket_dir = $web_config['php_fpm_socket_dir'];
+		}
 		if(substr($socket_dir, -1) != '/') $socket_dir .= '/';
-		
+
 		if($data['new']['php_fpm_use_socket'] == 'y'){
 			$use_tcp = 0;
 			$use_socket = 1;
@@ -1635,6 +1748,7 @@ class apache2_plugin {
 			}
 
 			$cgi_starter_script = $cgi_starter_path.$cgi_config['cgi_starter_script'].(($data['new']['type'] == 'vhostsubdomain' || $data['new']['type'] == 'vhostalias') ? '_web' . $data['new']['domain_id'] : '');
+			$app->system->set_immutable($cgi_starter_script, false);
 			$app->system->file_put_contents($cgi_starter_script, $cgi_tpl->grab());
 			unset($cgi_tpl);
 
@@ -1648,6 +1762,7 @@ class apache2_plugin {
 			}
 			$app->system->chown($cgi_starter_script, $data['new']['system_user']);
 			$app->system->chgrp($cgi_starter_script, $data['new']['system_group']);
+			$app->system->set_immutable($cgi_starter_script, true);
 
 			$tpl->setVar('cgi_starter_path', $cgi_starter_path);
 			$tpl->setVar('cgi_starter_script', $cgi_config['cgi_starter_script'].(($data['new']['type'] == 'vhostsubdomain' || $data['new']['type'] == 'vhostalias') ? '_web' . $data['new']['domain_id'] : ''));
@@ -1675,6 +1790,16 @@ class apache2_plugin {
 		if(count($rewrite_rules) > 0)  $tmp_vhost_arr = $tmp_vhost_arr + array('redirects' => $rewrite_rules);
 		if(count($alias_seo_redirects) > 0) $tmp_vhost_arr = $tmp_vhost_arr + array('alias_seo_redirects' => $alias_seo_redirects);
 		$vhosts[] = $tmp_vhost_arr;
+
+		//if proxy protocol is enabled we need to add a new port to lsiten to
+		if($web_config['vhost_proxy_protocol_enabled'] == 'y' && $data['new']['proxy_protocol'] == 'y'){
+			if((int)$web_config['vhost_proxy_protocol_http_port'] > 0) {
+				$tmp_vhost_arr['port']           = (int)$web_config['vhost_proxy_protocol_http_port'];
+				$tmp_vhost_arr['use_proxy_protocol'] = $data['new']['proxy_protocol'];
+				$vhosts[]                        = $tmp_vhost_arr;
+			}
+		}
+
 		unset($tmp_vhost_arr);
 
 		//* Add vhost for ipv4 IP with SSL
@@ -1689,6 +1814,16 @@ class apache2_plugin {
 			}
 			if(count($ipv4_ssl_alias_seo_redirects) > 0) $tmp_vhost_arr = $tmp_vhost_arr + array('alias_seo_redirects' => $ipv4_ssl_alias_seo_redirects);
 			$vhosts[] = $tmp_vhost_arr;
+
+			//if proxy protocol is enabled we need to add a new port to lsiten to
+			if($web_config['vhost_proxy_protocol_enabled'] == 'y' && $data['new']['proxy_protocol'] == 'y'){
+				if((int)$web_config['vhost_proxy_protocol_https_port'] > 0) {
+					$tmp_vhost_arr['port']           = (int)$web_config['vhost_proxy_protocol_https_port'];
+					$tmp_vhost_arr['use_proxy_protocol'] = $data['new']['proxy_protocol'];
+					$vhosts[]                        = $tmp_vhost_arr;
+				}
+			}
+
 			unset($tmp_vhost_arr, $ipv4_ssl_alias_seo_redirects);
 			$app->log('Enable SSL for: '.$domain, LOGLEVEL_DEBUG);
 		}
@@ -1802,7 +1937,7 @@ class apache2_plugin {
 
 		if($data['new']['stats_type'] != '') {
 			if(!is_dir($data['new']['document_root'].'/' . $web_folder . '/stats')) $app->system->mkdir($data['new']['document_root'].'/' . $web_folder . '/stats');
-			$ht_file = "AuthType Basic\nAuthName \"Members Only\"\nAuthUserFile ".$data['new']['document_root']."/web/stats/.htpasswd_stats\nrequire valid-user";
+			$ht_file = "AuthType Basic\nAuthName \"Members Only\"\nAuthUserFile ".$data['new']['document_root']."/web/stats/.htpasswd_stats\nrequire valid-user\nDirectoryIndex index.html index.php\nHeader set Content-Security-Policy \"default-src * 'self' 'unsafe-inline' 'unsafe-eval' data:;\"\n<Files \"goaindex.html\">\nAddDefaultCharset UTF-8\n</Files>\n";
 			$app->system->file_put_contents($data['new']['document_root'].'/' . $web_folder . '/stats/.htaccess', $ht_file);
 			$app->system->chmod($data['new']['document_root'].'/' . $web_folder . '/stats/.htaccess', 0755);
 			unset($ht_file);
@@ -1824,10 +1959,30 @@ class apache2_plugin {
 			$this->awstats_update($data, $web_config);
 		}
 
+                //* Create GoAccess configuration
+                if($data['new']['stats_type'] == 'goaccess' && ($data['new']['type'] == 'vhost' || $data['new']['type'] == 'vhostsubdomain' || $data['new']['type'] == 'vhostalias')) {
+                        $this->goaccess_update($data, $web_config);
+                }
+
 		//* Remove Stats-Folder when Statistics set to none
 		if($data['new']['stats_type'] == '' && ($data['new']['type'] == 'vhost' || $data['new']['type'] == 'vhostsubdomain' || $data['new']['type'] == 'vhostalias')) {
 			$app->file->removeDirectory($data['new']['document_root'].'/web/stats');
 		}
+
+		//* Remove the AWstats configuration file
+		if($data['old']['stats_type'] == 'awstats' && $data['new']['stats_type'] != 'awstats') {
+			$this->awstats_delete($data, $web_config);
+		}
+
+		//* Remove the GoAccess configuration file
+		if($data['old']['stats_type'] == 'goaccess' && $data['new']['stats_type'] != 'goaccess') {
+			$this->goaccess_delete($data, $web_config);
+		}
+
+                //* Remove the Webalizer configuration file
+		if($data['old']['stats_type'] == 'webalizer' && $data['new']['stats_type'] != 'webalizer') {
+			$this->webalizer_delete($data, $web_config);
+                }
 
 		$this->php_fpm_pool_update($data, $web_config, $pool_dir, $pool_name, $socket_dir, $web_folder);
 		$this->hhvm_update($data, $web_config);
@@ -1909,17 +2064,12 @@ class apache2_plugin {
 						$app->system->copy($key_file, $key_file.'.err');
 						$app->system->chmod($key_file.'.err', 0400);
 					}
-					if(is_file($key_file2)){
-						$app->system->copy($key_file2, $key_file2.'.err');
-						$app->system->chmod($key_file2.'.err', 0400);
-					}
 					if(is_file($csr_file)) $app->system->copy($csr_file, $csr_file.'.err');
 					if(is_file($crt_file)) $app->system->copy($crt_file, $crt_file.'.err');
 					if(is_file($bundle_file)) $app->system->copy($bundle_file, $bundle_file.'.err');
 
 					//* Restore the ~ backup files
 					if(is_file($key_file.'~')) $app->system->copy($key_file.'~', $key_file);
-					if(is_file($key_file2.'~')) $app->system->copy($key_file2.'~', $key_file2);
 					if(is_file($crt_file.'~')) $app->system->copy($crt_file.'~', $crt_file);
 					if(is_file($csr_file.'~')) $app->system->copy($csr_file.'~', $csr_file);
 					if(is_file($bundle_file.'~')) $app->system->copy($bundle_file.'~', $bundle_file);
@@ -1944,7 +2094,6 @@ class apache2_plugin {
 		$this->ssl_certificate_changed = false;
 
 		if(@is_file($key_file.'~')) $app->system->unlink($key_file.'~');
-		if(@is_file($key_file2.'~')) $app->system->unlink($key_file2.'~');
 		if(@is_file($crt_file.'~')) $app->system->unlink($crt_file.'~');
 		if(@is_file($csr_file.'~')) $app->system->unlink($csr_file.'~');
 		if(@is_file($bundle_file.'~')) $app->system->unlink($bundle_file.'~');
@@ -2026,14 +2175,14 @@ class apache2_plugin {
 		if($data['old']['type'] == 'vhost' || $data['old']['type'] == 'vhostsubdomain' || $data['old']['type'] == 'vhostalias'){
 			if(is_array($log_folders) && !empty($log_folders)){
 				foreach($log_folders as $log_folder){
-					$app->system->exec_safe('umount ? 2>/dev/null', $data['old']['document_root'].'/'.$log_folder);
+					$app->system->exec_safe('umount -l ? 2>/dev/null', $data['old']['document_root'].'/'.$log_folder);
 				}
 			} else {
-				$app->system->exec_safe('umount ? 2>/dev/null', $data['old']['document_root'].'/'.$log_folder);
+				$app->system->exec_safe('umount -l ? 2>/dev/null', $data['old']['document_root'].'/'.$log_folder);
 			}
-			
+
 			// remove letsencrypt if it exists (renew will always fail otherwise)
-			
+
 			$old_domain = $data['old']['domain'];
 			if(substr($old_domain, 0, 2) === '*.') {
 				// wildcard domain not yet supported by letsencrypt!
@@ -2157,11 +2306,13 @@ class apache2_plugin {
 					$fastcgi_starter_path = str_replace('[system_user]', $data['old']['system_user'], $fastcgi_config['fastcgi_starter_path']);
 					if($data['old']['type'] == 'vhost') {
 						if (is_dir($fastcgi_starter_path)) {
+							$app->system->set_immutable($fastcgi_starter_path, false, true);
 							$app->system->exec_safe('rm -rf ?', $fastcgi_starter_path);
 						}
 					} else {
 						$fcgi_starter_script = $fastcgi_starter_path.$fastcgi_config['fastcgi_starter_script'].'_web'.$data['old']['domain_id'];
 						if (file_exists($fcgi_starter_script)) {
+							$app->system->set_immutable($fcgi_starter_script, false);
 							$app->system->exec_safe('rm -f ?', $fcgi_starter_script);
 						}
 					}
@@ -2182,11 +2333,13 @@ class apache2_plugin {
 					$cgi_starter_path = str_replace('[system_user]', $data['old']['system_user'], $web_config['cgi_starter_path']);
 					if($data['old']['type'] == 'vhost') {
 						if (is_dir($cgi_starter_path)) {
+							$app->system->set_immutable($cgi_starter_path, false, true);
 							$app->system->exec_safe('rm -rf ?', $cgi_starter_path);
 						}
 					} else {
 						$cgi_starter_script = $cgi_starter_path.'php-cgi-starter_web'.$data['old']['domain_id'];
 						if (file_exists($cgi_starter_script)) {
+							$app->system->set_immutable($cgi_starter_script, false);
 							$app->system->exec_safe('rm -f ?', $cgi_starter_script);
 						}
 					}
@@ -2228,7 +2381,7 @@ class apache2_plugin {
 
 			}
 
-			//* Remove the awstats configuration file
+			//* Remove the AWstats configuration file
 			if($data['old']['stats_type'] == 'awstats') {
 				$this->awstats_delete($data, $web_config);
 			}
@@ -2568,7 +2721,7 @@ class apache2_plugin {
 			$app->system->chown($new_folder_path.'.htaccess', $website['system_user']);
 			$app->system->chgrp($new_folder_path.'.htaccess', $website['system_group']);
 			$app->log('Created/modified file '.$new_folder_path.'.htaccess', LOGLEVEL_DEBUG);
-			
+
 			//* Create empty .htpasswd file, if it does not exist
 			if(!is_file($folder_path.'.htpasswd')) {
 				$app->system->touch($new_folder_path.'.htpasswd');
@@ -2930,21 +3083,114 @@ class apache2_plugin {
 		}
 	}
 
-	//* Delete the awstats configuration file
-	private function awstats_delete ($data, $web_config) {
+        //* Delete the awstats configuration file
+        private function awstats_delete ($data, $web_config) {
+                global $app;
+
+                $awstats_conf_dir = $web_config['awstats_conf_dir'];
+
+                if ( @is_file($awstats_conf_dir.'/awstats.'.$data['old']['domain'].'.conf') ) {
+                        $app->system->unlink($awstats_conf_dir.'/awstats.'.$data['old']['domain'].'.conf');
+                        $app->log('Removed AWStats config file: '.$awstats_conf_dir.'/awstats.'.$data['old']['domain'].'.conf', LOGLEVEL_DEBUG);
+                }
+        }
+
+	//* Update the GoAccess configuration file
+        private function goaccess_update ($data, $web_config) {
+                global $app;
+
+                $web_folder = $data['new']['web_folder'];
+                if($data['new']['type'] == 'vhost') $web_folder = 'web';
+
+                $goaccess_conf_locs = array('/etc/goaccess.conf', '/etc/goaccess/goaccess.conf');
+                $count = 0;
+
+                foreach($goaccess_conf_locs as $goa_loc) {
+                        if(is_file($goa_loc) && (filesize($goa_loc) > 0)) {
+                                $goaccess_conf_main = $goa_loc;
+                                break;
+                        } else {
+                                $count++;
+                                if($count == 2) {
+                                        $app->log("No GoAccess base config found. Make sure that GoAccess is installed and that the goaccess.conf does exist in /etc or /etc/goaccess", LOGLEVEL_WARN);
+                                }
+                        }
+                }
+
+                if(!is_dir($data['new']['document_root'] . "/log/goaccess_db")) $app->system->mkdirpath($data['new']['document_root'] . "/log/goaccess_db");
+		$goaccess_conf = $data['new']['document_root'].'/log/goaccess.conf';
+
+                /*
+                In case that you use a different log format, you should use a custom goaccess.conf which you'll have to put into /usr/local/ispconfig/server/conf-custom/.
+                By default the originaly with GoAccess shipped goaccess.conf from /etc/ will be used along with the log-format value COMBINED.
+		*/
+
+                if(file_exists("/usr/local/ispconfig/server/conf-custom/goaccess.conf.master")) {
+                        $app->system->copy("/usr/local/ispconfig/server/conf-custom/goaccess_index.php.master", $goaccess_conf);
+
+                } elseif(!file_exists($goaccess_conf)) {
+
+			/*
+                         By default the goaccess.conf should get copied by the webserver plugin but in case it wasn't, or it got deleted by accident we gonna copy it again to the destination dir.
+                         Also there was no /usr/local/ispconfig/server/conf-custom/goaccess.conf.master, so we gonna use /etc/goaccess.conf as the base conf.
+			 */
+
+			$app->system->copy($goaccess_conf_main, $goaccess_conf);
+			$content = $app->system->file_get_contents($goaccess_conf, true);
+			$content = preg_replace('/^(#)?log-format COMBINED/m', "log-format COMBINED", $content);
+			$app->system->file_put_contents($goaccess_conf, $content, true);
+			unset($content);
+
+                }
+
+                if(file_exists($goaccess_conf)) {
+                        $domain = $data['new']['domain'];
+                        $content = $app->system->file_get_contents($goaccess_conf, true);
+                        $content = preg_replace('/^(#)?html-report-title(.*)/m', "html-report-title $domain", $content);
+                        $app->system->file_put_contents($goaccess_conf, $content, true);
+                        unset($content);
+
+                }
+
+                if(is_file($goaccess_conf) && (filesize($goaccess_conf) > 0)) {
+                        $app->log('Created GoAccess config file: '.$goaccess_conf, LOGLEVEL_DEBUG);
+                }
+
+                if(is_file($data['new']['document_root']."/" . $web_folder . "/stats/index.html")) $app->system->unlink($data['new']['document_root']."/" . $web_folder . "/stats/index.html");
+                if(file_exists("/usr/local/ispconfig/server/conf-custom/goaccess_index.php.master")) {
+                        $app->system->copy("/usr/local/ispconfig/server/conf-custom/goaccess_index.php.master", $data['new']['document_root']."/" . $web_folder . "/stats/index.php");
+                } else {
+                        $app->system->copy("/usr/local/ispconfig/server/conf/goaccess_index.php.master", $data['new']['document_root']."/" . $web_folder . "/stats/index.php");
+                }
+        }
+
+	//* Delete the GoAccess configuration file
+	private function goaccess_delete ($data, $web_config) {
 		global $app;
 
-		$awstats_conf_dir = $web_config['awstats_conf_dir'];
+		$goaccess_conf = $data['old']['document_root'] . "/log/goaccess.conf";
 
-		if ( @is_file($awstats_conf_dir.'/awstats.'.$data['old']['domain'].'.conf') ) {
-			$app->system->unlink($awstats_conf_dir.'/awstats.'.$data['old']['domain'].'.conf');
-			$app->log('Removed AWStats config file: '.$awstats_conf_dir.'/awstats.'.$data['old']['domain'].'.conf', LOGLEVEL_DEBUG);
+		if ( @is_file($goaccess_conf) ) {
+			$app->system->unlink($goaccess_conf);
+			$app->log('Removed GoAccess config file: '.$goaccess_conf, LOGLEVEL_DEBUG);
 		}
 	}
 
+        //* Delete the Webalizer configuration file
+        private function webalizer_delete ($data, $web_config) {
+                global $app;
+
+                $webalizer_conf = $data['old']['document_root'] . "/log/webalizer.conf";
+
+                if ( @is_file($webalizer_conf) ) {
+                        $app->system->unlink($webalizer_conf);
+                        $app->log('Removed Webalizer config file: '.$webalizer_conf, LOGLEVEL_DEBUG);
+                }
+        }
+
 	private function hhvm_update($data, $web_config) {
 		global $app, $conf;
-		
+
 		if(file_exists($conf['rootpath'] . '/conf-custom/hhvm_starter.master')) {
 			$content = file_get_contents($conf['rootpath'] . '/conf-custom/hhvm_starter.master');
 		} else {
@@ -2955,7 +3201,7 @@ class apache2_plugin {
 		} else {
 			$monit_content = file_get_contents($conf['rootpath'] . '/conf/hhvm_monit.master');
 		}
-		
+
 		if($data['new']['php'] == 'hhvm' && $data['old']['php'] != 'hhvm' || ($data['new']['php'] == 'hhvm' && isset($data['old']['custom_php_ini']) && $data['new']['custom_php_ini'] != $data['old']['custom_php_ini'])) {
 
 			// Custom php.ini settings
@@ -2968,7 +3214,7 @@ class apache2_plugin {
 						foreach($required_php_snippets as $required_php_snippet){
 							$required_php_snippet = intval($required_php_snippet);
 							if($required_php_snippet > 0){
-								$php_snippet = $app->db->queryOneRecord("SELECT * FROM directive_snippets WHERE ".($snippet['master_directive_snippets_id'] > 0 ? 'master_' : '')."directive_snippets_id = ? AND type = 'php' AND active = 'y'", $required_php_snippet);
+								$php_snippet = $app->db->queryOneRecord("SELECT * FROM directive_snippets WHERE directive_snippets_id = ? AND type = 'php' AND active = 'y'", $required_php_snippet);
 								$php_snippet['snippet'] = trim($php_snippet['snippet']);
 								if($php_snippet['snippet'] != ''){
 									$custom_php_ini_settings .= "\n".$php_snippet['snippet'];
@@ -2992,14 +3238,14 @@ class apache2_plugin {
 			$app->system->exec_safe('chmod +x ? >/dev/null 2>&1', '/etc/init.d/hhvm_' . $data['new']['system_user']);
 			$app->system->exec_safe('/usr/sbin/update-rc.d ? defaults >/dev/null 2>&1', 'hhvm_' . $data['new']['system_user']);
 			$app->system->exec_safe('? restart >/dev/null 2>&1', '/etc/init.d/hhvm_' . $data['new']['system_user']);
-			
+
 			if(is_dir('/etc/monit/conf.d')){
 				$monit_content = str_replace('{SYSTEM_USER}', $data['new']['system_user'], $monit_content);
 				file_put_contents('/etc/monit/conf.d/00-hhvm_' . $data['new']['system_user'], $monit_content);
 				if(is_file('/etc/monit/conf.d/hhvm_' . $data['new']['system_user'])) unlink('/etc/monit/conf.d/hhvm_' . $data['new']['system_user']);
 				exec('/etc/init.d/monit restart >/dev/null 2>&1');
 			}
-			
+
  		} elseif($data['new']['php'] != 'hhvm' && $data['old']['php'] == 'hhvm') {
 			if($data['old']['system_user'] != ''){
 				$app->system->exec_safe('? stop >/dev/null 2>&1', '/etc/init.d/hhvm_' . $data['old']['system_user']);
@@ -3007,7 +3253,7 @@ class apache2_plugin {
 				unlink('/etc/init.d/hhvm_' . $data['old']['system_user']);
 				if(is_file('/etc/hhvm/'.$data['old']['system_user'].'.ini')) unlink('/etc/hhvm/'.$data['old']['system_user'].'.ini');
 			}
-			
+
 			if(is_file('/etc/monit/conf.d/hhvm_' . $data['old']['system_user']) || is_file('/etc/monit/conf.d/00-hhvm_' . $data['old']['system_user'])){
 				if(is_file('/etc/monit/conf.d/hhvm_' . $data['old']['system_user'])){
 					unlink('/etc/monit/conf.d/hhvm_' . $data['old']['system_user']);
@@ -3026,27 +3272,35 @@ class apache2_plugin {
 		$pool_dir = trim($pool_dir);
 		//$reload = false;
 
+		$default_php_fpm = true;
+
 		if($data['new']['php'] == 'php-fpm'){
-			if(trim($data['new']['fastcgi_php_version']) != ''){
-				$default_php_fpm = false;
-				list($custom_php_fpm_name, $custom_php_fpm_init_script, $custom_php_fpm_ini_dir, $custom_php_fpm_pool_dir) = explode(':', trim($data['new']['fastcgi_php_version']));
-				if(substr($custom_php_fpm_ini_dir, -1) != '/') $custom_php_fpm_ini_dir .= '/';
-			} else {
-				$default_php_fpm = true;
+			if($data['new']['server_php_id'] != 0){
+				$tmp_php = $app->db->queryOneRecord('SELECT * FROM server_php WHERE server_php_id = ?', $data['new']['server_php_id']);
+				if($tmp_php) {
+					$default_php_fpm = false;
+					$custom_php_fpm_ini_dir = $tmp_php['php_fpm_ini_dir'];
+					$custom_php_fpm_init_script = $tmp_php['php_fpm_init_script'];
+					$custom_php_fpm_pool_dir = $tmp_php['php_fpm_pool_dir'];
+					if(substr($custom_php_fpm_ini_dir, -1) != '/') $custom_php_fpm_ini_dir .= '/';
+				}
 			}
 		} else {
-			if(trim($data['old']['fastcgi_php_version']) != '' && $data['old']['php'] == 'php-fpm'){
-				$default_php_fpm = false;
-				list($custom_php_fpm_name, $custom_php_fpm_init_script, $custom_php_fpm_ini_dir, $custom_php_fpm_pool_dir) = explode(':', trim($data['old']['fastcgi_php_version']));
-				if(substr($custom_php_fpm_ini_dir, -1) != '/') $custom_php_fpm_ini_dir .= '/';
-			} else {
-				$default_php_fpm = true;
+			if($data['old']['server_php_id'] != 0 && $data['old']['php'] == 'php-fpm'){
+				$tmp_php = $app->db->queryOneRecord('SELECT * FROM server_php WHERE server_php_id = ?', $data['old']['server_php_id']);
+				if($tmp_php) {
+					$default_php_fpm = false;
+					$custom_php_fpm_ini_dir = $tmp_php['php_fpm_ini_dir'];
+					$custom_php_fpm_init_script = $tmp_php['php_fpm_init_script'];
+					$custom_php_fpm_pool_dir = $tmp_php['php_fpm_pool_dir'];
+					if(substr($custom_php_fpm_ini_dir, -1) != '/') $custom_php_fpm_ini_dir .= '/';
+				}
 			}
 		}
 
 		$app->uses("getconf");
 		$web_config = $app->getconf->get_server_config($conf["server_id"], 'web');
-		
+
 		$php_fpm_reload_mode = ($web_config['php_fpm_reload_mode'] == 'reload')?'reload':'restart';
 
 		if($data['new']['php'] != 'php-fpm'){
@@ -3069,7 +3323,7 @@ class apache2_plugin {
 		$tpl = new tpl();
 		$tpl->newTemplate('php_fpm_pool.conf.master');
 		$tpl->setVar('apache_version', $app->system->getapacheversion());
-		
+
 		if($data['new']['php_fpm_use_socket'] == 'y'){
 			$use_tcp = 0;
 			$use_socket = 1;
@@ -3122,7 +3376,7 @@ class apache2_plugin {
 		// Custom php.ini settings
 		$final_php_ini_settings = array();
 		$custom_php_ini_settings = trim($data['new']['custom_php_ini']);
-		
+
 		if(intval($data['new']['directive_snippets_id']) > 0){
 			$snippet = $app->db->queryOneRecord("SELECT * FROM directive_snippets WHERE directive_snippets_id = ? AND type = 'apache' AND active = 'y' AND customer_viewable = 'y'", intval($data['new']['directive_snippets_id']));
 			if(isset($snippet['required_php_snippets']) && trim($snippet['required_php_snippets']) != ''){
@@ -3131,7 +3385,7 @@ class apache2_plugin {
 					foreach($required_php_snippets as $required_php_snippet){
 						$required_php_snippet = intval($required_php_snippet);
 						if($required_php_snippet > 0){
-							$php_snippet = $app->db->queryOneRecord("SELECT * FROM directive_snippets WHERE ".($snippet['master_directive_snippets_id'] > 0 ? 'master_' : '')."directive_snippets_id = ? AND type = 'php' AND active = 'y'", $required_php_snippet);
+							$php_snippet = $app->db->queryOneRecord("SELECT * FROM directive_snippets WHERE directive_snippets_id = ? AND type = 'php' AND active = 'y'", $required_php_snippet);
 							$php_snippet['snippet'] = trim($php_snippet['snippet']);
 							if($php_snippet['snippet'] != ''){
 								$custom_php_ini_settings .= "\n".$php_snippet['snippet'];
@@ -3141,14 +3395,16 @@ class apache2_plugin {
 				}
 			}
 		}
-		
+
 		$custom_session_save_path = false;
+		$custom_sendmail_path = false;
 		if($custom_php_ini_settings != ''){
 			// Make sure we only have Unix linebreaks
 			$custom_php_ini_settings = str_replace("\r\n", "\n", $custom_php_ini_settings);
 			$custom_php_ini_settings = str_replace("\r", "\n", $custom_php_ini_settings);
 			$ini_settings = explode("\n", $custom_php_ini_settings);
 			if(is_array($ini_settings) && !empty($ini_settings)){
+				$ini_settings = str_replace('{WEBROOT}', $data['new']['document_root'].'/web', $ini_settings);
 				foreach($ini_settings as $ini_setting){
 					$ini_setting = trim($ini_setting);
 					if(substr($ini_setting, 0, 1) == ';') continue;
@@ -3159,6 +3415,7 @@ class apache2_plugin {
 					if($value != ''){
 						$key = trim($key);
 						if($key == 'session.save_path') $custom_session_save_path = true;
+						if($key == 'sendmail_path') $custom_sendmail_path = true;
 						switch (strtolower($value)) {
 						case '0':
 							// PHP-FPM might complain about invalid boolean value if you use 0
@@ -3181,6 +3438,7 @@ class apache2_plugin {
 		}
 
 		$tpl->setVar('custom_session_save_path', ($custom_session_save_path ? 'y' : 'n'));
+		$tpl->setVar('custom_sendmail_path', ($custom_sendmail_path ? 'y' : 'n'));
 
 		$tpl->setLoop('custom_php_ini_settings', $final_php_ini_settings);
 
@@ -3228,18 +3486,23 @@ class apache2_plugin {
 	//* Delete the PHP-FPM pool configuration file
 	private function php_fpm_pool_delete ($data, $web_config) {
 		global $app, $conf;
-		
+
 		$app->uses("getconf");
 		$web_config = $app->getconf->get_server_config($conf["server_id"], 'web');
-		
+
 		$php_fpm_reload_mode = ($web_config['php_fpm_reload_mode'] == 'reload')?'reload':'restart';
 
-		if(trim($data['old']['fastcgi_php_version']) != '' && $data['old']['php'] == 'php-fpm'){
-			$default_php_fpm = false;
-			list($custom_php_fpm_name, $custom_php_fpm_init_script, $custom_php_fpm_ini_dir, $custom_php_fpm_pool_dir) = explode(':', trim($data['old']['fastcgi_php_version']));
-			if(substr($custom_php_fpm_ini_dir, -1) != '/') $custom_php_fpm_ini_dir .= '/';
-		} else {
-			$default_php_fpm = true;
+		$default_php_fpm = true;
+
+		if($data['old']['server_php_id'] != 0 && $data['old']['php'] == 'php-fpm'){
+			$tmp_php = $app->db->queryOneRecord('SELECT * FROM server_php WHERE server_php_id = ?', $data['old']['server_php_id']);
+			if($tmp_php) {
+				$default_php_fpm = false;
+				$custom_php_fpm_ini_dir = $tmp_php['php_fpm_ini_dir'];
+				$custom_php_fpm_init_script = $tmp_php['php_fpm_init_script'];
+				$custom_php_fpm_pool_dir = $tmp_php['php_fpm_pool_dir'];
+				if(substr($custom_php_fpm_ini_dir, -1) != '/') $custom_php_fpm_ini_dir .= '/';
+			}
 		}
 
 		if($default_php_fpm){
@@ -3388,6 +3651,167 @@ class apache2_plugin {
 			$seo_redirects[$prefix.'seo_redirect_operator'] = '!';
 		}
 		return $seo_redirects;
+	}
+
+	function _setup_jailkit_chroot()
+	{
+		global $app, $conf;
+
+		$app->uses('system');
+
+		if (isset($this->jailkit_config) && isset($this->jailkit_config['jailkit_hardlinks'])) {
+			if ($this->jailkit_config['jailkit_hardlinks'] == 'yes') {
+				$options = array('hardlink');
+			} elseif ($this->jailkit_config['jailkit_hardlinks'] == 'no') {
+				$options = array();
+			}
+		} else {
+			$options = array('allow_hardlink');
+		}
+
+		// should move return here if $this->website['new_jailkit_hash'] == $this->website['last_jailkit_hash'] ?
+
+		// check if the chroot environment is created yet if not create it with a list of program sections from the config
+		if (!is_dir($this->website['document_root'].'/etc/jailkit'))
+		{
+			$app->system->create_jailkit_chroot($this->website['document_root'], $this->jailkit_config['jailkit_chroot_app_sections'], $options);
+			$app->log("Added jailkit chroot", LOGLEVEL_DEBUG);
+
+			$this->_add_jailkit_programs($options);
+
+			$app->load('tpl');
+
+			$tpl = new tpl();
+			$tpl->newTemplate("bash.bashrc.master");
+
+			$tpl->setVar('jailkit_chroot', true);
+			$tpl->setVar('domain', $this->website['domain']);
+			$tpl->setVar('home_dir', $this->_get_home_dir(""));
+
+			$bashrc = $this->website['document_root'].'/etc/bash.bashrc';
+			if(@is_file($bashrc) || @is_link($bashrc)) unlink($bashrc);
+
+			file_put_contents($bashrc, $tpl->grab());
+			unset($tpl);
+
+			$app->log("Added bashrc script: ".$bashrc, LOGLEVEL_DEBUG);
+
+			$tpl = new tpl();
+			$tpl->newTemplate("motd.master");
+
+			$tpl->setVar('domain', $this->website['domain']);
+
+			$motd = $this->website['document_root'].'/var/run/motd';
+			if(@is_file($motd) || @is_link($motd)) unlink($motd);
+
+			$app->system->file_put_contents($motd, $tpl->grab());
+
+		} else {
+			// force update existing jails
+			$options[] = 'force';
+
+			$sections = $this->jailkit_config['jailkit_chroot_app_sections'];
+			$programs = $this->jailkit_config['jailkit_chroot_app_programs'] . ' '
+				  . $this->jailkit_config['jailkit_chroot_cron_programs'];
+
+			if ($this->website['new_jailkit_hash'] == $this->website['last_jailkit_hash']) {
+				return;
+			}
+
+			$records = $app->db->queryAllRecords('SELECT web_folder FROM `web_domain` WHERE `parent_domain_id` = ? AND `document_root` = ? AND web_folder != \'\' AND web_folder IS NOT NULL AND `server_id` = ?', $this->website['domain_id'], $this->website['document_root'], $conf['server_id']);
+			foreach ($records as $record) {
+				$options[] = 'skip='.$record['web_folder'];
+			}
+
+			$app->system->update_jailkit_chroot($this->website['document_root'], $sections, $programs, $options);
+		}
+
+		// this gets last_jailkit_update out of sync with master db, but that is ok,
+		// as it is only used as a timestamp to moderate the frequency of updating on the slaves
+		$app->db->query("UPDATE `web_domain` SET `last_jailkit_update` = NOW(), `last_jailkit_hash` = ? WHERE `document_root` = ?", $this->website['new_jailkit_hash'], $this->website['document_root']);
+	}
+
+	function _add_jailkit_programs($opts=array())
+	{
+		global $app;
+
+		$app->uses('system');
+
+		//copy over further programs and its libraries
+		$app->system->create_jailkit_programs($this->website['document_root'], $this->jailkit_config['jailkit_chroot_app_programs'], $opts);
+		$app->log("Added app programs to jailkit chroot", LOGLEVEL_DEBUG);
+
+		$app->system->create_jailkit_programs($this->website['document_root'], $this->jailkit_config['jailkit_chroot_cron_programs'], $opts);
+		$app->log("Added cron programs to jailkit chroot", LOGLEVEL_DEBUG);
+	}
+
+	function _get_home_dir($username)
+	{
+		return str_replace("[username]", $username, $this->jailkit_config['jailkit_chroot_home']);
+	}
+
+	function _add_jailkit_user()
+	{
+		global $app;
+
+		// add the user to the chroot
+		$jailkit_chroot_userhome = $this->_get_home_dir($this->website['system_user']);
+
+		if(!is_dir($this->website['document_root'].'/etc')) $app->system->mkdir($this->website['document_root'].'/etc', 0755, true);
+		if(!is_file($this->website['document_root'].'/etc/passwd')) $app->system->exec_safe('touch ?', $this->website['document_root'].'/etc/passwd');
+
+		// IMPORTANT!
+		// ALWAYS create the user. Even if the user was created before
+		// if we check if the user exists, then a update (no shell -> jailkit) will not work
+		// and the user has FULL ACCESS to the root of the server!
+		$app->system->create_jailkit_user($this->website['system_user'], $this->website['document_root'], $jailkit_chroot_userhome);
+
+		if(!is_dir($this->website['document_root'].$jailkit_chroot_userhome)) {
+			$app->system->mkdir($this->website['document_root'].$jailkit_chroot_userhome, 0750, true);
+			$app->system->chown($this->website['document_root'].$jailkit_chroot_userhome, $this->website['system_user']);
+			$app->system->chgrp($this->website['document_root'].$jailkit_chroot_userhome, $this->website['system_group']);
+		}
+
+		$app->log("Added created jailkit user home in : ".$this->website['document_root'].$jailkit_chroot_userhome, LOGLEVEL_DEBUG);
+	}
+
+	private function _delete_jailkit_if_unused($parent_domain_id) {
+		global $app, $conf;
+
+		// get jail directory
+		$parent_domain = $app->db->queryOneRecord("SELECT * FROM `web_domain` WHERE `domain_id` = ? OR `parent_domain_id` = ? AND `document_root` IS NOT NULL", $parent_domain_id, $parent_domain_id);
+		if (!is_dir($parent_domain['document_root'])) {
+			return;
+		}
+
+		// chroot is used by php-fpm
+		if (isset($parent_domain['php_fpm_chroot']) && $parent_domain['php_fpm_chroot'] == 'y' && $parent_domain['php'] != 'no') {
+			return;
+		}
+
+		// check for any shell_user using this jail
+		$inuse = $app->db->queryOneRecord('SELECT shell_user_id FROM `shell_user` WHERE `parent_domain_id` = ? AND `chroot` = ?', $parent_domain_id, 'jailkit');
+		if($inuse) {
+			return;
+		}
+
+		// check for any cron job using this jail
+		$inuse = $app->db->queryOneRecord('SELECT id FROM `cron` WHERE `parent_domain_id` = ? AND `type` = ?', $parent_domain_id, 'chrooted');
+		if($inuse) {
+			return;
+		}
+
+		$options = array();
+		$records = $app->db->queryAllRecords('SELECT web_folder FROM `web_domain` WHERE `parent_domain_id` = ? AND `document_root` = ? AND web_folder != \'\' AND web_folder IS NOT NULL AND `server_id` = ?', $parent_domain_id, $parent_domain['document_root'], $conf['server_id']);
+		foreach ($records as $record) {
+			$options[] = 'skip='.$record['web_folder'];
+		}
+
+		$app->system->delete_jailkit_chroot($parent_domain['document_root'], $options);
+
+		// this gets last_jailkit_update out of sync with master db, but that is ok,
+		// as it is only used as a timestamp to moderate the frequency of updating on the slaves
+		$app->db->query("UPDATE `web_domain` SET `last_jailkit_update` = NOW(), `last_jailkit_hash` = NULL WHERE `document_root` = ?", $parent_domain['document_root']);
 	}
 
 } // end class

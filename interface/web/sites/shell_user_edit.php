@@ -75,6 +75,7 @@ class page_action extends tform_actions {
 
 		$app->uses('getconf,tools_sites');
 		$global_config = $app->getconf->get_global_config('sites');
+		$system_config = $app->getconf->get_global_config();
 		$shelluser_prefix = $app->tools_sites->replacePrefix($global_config['shelluser_prefix'], $this->dataRecord);
 
 		if ($this->dataRecord['username'] != ""){
@@ -95,6 +96,8 @@ class page_action extends tform_actions {
 		} else {
 			$app->tpl->setVar("edit_disabled", 0);
 		}
+
+		$app->tpl->setVar('ssh_authentication', $system_config['sites']['ssh_authentication']);
 
 		parent::onShowEnd();
 	}
@@ -123,6 +126,17 @@ class page_action extends tform_actions {
 
 		if(isset($this->dataRecord['ssh_rsa'])) $this->dataRecord['ssh_rsa'] = trim($this->dataRecord['ssh_rsa']);
 
+		$system_config = $app->getconf->get_global_config();
+
+		if($system_config['misc']['ssh_authentication'] == 'password') {
+			$this->dataRecord['ssh_rsa'] = null;
+		}
+
+		if($system_config['misc']['ssh_authentication'] == 'key') {
+			$this->dataRecord['password'] = null;
+			$this->dataRecord['repeat_password'] = null;
+		}
+
 		parent::onSubmit();
 	}
 
@@ -137,7 +151,7 @@ class page_action extends tform_actions {
 			}
 		}
 		unset($blacklist);
-		
+
 		if($app->functions->is_allowed_user(trim(strtolower($this->dataRecord['username']))) == false) $app->tform->errorMessage .= $app->tform->lng('username_not_allowed_txt');
 
 		/*
@@ -167,7 +181,7 @@ class page_action extends tform_actions {
 		$dir = $web["document_root"];
 		$uid = $web["system_user"];
 		$gid = $web["system_group"];
-		
+
 		// Check system user and group
 		if($app->functions->is_allowed_user($uid) == false || $app->functions->is_allowed_group($gid) == false) {
 			$app->error($app->tform->lng('invalid_system_user_or_group_txt'));

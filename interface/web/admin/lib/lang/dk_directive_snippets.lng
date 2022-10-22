@@ -8,5 +8,8 @@ $wb['directive_snippets_name_empty'] = 'Angiv et navn til uddrag.';
 $wb['directive_snippets_name_error_unique'] = 'Der er allerede et direktiv uddrag med dette navn.';
 $wb['variables_txt'] = 'Variabler';
 $wb['customer_viewable_txt'] = 'Customer viewable';
-$wb['required_php_snippets_txt'] = 'Requiered PHP Snippet';
-?>
+$wb['required_php_snippets_txt'] = 'Required PHP Snippet';
+$wb['update_sites_txt'] = 'Update sites using this snippet';
+$wb['error_hide_snippet_active_sites'] = 'You cannot hide this snippet from customers as it is currently used by existing websites.';
+$wb['error_disable_snippet_active_sites'] = 'You cannot disable this snippet as it is currently used by existing websites.';
+$wb['error_delete_snippet_active_sites'] = 'You cannot delete this snippet as it is currently used by existing websites.';

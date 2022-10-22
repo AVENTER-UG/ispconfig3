@@ -1,0 +1,4 @@
+From: {admin_name} <{admin_mail}>
+Subject: Bienvenue dans votre nouvelle boîte aux lettres
+
+Votre nouveau compte email est désormais activé. Votre webmaster.

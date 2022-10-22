@@ -152,9 +152,9 @@ class tform_base {
 			$wb = $app->functions->array_merge($wb_global, $wb);
 		}
 		if(isset($wb_global)) unset($wb_global);
-		
+
 		$this->wordbook = $wb;
-		
+
 		$app->plugin->raiseEvent($_SESSION['s']['module']['name'].':'.$app->tform->formDef['name'] . ':on_after_formdef', $this);
 
 		$this->dateformat = $app->lng('conf_format_dateshort');
@@ -276,7 +276,8 @@ class tform_base {
 			unset($tmp_recordid);
 
 			$querystring = str_replace("{AUTHSQL}", $this->getAuthSQL('r'), $querystring);
-			$querystring = preg_replace_callback('@{AUTHSQL::(.+?)}@', create_function('$matches','global $app; $tmp = $app->tform->getAuthSQL("r", $matches[1]); return $tmp;'), $querystring);
+			//$querystring = preg_replace_callback('@{AUTHSQL::(.+?)}@', create_function('$matches','global $app; $tmp = $app->tform->getAuthSQL("r", $matches[1]); return $tmp;'), $querystring);
+			$querystring = preg_replace_callback('@{AUTHSQL::(.+?)}@', function($matches) {global $app; $tmp = $app->tform->getAuthSQL("r", $matches[1]); return $tmp;}, $querystring);
 
 			// Getting the records
 			$tmp_records = $app->db->queryAllRecords($querystring);
@@ -323,7 +324,7 @@ class tform_base {
 		return $this->getAuthSQL('r', $matches[1]);
 	}
 	*/
-	
+
 	/**
 	 * Get the key => value array of a form filled from a datasource definitiom
 	 *
@@ -336,15 +337,15 @@ class tform_base {
 	}
 
 	//* If the parameter 'valuelimit' is set
-	function applyValueLimit($limit, $values, $current_value = '') {
+	function applyValueLimit($formtype, $limit, $values, $current_value = '') {
 
 		global $app;
-		
-		// we mas have multiple limits, therefore we explode by ; first
+
+		// we may have multiple limits, therefore we explode by ; first
 		// Example: "system:sites:web_php_options;client:web_php_options"
 		$limits = explode(';',$limit);
-		
-		
+
+
 		foreach($limits as $limit) {
 
 			$limit_parts = explode(':', $limit);
@@ -399,17 +400,30 @@ class tform_base {
 				$tmp_key = $limit_parts[2];
 				$allowed = $allowed = explode(',',$tmp_conf[$tmp_key]);
 			}
-			
-			// add the current value to the allowed array
-			$allowed[] = $current_value;
 
-			// remove all values that are not allowed
-			$values_new = array();
-			foreach($values as $key => $val) {
-				if(in_array($key, $allowed)) $values_new[$key] = $val;
+			if($formtype == 'CHECKBOX') {
+				if(strstr($limit,'force_')) {
+					// Force the checkbox field to be ticked and enabled
+					if($allowed[0] == $values[1]) {
+						$values = 'on';
+					}
+				} else {
+					// Force the checkbox field to be unchecked and disabled
+					if($allowed[0] == $values[0]) {
+						$values = 'off';
+					}
+				}
+			} else {
+				// add the current value to the allowed array
+				$allowed[] = $current_value;
+
+				// remove all values that are not allowed
+				$values_new = array();
+				foreach($values as $key => $val) {
+					if(in_array($key, $allowed)) $values_new[$key] = $val;
+				}
+				$values = $values_new;
 			}
-
-			$values = $values_new;
 
 		}
 
@@ -438,7 +452,7 @@ class tform_base {
 		$csrf_token = $app->auth->csrf_token_get($this->formDef['name']);
 		$_csrf_id = $csrf_token['csrf_id'];
 		$_csrf_value = $csrf_token['csrf_key'];
-		
+
 		$this->formDef['tabs'][$tab]['fields']['_csrf_id'] = array(
 			'datatype' => 'VARCHAR',
 			'formtype' => 'TEXT',
@@ -454,7 +468,7 @@ class tform_base {
 		$record['_csrf_id'] = $_csrf_id;
 		$record['_csrf_key'] = $_csrf_value;
 		/* CSRF PROTECTION */
-		
+
 		$new_record = array();
 		if($action == 'EDIT') {
 			$record = $this->decode($record, $tab);
@@ -479,7 +493,7 @@ class tform_base {
 
 					// If a limitation for the values is set
 					if(isset($field['valuelimit']) && is_array($field["value"])) {
-						$field["value"] = $this->applyValueLimit($field['valuelimit'], $field["value"], $val);
+						$field["value"] = $this->applyValueLimit($field['formtype'], $field['valuelimit'], $field["value"], $val);
 					}
 
 					switch ($field['formtype']) {
@@ -521,8 +535,14 @@ class tform_base {
 						break;
 
 					case 'CHECKBOX':
-						$checked = ($val == $field['value'][1])?' CHECKED':'';
-						$new_record[$key] = "<input name=\"".$key."\" id=\"".$key."\" value=\"".$field['value'][1]."\" type=\"checkbox\" $checked />\r\n";
+						if($field["value"] == 'off') {
+							$new_record[$key] = "<input name=\"".$key."\" id=\"".$key."\" value=\"".$field['value'][1]."\" type=\"checkbox\" disabled=\"disabled\" />\r\n";
+						} elseif ($field["value"] == 'on') {
+							$new_record[$key] = "<input name=\"".$key."\" id=\"".$key."\" value=\"".$field['value'][1]."\" type=\"checkbox\" disabled=\"disabled\" CHECKED />\r\n";
+						} else {
+							$checked = ($val == $field['value'][1])?' CHECKED':'';
+							$new_record[$key] = "<input name=\"".$key."\" id=\"".$key."\" value=\"".$field['value'][1]."\" type=\"checkbox\" $checked />\r\n";
+						}
 						break;
 
 					case 'CHECKBOXARRAY':
@@ -541,7 +561,13 @@ class tform_base {
 									if(trim($tvl) == trim($k)) $checked = ' CHECKED';
 								}
 								// $out .= "<label for=\"".$key."[]\" class=\"inlineLabel\"><input name=\"".$key."[]\" id=\"".$key."[]\" value=\"$k\" type=\"checkbox\" $checked /> $v</label>\r\n";
-								$out .= "<label for=\"".$key.$elementNo."\" class=\"inlineLabel\"><input name=\"".$key."[]\" id=\"".$key.$elementNo."\" value=\"$k\" type=\"checkbox\" $checked /> $v</label><br/>\r\n";
+								$out .= "<label for=\"".$key.$elementNo."\" class=\"inlineLabel\"><input name=\"".$key."[]\" id=\"".$key.$elementNo."\" value=\"$k\" type=\"checkbox\" $checked /> $v</label>";
+								if (isset($field['render_inline']) && $field['render_inline'] == 'n') {
+									$out .= "<br/>\r\n";
+								}
+								else {
+									$out .= "&nbsp;\r\n";
+								}
 								$elementNo++;
 							}
 						}
@@ -589,7 +615,7 @@ class tform_base {
 
 						$new_record[$key] = $this->_getDateHTML($key, $dt_value);
 						break;
-					
+
 					default:
 						if(isset($record[$key])) {
 							$new_record[$key] = $app->functions->htmlentities($record[$key]);
@@ -614,7 +640,7 @@ class tform_base {
 
 				// If a limitation for the values is set
 				if(isset($field['valuelimit']) && is_array($field["value"])) {
-					$field["value"] = $this->applyValueLimit($field['valuelimit'], $field["value"], $field['default']);
+					$field["value"] = $this->applyValueLimit($field['formtype'], $field['valuelimit'], $field["value"], $field['default']);
 				}
 
 				switch ($field['formtype']) {
@@ -651,9 +677,15 @@ class tform_base {
 					break;
 
 				case 'CHECKBOX':
-					// $checked = (empty($field["default"]))?'':' CHECKED';
-					$checked = ($field["default"] == $field['value'][1])?' CHECKED':'';
-					$new_record[$key] = "<input name=\"".$key."\" id=\"".$key."\" value=\"".$field['value'][1]."\" type=\"checkbox\" $checked />\r\n";
+					if($field["value"] == 'off') {
+						$new_record[$key] = "<input name=\"".$key."\" id=\"".$key."\" value=\"".$field['value'][1]."\" type=\"checkbox\" disabled=\"disabled\" />\r\n";
+					} elseif ($field["value"] == 'on') {
+						$new_record[$key] = "<input name=\"".$key."\" id=\"".$key."\" value=\"".$field['value'][1]."\" type=\"checkbox\" disabled=\"disabled\" CHECKED />\r\n";
+					} else {
+						// $checked = (empty($field["default"]))?'':' CHECKED';
+						$checked = ($field["default"] == $field['value'][1])?' CHECKED':'';
+						$new_record[$key] = "<input name=\"".$key."\" id=\"".$key."\" value=\"".$field['value'][1]."\" type=\"checkbox\" $checked />\r\n";
+					}
 					break;
 
 				case 'CHECKBOXARRAY':
@@ -672,7 +704,13 @@ class tform_base {
 								if(trim($tvl) == trim($k)) $checked = ' CHECKED';
 							}
 							// $out .= "<label for=\"".$key."[]\" class=\"inlineLabel\"><input name=\"".$key."[]\" id=\"".$key."[]\" value=\"$k\" type=\"checkbox\" $checked /> $v</label>\r\n";
-							$out .= "<label for=\"".$key.$elementNo."\" class=\"inlineLabel\"><input name=\"".$key."[]\" id=\"".$key.$elementNo."\" value=\"$k\" type=\"checkbox\" $checked /> $v</label> &nbsp;\r\n";
+							$out .= "<label for=\"".$key.$elementNo."\" class=\"inlineLabel\"><input name=\"".$key."[]\" id=\"".$key.$elementNo."\" value=\"$k\" type=\"checkbox\" $checked /> $v</label>";
+							if (isset($field['render_inline']) && $field['render_inline'] == 'n') {
+								$out .= "<br/>\r\n";
+							}
+							else {
+								$out .= "&nbsp;\r\n";
+							}
 							$elementNo++;
 						}
 					}
@@ -701,7 +739,7 @@ class tform_base {
 
 					$new_record[$key] = $this->_getDateTimeHTML($key, $dt_value, $display_seconds);
 					break;
-				
+
 				case 'DATE':
 					$dt_value = (isset($field['default'])) ? $field['default'] : 0;
 
@@ -750,7 +788,7 @@ class tform_base {
 					unset($_POST);
 					unset($record);
 				}
-				
+
 				if(isset($_SESSION['_csrf_timeout']) && is_array($_SESSION['_csrf_timeout'])) {
 					$to_unset = array();
 					foreach($_SESSION['_csrf_timeout'] as $_csrf_id => $timeout) {
@@ -767,7 +805,7 @@ class tform_base {
 			}
 			/* CSRF PROTECTION */
 		}
-		
+
 		$new_record = array();
 		if(is_array($record)) {
 			foreach($fields as $key => $field) {
@@ -933,6 +971,9 @@ class tform_base {
 				case 'STRIPNL':
 					$returnval = str_replace(array("\n","\r"),'', $returnval);
 					break;
+				case 'NORMALIZEPATH':
+					$returnval = $app->functions->normalize_path($returnval);
+					break;
 				default:
 					$this->errorMessage .= "Unknown Filter: ".$filter['type'];
 					break;
@@ -1051,6 +1092,29 @@ class tform_base {
 							if (!preg_match("/^[^\\+]+$/", $field_value)) { // * disallow + in local-part
 								$error = true;
 							}
+						}
+						if ($error) {
+							$errmsg = $validator['errmsg'];
+							if(isset($this->wordbook[$errmsg])) {
+								$this->errorMessage .= $this->wordbook[$errmsg]."<br />\r\n";
+							} else {
+								$this->errorMessage .= $errmsg."<br />\r\n";
+							}
+						}
+
+					} else $this->errorMessage .= "function filter_var missing <br />\r\n";
+				}
+				unset($error);
+				break;
+			case 'ISEMAILADDRESS':
+				$error = false;
+				if($validator['allowempty'] != 'y') $validator['allowempty'] = 'n';
+				if($validator['allowempty'] == 'y' && $field_value == '') {
+					//* Do nothing
+				} else {
+					if(function_exists('filter_var')) {
+						if(filter_var($field_value, FILTER_VALIDATE_EMAIL) === false) {
+							$error = true;
 						}
 						if ($error) {
 							$errmsg = $validator['errmsg'];
@@ -1198,7 +1262,7 @@ class tform_base {
 					}
 				}
 				break;
-			
+
 			case 'ISDATETIME':
 				/* Checks a datetime value against the date format of the current language */
 				if($validator['allowempty'] != 'y') $validator['allowempty'] = 'n';
@@ -1216,7 +1280,7 @@ class tform_base {
 					}
 				}
 				break;
-			
+
 			case 'RANGE':
 				//* Checks if the value is within the given range or above / below a value
 				//* Range examples: < 10 = ":10", between 2 and 10 = "2:10", above 5 = "5:".
@@ -1281,7 +1345,7 @@ class tform_base {
 		$sql_update = '';
 
 		$record = $this->encode($record, $tab, true);
-		
+
 		if(($this->primary_id_override > 0)) {
 			$sql_insert_key .= '`'.$this->formDef["db_table_idx"].'`, ';
 			$sql_insert_val .= $this->primary_id_override.", ";
@@ -1310,8 +1374,7 @@ class tform_base {
 								$record[$key] = $app->auth->crypt_password(stripslashes($record[$key]),'ISO-8859-1');
 								$sql_insert_val .= "'".$app->db->quote($record[$key])."', ";
 							} elseif (isset($field['encryption']) && $field['encryption'] == 'MYSQL') {
-								$tmp = $app->db->queryOneRecord("SELECT PASSWORD(?) as `crypted`", stripslashes($record[$key]));
-								$record[$key] = $tmp['crypted'];
+								$record[$key] = $app->db->getPasswordHash($record[$key]);
 								$sql_insert_val .= "'".$app->db->quote($record[$key])."', ";
 							} else {
 								$record[$key] = md5(stripslashes($record[$key]));
@@ -1342,8 +1405,7 @@ class tform_base {
 								$record[$key] = $app->auth->crypt_password(stripslashes($record[$key]),'ISO-8859-1');
 								$sql_update .= "`$key` = '".$app->db->quote($record[$key])."', ";
 							} elseif (isset($field['encryption']) && $field['encryption'] == 'MYSQL') {
-								$tmp = $app->db->queryOneRecord("SELECT PASSWORD(?) as `crypted`", stripslashes($record[$key]));
-								$record[$key] = $tmp['crypted'];
+								$record[$key] = $app->db->getPasswordHash($record[$key]);
 								$sql_update .= "`$key` = '".$app->db->quote($record[$key])."', ";
 							} else {
 								$record[$key] = md5(stripslashes($record[$key]));
@@ -1523,7 +1585,7 @@ class tform_base {
 
 		// Set form title
 		$form_hint = $this->lng($this->formDef["title"]);
-		if($this->formDef["description"] != '') $form_hint .= '<div class="pageForm_description">'.$this->lng($this->formDef["description"]).'</div>';
+		if(isset($this->formDef["description"]) && $this->formDef["description"] != '') $form_hint .= '<div class="pageForm_description">'.$this->lng($this->formDef["description"]).'</div>';
 		$app->tpl->setVar('form_hint', $form_hint);
 
 		// Set Wordbook for this form

@@ -1,9 +1,10 @@
 <?php
+$wb['users_txt'] = 'Users';
 $wb['username_txt'] = 'Käyttäjätunnus';
 $wb['username_err'] = 'Käyttäjätunnus on liian pitkä tai sisältää kiellettyjä merkkejä.';
 $wb['username_empty'] = 'Käyttäjätunnus on tyhjä.';
 $wb['username_unique'] = 'Tämä käyttäjätunnus on jo olemassa.';
-$wb['passwort_txt'] = 'Salasana';
+$wb['password_txt'] = 'Salasana';
 $wb['modules_txt'] = 'Ohjelmaosiot';
 $wb['startmodule_txt'] = 'Aloitusosio';
 $wb['app_theme_txt'] = 'Teema';
@@ -33,4 +34,5 @@ $wb['username_error_collision'] = 'The username may not be web or web plus a num
 $wb['client_not_admin_err'] = 'A user that belongs to a client can not be set to type: admin';
 $wb['lost_password_function_txt'] = 'Forgot password function is available';
 $wb['no_user_insert'] = 'CP-Users of type -user- get added and updated automatically when you add a client or reseller.';
+$wb['otp_auth_txt'] = '2-Factor Authentication';
 ?>

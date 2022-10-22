@@ -28,6 +28,13 @@
   EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+/* compatibility for php < 5.5 (centos 7), remove when no longer needed */
+if(!function_exists("array_column")){
+	function array_column($array,$column_name){
+		return array_map(function($element) use($column_name){return $element[$column_name];}, $array);
+	}
+}
+
 class webserver_plugin {
 
 	var $plugin_name = 'webserver_plugin';
@@ -37,8 +44,6 @@ class webserver_plugin {
 	 * This function is called during ispconfig installation to determine
 	 * if a symlink shall be created for this plugin.
 	 */
-
-
 	public function onInstall() {
 		global $conf;
 
@@ -56,6 +61,11 @@ class webserver_plugin {
 		global $app;
 
 		$app->plugins->registerAction('server_plugins_loaded', $this->plugin_name, 'check_phpini_changes');
+
+		$app->plugins->registerEvent('server_update', $this->plugin_name, 'server_update');
+
+		$app->plugins->registerEvent('server_php_insert', $this->plugin_name, 'server_php_update');
+		$app->plugins->registerEvent('server_php_update', $this->plugin_name, 'server_php_update');
 	}
 
 	/**
@@ -89,20 +99,26 @@ class webserver_plugin {
 		//** add default php.ini files to check
 		$check_files[] = array('file' => $web_config['php_ini_path_apache'],
 			'mode' => 'mod',
-			'php_version' => ''); // default;
-
-		$check_files[] = array('file' => $web_config['php_ini_path_cgi'],
-			'mode' => '', // all but 'mod' and 'fast-cgi'
-			'php_version' => ''); // default;
+			'php_version' => 0); // default;
 
 		if($fastcgi_config["fastcgi_phpini_path"] && $fastcgi_config["fastcgi_phpini_path"] != $web_config['php_ini_path_cgi']) {
 			$check_files[] = array('file' => $fastcgi_config["fastcgi_phpini_path"],
 				'mode' => 'fast-cgi',
-				'php_version' => ''); // default;
+				'php_version' => 0); // default;
 		} else {
 			$check_files[] = array('file' => $web_config['php_ini_path_cgi'],
 				'mode' => 'fast-cgi', // all but 'mod'
-				'php_version' => ''); // default;
+				'php_version' => 0); // default;
+		}
+
+		$check_files[] = array('file' => $web_config['php_fpm_ini_path'],
+			'mode' => 'php-fpm',
+			'php_version' => 0); // default;
+
+		if(!array_search($web_config['php_ini_path_cgi'], array_column($check_files, 'file'))) {
+			$check_files[] = array('file' => $web_config['php_ini_path_cgi'],
+				'mode' => '', // all but 'mod' and 'fast-cgi'
+				'php_version' => 0); // default;
 		}
 
 
@@ -112,11 +128,12 @@ class webserver_plugin {
 			if($php['php_fastcgi_ini_dir'] && $php['php_fastcgi_ini_dir'] . '/php.ini' != $web_config['php_ini_path_cgi']) {
 				$check_files[] = array('file' => $php['php_fastcgi_ini_dir'] . '/php.ini',
 					'mode' => 'fast-cgi',
-					'php_version' => $php['php_fastcgi_ini_dir']);
-			} elseif($php['php_fpm_ini_dir'] && $php['php_fpm_ini_dir'] . '/php.ini' != $web_config['php_ini_path_cgi']) {
+					'php_version' => $php['server_php_id']);
+			}
+			if($php['php_fpm_ini_dir'] && $php['php_fpm_ini_dir'] . '/php.ini' != $web_config['php_fpm_ini_path']) {
 				$check_files[] = array('file' => $php['php_fpm_ini_dir'] . '/php.ini',
 					'mode' => 'php-fpm',
-					'php_version' => $php['php_fpm_ini_dir']);
+					'php_version' => $php['server_php_id']);
 			}
 		}
 		unset($php_versions);
@@ -133,6 +150,13 @@ class webserver_plugin {
 		}
 		if(!is_array($php_ini_md5)) $php_ini_md5 = array();
 
+		// verify needed php file settings if that hasn't been done since 15 minutes
+		$now = time();
+		$verify_php_ini=false;
+		if(!isset($php_ini_md5['last_verify_php_ini']) || ($now - intval($php_ini_md5['last_verify_php_ini']) > 15*60)) {
+			$verify_php_ini=true;
+		}
+
 		$processed = array();
 		foreach($check_files as $file) {
 			$file_path = $file['file'];
@@ -143,6 +167,11 @@ class webserver_plugin {
 			$ident = $file_path . '::' . $file['mode'] . '::' . $file['php_version'];
 			if(in_array($ident, $processed) == true) continue;
 			$processed[] = $ident;
+
+			//** check that needed php.ini settings/changes are made
+			if($verify_php_ini) {
+				$this->verify_php_ini($file);
+			}
 
 			//** check if md5sum of file changed
 			$file_md5 = md5_file($file_path);
@@ -157,13 +186,168 @@ class webserver_plugin {
 			$new_php_ini_md5[$file_path] = $file_md5;
 		}
 
+		$new_php_ini_md5['last_verify_php_ini'] = time();
+
 		//** write new md5 sums if something changed
-		if($php_ini_changed == true) $app->system->file_put_contents(SCRIPT_PATH . '/temp/php.ini.md5sum', base64_encode(serialize($new_php_ini_md5)));
+		if($php_ini_changed == true || $verify_php_ini == true) $app->system->file_put_contents(SCRIPT_PATH . '/temp/php.ini.md5sum', base64_encode(serialize($new_php_ini_md5)));
 		unset($new_php_ini_md5);
 		unset($php_ini_md5);
 		unset($processed);
 	}
 
+	/**
+	 * The method runs each php.ini file through verify_php_ini()
+	 */
+	function server_php_update($event_name, $data) {
+		global $app, $conf;
+
+		if(isset($data['new']['php_fastcgi_ini_dir'])) {
+			$php_ini = $data['new']['php_fastcgi_ini_dir'] . '/php.ini';
+			if(file_exists($php_ini)) {
+				$this->verify_php_ini(array('file' => $php_ini,
+					'mode' => 'fast-cgi',
+					'php_version' => $data['new']['server_php_id'])
+				);
+			} else {
+				$app->log("Cannot verify php.ini, file not found: $php_ini", LOGLEVEL_WARN);
+			}
+		}
+		if(isset($data['new']['php_fpm_ini_dir'])) {
+			$php_ini = $data['new']['php_fpm_ini_dir'] . '/php.ini';
+			if(file_exists($php_ini)) {
+				$this->verify_php_ini(array('file' => $php_ini,
+					'mode' => 'php-fpm',
+					'php_version' => $data['new']['server_php_id'])
+				);
+			} else {
+				$app->log("Cannot verify php.ini, file not found: $php_ini", LOGLEVEL_WARN);
+			}
+		}
+	}
+
+	/**
+	 * The method checks/sets needed php.ini settings
+	 */
+	public function verify_php_ini($file) {
+		global $app;
+
+		if(isset($file['file']) && is_file($file['file'])) {
+			$php_ini = $file['file'];
+			// ensure opcache.validate_root = 1
+			$app->system->exec_safe('grep ^opcache.validate_root ?', $php_ini);
+			if($app->system->last_exec_retcode() != 0) {
+				$app->log('verify_php_ini(): php.ini '.$php_ini.' is missing validate_root', LOGLEVEL_DEBUG);
+				$sed_script='s/; *opcache\.validate_root *= *.+$/opcache.validate_root = 1/g';
+				$app->system->exec_safe('sed -E -i ? ?', $sed_script, $php_ini);
+			}
+		}
+	}
+
+	/*
+	 * Checks for changes to jailkit settings in server config and schedules affected jails to be updated.
+	 */
+	function server_update($event_name, $data) {
+		global $app, $conf;
+
+		// load the server configuration options
+		$app->uses('ini_parser,system');
+
+		$old = $app->ini_parser->parse_ini_string($data['old']['config']);
+		$new = $app->ini_parser->parse_ini_string($data['new']['config']);
+		if (is_array($old) && is_array($new) && isset($old['jailkit']) && isset($new['jailkit'])) {
+			$old = $old['jailkit'];
+			$new = $new['jailkit'];
+		} else {
+			$app->log('server_update: could not parse jailkit section of server config.', LOGLEVEL_WARN);
+			return;
+		}
+
+		$hardlink_mode_changed = (boolean)(($old['jailkit_hardlinks'] != $new['jailkit_hardlinks']) && $new['jailkit_hardlinks'] != 'allow');
+
+		if (($old['jailkit_chroot_app_sections'] != $new['jailkit_chroot_app_sections']) ||
+		    ($old['jailkit_chroot_app_programs'] != $new['jailkit_chroot_app_programs']) ||
+		    ($old['jailkit_chroot_cron_programs'] != $new['jailkit_chroot_cron_programs']) ||
+		    ($hardlink_mode_changed && $new['jailkit_hardlinks'] != 'allow'))
+		{
+			$app->log('Jailkit config has changed, scheduling affected chroot jails to be updated.', LOGLEVEL_DEBUG);
+
+			$web_domains = $app->db->queryAllRecords("SELECT * FROM web_domain WHERE type = 'vhost' AND server_id = ?", $conf['server_id']);
+
+			foreach ($web_domains as $web) {
+				// we could check (php_fpm_chroot == y || jailkit shell user exists || jailkit cron exists),
+				// but will just shortcut the db checks to see if jailkit was setup previously:
+				if (!is_dir($web['document_root'].'/etc/jailkit')) {
+					continue;
+				}
+
+				if ($hardlink_mode_changed ||
+				    // chroot cron programs changed
+				    ($old['jailkit_chroot_cron_programs'] != $new['jailkit_chroot_cron_programs']) ||
+				    // jailkit sections changed and website does not overwrite
+				    (($old['jailkit_chroot_app_sections'] != $new['jailkit_chroot_app_sections']) &&
+				     (!(isset($web['jailkit_chroot_app_sections']) && $web['jailkit_chroot_app_sections'] != '' ))) ||
+				    // jailkit apps changed and website does not overwrite
+				    (($old['jailkit_chroot_app_programs'] != $new['jailkit_chroot_app_programs']) &&
+				     (!(isset($web['jailkit_chroot_app_programs']) && $web['jailkit_chroot_app_programs'] != '' ))))
+				{
+
+					$sections = $new['jailkit_chroot_app_sections'];
+					if (isset($web['jailkit_chroot_app_sections']) && $web['jailkit_chroot_app_sections'] != '' ) {
+						$sections = $web['jailkit_chroot_app_sections'];
+					}
+
+					$programs = $new['jailkit_chroot_app_programs'];
+					if (isset($web['jailkit_chroot_app_sections']) && $web['jailkit_chroot_app_sections'] != '' ) {
+						$programs = $web['jailkit_chroot_app_sections'];
+					}
+
+					if (isset($new['jailkit_hardlinks'])) {
+						if ($new['jailkit_hardlinks'] == 'yes') {
+							$options = array('hardlink');
+						} elseif ($new['jailkit_hardlinks'] == 'no') {
+							$options = array();
+						}
+					} else {
+						$options = array('allow_hardlink');
+					}
+
+					$options[] = 'force';
+
+					// we could add a server config setting to allow updating these immediately:
+					//   $app->system->update_jailkit_chroot($new['document_root'], $sections, $programs, $options);
+					//
+					// but to mitigate disk contention, will just queue "update needed"
+					// for jailkit maintenance cronjob via last_jailkit_update timestamp
+					$app->db->query("UPDATE `web_domain` SET `last_jailkit_update` = FROM_UNIXTIME(0) WHERE `document_root` = ?", $web['document_root']);
+				}
+			}
+		}
+
+		$check_files = array();
+		if ($old['php_ini_path_apache'] != $new['php_ini_path_apache']) {
+			$check_files[] = array('file' => $new['php_ini_path_apache'],
+				'mode' => 'mod',
+				'php_version' => 0);
+		}
+
+		if ($old['fastcgi_phpini_path'] != $new['fastcgi_phpini_path']) {
+			$check_files[] = array('file' => $new['fastcgi_phpini_path'],
+				'mode' => 'fast-cgi',
+				'php_version' => 0);
+		}
+		if ($old['php_ini_path_cgi'] != $new['php_ini_path_cgi']) {
+			$check_files[] = array('file' => $new['php_ini_path_cgi'],
+				'mode' => 'fast-cgi',
+				'php_version' => 0);
+		}
+		if ($old['php_fpm_ini_path'] != $new['php_fpm_ini_path']) {
+			$check_files[] = array('file' => $web_config['php_fpm_ini_path'],
+				'mode' => 'php-fpm',
+				'php_version' => 0);
+		}
+		foreach ($check_files as $file) {
+			$this->verify_php_ini($file);
+		}
+	}
 }
 
-?>

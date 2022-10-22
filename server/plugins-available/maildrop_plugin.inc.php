@@ -146,9 +146,12 @@ class maildrop_plugin {
 
 				if ($data['new']['autoresponder_start_date'] && $data["new"]["autoresponder_start_date"] != '0000-00-00 00:00:00') { // Dates have been set
 					$tpl = str_replace('{start_date}', strtotime($data["new"]["autoresponder_start_date"]), $tpl);
-					$tpl = str_replace('{end_date}', strtotime($data["new"]["autoresponder_end_date"]), $tpl);
 				} else {
 					$tpl = str_replace('{start_date}', -7200, $tpl);
+				}
+				if ($data['new']['autoresponder_end_date'] && $data["new"]["autoresponder_end_date"] != '0000-00-00 00:00:00') { // Dates have been set
+					$tpl = str_replace('{end_date}', strtotime($data["new"]["autoresponder_end_date"]), $tpl);
+				} else {
 					$tpl = str_replace('{end_date}', 2147464800, $tpl);
 				}
 
@@ -173,7 +176,9 @@ class maildrop_plugin {
 		// Write the custom mailfilter script, if mailfilter recipe has changed
 		if($data["old"]["custom_mailfilter"] != $data["new"]["custom_mailfilter"]
 			or $data["old"]["move_junk"] != $data["new"]["move_junk"]
-			or $data["old"]["cc"] != $data["new"]["cc"]) {
+			or $data["old"]["cc"] != $data["new"]["cc"]
+			or $data["old"]["forward_in_lda"] != $data["new"]["forward_in_lda"]
+		) {
 
 			$app->log("Mailfilter config has been changed", LOGLEVEL_DEBUG);
 			if(trim($data["new"]["custom_mailfilter"]) != ''
@@ -195,7 +200,7 @@ class maildrop_plugin {
 
 				$mailfilter_content = '';
 
-				if($data["new"]["cc"] != '') {
+				if ($data["new"]["forward_in_lda"] == 'y' && $data["new"]["cc"] != '') {
 					$tmp_mails_arr = explode(',',$data["new"]["cc"]);
 					foreach($tmp_mails_arr as $address) {
 						if(trim($address) != '') $mailfilter_content .= "cc \"!".trim($address)."\"\n";
@@ -204,7 +209,7 @@ class maildrop_plugin {
 					$app->log("Added CC address ".$data["new"]["cc"].' to mailfilter file.', LOGLEVEL_DEBUG);
 				}
 
-				if($data["new"]["move_junk"] == 'y') {
+				if($data["new"]["move_junk"] != 'n') {
 					if(file_exists($conf["rootpath"].'/conf-custom/mailfilter_move_junk.master')) {
 						$mailfilter_content .= file_get_contents($conf["rootpath"].'/conf-custom/mailfilter_move_junk.master')."\n";
 					} else {

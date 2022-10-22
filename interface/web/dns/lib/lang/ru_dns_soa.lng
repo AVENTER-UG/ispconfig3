@@ -7,7 +7,7 @@ $wb['serial_txt'] = 'Серийный номер';
 $wb['refresh_txt'] = 'Refresh';
 $wb['retry_txt'] = 'Повтор';
 $wb['expire_txt'] = 'Expire';
-$wb['minimum_txt'] = 'Minimum';
+$wb['minimum_txt'] = 'Minimum (negative cache ttl)';
 $wb['ttl_txt'] = 'TTL';
 $wb['xfer_txt'] = 'Xfer (IP)';
 $wb['active_txt'] = 'Активно';
@@ -41,4 +41,7 @@ $wb['dnssec_wanted_info'] = 'При отключении DNSSEC ключи не 
 $wb['error_not_allowed_server_id'] = 'Выбранный сервер не доступен для этой учетной записи.';
 $wb['soa_cannot_be_changed_txt'] = 'Зона (SOA) не может быть изменена. Пожалуйста, обратитесь к администратору, чтобы изменить зону.';
 $wb['configuration_error_txt'] = 'ОШИБКА КОНФИГУРАЦИИ';
+$wb['dnssec_algo_txt'] = 'DNSSEC Algorithm';
+$wb['rendered_zone_txt'] = 'Bind zone format for reference and export.';
+$wb['rendered_zone_unavailable_txt'] = 'Sorry, no data is available yet.';
 ?>
