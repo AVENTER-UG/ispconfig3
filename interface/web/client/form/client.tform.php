@@ -45,7 +45,6 @@ $form["action"]  = "client_edit.php";
 $form["db_table"] = "client";
 $form["db_table_idx"] = "client_id";
 $form["db_history"] = "yes";
-$form["tab_default"] = "address";
 $form["tab_default"] = "info";
 $form["list_default"] = "client_list.php";
 $form["auth"]  = 'yes';
