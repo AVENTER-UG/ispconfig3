@@ -94,8 +94,7 @@ class page_action extends tform_actions {
 
 		chdir('../client');
 
-		$client_group_id = $_SESSION["s"]["user"]["default_group"];
-		$tmp = $app->db->queryOneRecord("SELECT company_name, contact_firstname, contact_name, email FROM client WHERE sys_groupid = ?", $client_group_id);
+		$tmp = $app->db->queryOneRecord("SELECT company_name, contact_firstname, contact_name, email FROM client WHERE sys_groupid = ?", $current_client_id);
 		$app->tpl->setVar('company_name', $tmp['company_name']);
 		$app->tpl->setVar('contact_name', $tmp['contact_name']);
 		$app->tpl->setVar('email', $tmp['email']);
