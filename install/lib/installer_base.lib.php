@@ -2187,7 +2187,7 @@ class installer_base {
 
 		//* Backup exiting file
 		if(is_file($full_file_name)) {
-			copy($full_file_name, $config_dir.$configfile.'~');
+			copy($full_file_name, $full_file_name.'~');
 		}
 		$content = rfsel($conf['ispconfig_install_dir'].'/server/conf-custom/install/'.$configfile.'.master', 'tpl/'.$configfile.'.master');
 		$content = str_replace('{mysql_server_ispconfig_user}', $conf['mysql']['ispconfig_user'], $content);
