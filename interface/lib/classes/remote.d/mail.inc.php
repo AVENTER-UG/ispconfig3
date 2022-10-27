@@ -679,6 +679,17 @@ class remoting_mail extends remoting {
     	return $affected_rows;
 	}
 
+    public function mail_relay_domain_delete($session_id, $primary_id)
+    {
+        if(!$this->checkPerm($session_id, 'mail_relay_delete'))
+        {
+            throw new SoapFault('permission_denied', 'You do not have the permissions to access this function.');
+            return false;
+        }
+        $affected_rows = $this->deleteQuery('../mail/form/mail_relay_domain.tform.php', $primary_id);
+        return $affected_rows;
+    }
+
 	//* Get spamfilter whitelist details
 	public function mail_spamfilter_whitelist_get($session_id, $primary_id)
 	{
