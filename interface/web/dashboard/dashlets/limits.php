@@ -147,32 +147,20 @@ class dashlet_limits
         }
         $tpl->setVar($wb);
 
-        if ($app->auth->is_admin()) {
-            $user_is_admin = true;
-        } else {
-            $user_is_admin = false;
-        }
-        $tpl->setVar('is_admin', $user_is_admin);
-
-        if ($user_is_admin == false) {
-            $client_group_id = $app->functions->intval($_SESSION["s"]["user"]["default_group"]);
-            $client = $app->db->queryOneRecord("SELECT * FROM sys_group, client WHERE sys_group.client_id = client.client_id and sys_group.groupid = ?", $client_group_id);
-        }
-
-        if ($limit_to_client_id == 0 || !$app->auth->is_admin()) {
+        if ($limit_to_client_id == 0) {
           $client_id = $_SESSION['s']['user']['client_id'];
         } else {
           $client_id = $limit_to_client_id;
         }
 
+        $client_group_id = $app->functions->intval($_SESSION["s"]["user"]["default_group"]);
+        $client = $app->db->queryOneRecord("SELECT * FROM client WHERE client_id = ?", $client_id);
+
+
         $rows = array();
         foreach ($limits as $limit) {
             $field = $limit['field'];
-            if ($user_is_admin) {
-                $value = $wb['unlimited_txt'];
-            } else {
-                $value = $client[$field];
-            }
+            $value = $client[$field];
             if ($value != 0 || $value == $wb['unlimited_txt']) {
                 $value_formatted = ($value == '-1')?$wb['unlimited_txt']:$value;
                 if (isset($limit['q_type']) && $limit['q_type'] != '') {
