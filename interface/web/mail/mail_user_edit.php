@@ -67,6 +67,17 @@ class page_action extends tform_actions {
 		parent::onShowNew();
 	}
 
+	function onShowEdit() {
+		global $app, $conf;
+
+		parent::onShowEdit();
+
+		if(isset($this->dataRecord)) {
+			$app->tform->formDef['title'] = $app->lng('Mailbox') . ' ' . $this->dataRecord['email'];
+		}
+	}
+
+
 	function onShowEnd() {
 		global $app, $conf;
 
