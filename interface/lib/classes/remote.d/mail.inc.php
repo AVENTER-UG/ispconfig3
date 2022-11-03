@@ -692,6 +692,8 @@ class remoting_mail extends remoting {
 
     public function mail_relay_domain_get($session_id, $primary_id)
     {
+        global $app;
+
         if(!$this->checkPerm($session_id, 'mail_relay_get'))
         {
             throw new SoapFault('permission_denied', 'You do not have the permissions to access this function.');
@@ -700,6 +702,17 @@ class remoting_mail extends remoting {
         $app->uses('remoting_lib');
 		$app->remoting_lib->loadFormDef('../mail/form/mail_relay_domain.tform.php');
 		return $app->remoting_lib->getDataRecord($primary_id);
+    }
+
+    public function mail_relay_domain_update($session_id, $client_id, $primary_id, $params)
+    {
+        if(!$this->checkPerm($session_id, 'mail_relay_update'))
+        {
+            throw new SoapFault('permission_denied', 'You do not have the permissions to access this function.');
+            return false;
+        }
+        $affected_rows = $this->updateQuery('../mail/form/mail_relay_domain.tform.php', $client_id, $primary_id, $params);
+		return $affected_rows;
     }
 
 	//* Get spamfilter whitelist details
