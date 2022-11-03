@@ -9,6 +9,7 @@ $wb['email_txt'] = 'Correo';
 $wb['generate_password_txt'] = 'Generar contraseña';
 $wb['limit_mailmailinglist_txt'] = 'Límite alcanzado';
 $wb['listname_error_empty'] = 'Nombre de la lista vacío.';
+$wb['listname_error_regex'] = 'The list name is invalid. The minimum length is 2 characters (allowed are: [a-z 1-9 - _]).';
 $wb['listname_error_unique'] = 'Ya existe en el servidor un lista de correos con ese nombre. Por favor elija otro.';
 $wb['listname_txt'] = 'Nombre de lista';
 $wb['mailinglist_txt'] = 'Lista de correo';

@@ -2,6 +2,7 @@
 $wb['limit_mailmailinglist_txt'] = 'Το όριο ξεπεράστηκε.';
 $wb['domain_error_empty'] = 'Το Domain είναι άδειο.';
 $wb['listname_error_empty'] = 'Η λίστα είναι άδεια.';
+$wb['listname_error_regex'] = 'The list name is invalid. The minimum length is 2 characters (allowed are: [a-z 1-9 - _]).';
 $wb['domain_error_regex'] = 'Το όνομα domain δεν είναι έγκυρο/';
 $wb['email_in_use_txt'] = 'Το email χρησιμοποιείται ήδη.';
 $wb['no_domain_perm'] = 'Δεν έχετε δικαιώματα σε αυτό το domain.';
