@@ -204,7 +204,7 @@ class cron {
 		if($this->_bParsed == false) $this->_calcValidValues();
 
 		// get the field values for the given Date.
-		list($iMinute, $iHour, $iDay, $iWDay, $iMonth, $iYear) = explode(':', ISPConfigDateTime::to_string($vDate, 'custom:%M:%H:%d:%w:%m:%Y'));
+		list($iMinute, $iHour, $iDay, $iWDay, $iMonth, $iYear) = explode(':', ISPConfigDateTime::to_string($vDate, 'custom:i:G:j:w:n:Y'));
 
 		$bValid = false;
 		$iStartYear = $iYear;
