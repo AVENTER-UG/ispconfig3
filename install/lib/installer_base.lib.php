@@ -246,6 +246,8 @@ class installer_base {
 
 	//** Check prerequisites
 	public function check_prerequisites() {
+		global $conf;
+		
 		$msg = '';
 
 		if ($conf['default_php'] != '') {
