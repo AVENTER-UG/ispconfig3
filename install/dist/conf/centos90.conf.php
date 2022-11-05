@@ -28,7 +28,7 @@ NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
 EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-//***  Fedora 9 default settings
+//***  RHEL 9 derivatives default settings
 
 //* Main
 $conf['language'] = 'en';
@@ -43,6 +43,7 @@ $conf['init_scripts'] = '/etc/init.d';
 $conf['runlevel'] = '/etc';
 $conf['shells'] = '/etc/shells';
 $conf['pam'] = '/etc/pam.d';
+$conf['default_php'] = "8.0";
 
 //* Services provided by this server, this selection will be overridden by the expert mode
 $conf['services']['mail'] = true;
