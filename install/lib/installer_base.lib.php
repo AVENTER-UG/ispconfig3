@@ -1073,6 +1073,14 @@ class installer_base {
 		return true;
 	}
 
+	public function get_postfix_version() {
+		//* Get postfix version
+		exec('postconf -d mail_version 2>&1', $out);
+		$postfix_version = preg_replace('/.*=\s*/', '', $out[0]);
+		unset($out);
+		return $postfix_version;
+	}
+
 	public function configure_postfix($options = '') {
 		global $conf,$autoinstall;
 		$cf = $conf['postfix'];
@@ -1082,10 +1090,7 @@ class installer_base {
 			$this->error("The postfix configuration directory '$config_dir' does not exist.");
 		}
 
-		//* Get postfix version
-		exec('postconf -d mail_version 2>&1', $out);
-		$postfix_version = preg_replace('/.*=\s*/', '', $out[0]);
-		unset($out);
+		$postfix_version = $this->get_postfix_version();
 
 		//* Install virtual mappings
 		foreach (glob('tpl/mysql-virtual_*.master') as $filename) {
@@ -1484,8 +1489,7 @@ class installer_base {
 
 		$config_dir = $conf['postfix']['config_dir'];
 		$quoted_config_dir = preg_quote($config_dir, '|');
-		$postfix_version = `postconf -d mail_version 2>/dev/null`;
-		$postfix_version = preg_replace( '/mail_version\s*=\s*(.*)\s*/', '$1', $postfix_version );
+		$postfix_version = $this->get_postfix_version();
 
 		//* Configure master.cf and add a line for deliver
 		if(!$this->get_postfix_service('dovecot', 'unix')) {
@@ -1727,6 +1731,7 @@ class installer_base {
 						break;
 					}
 				}
+				$postfix_version = $this->get_postfix_version();
 				# postfix < 3.3 needs this when using reject_unverified_recipient:
 				if(version_compare($postfix_version, 3.3, '<')) {
 					$postconf_commands[] = "enable_original_recipient = yes";
