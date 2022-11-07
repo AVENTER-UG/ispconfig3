@@ -28,11 +28,11 @@ NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
 EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-//***  RHEL 7 derivatives default settings
+//***  RHEL 9 derivatives default settings
 
 //* Main
 $conf['language'] = 'en';
-$conf['distname'] = 'centos72';
+$conf['distname'] = 'centos90';
 $conf['hostname'] = 'server1.domain.tld'; // Full hostname
 $conf['ispconfig_install_dir'] = '/usr/local/ispconfig';
 $conf['ispconfig_config_dir'] = '/usr/local/ispconfig';
@@ -43,7 +43,7 @@ $conf['init_scripts'] = '/etc/init.d';
 $conf['runlevel'] = '/etc';
 $conf['shells'] = '/etc/shells';
 $conf['pam'] = '/etc/pam.d';
-$conf['default_php'] = "5.4";
+$conf['default_php'] = "8.0";
 
 //* Services provided by this server, this selection will be overridden by the expert mode
 $conf['services']['mail'] = true;
@@ -64,7 +64,7 @@ $conf['mysql']['admin_user'] = 'root';
 $conf['mysql']['admin_password'] = '';
 $conf['mysql']['charset'] = 'utf8';
 $conf['mysql']['ispconfig_user'] = 'ispconfig';
-$conf['mysql']['ispconfig_password'] = md5(uniqid(rand()));
+$conf['mysql']['ispconfig_password'] = md5(random_bytes(20));
 $conf['mysql']['master_slave_setup'] = 'n';
 $conf['mysql']['master_host'] = '';
 $conf['mysql']['master_port'] = '3306';
@@ -72,7 +72,7 @@ $conf['mysql']['master_database'] = 'dbispconfig';
 $conf['mysql']['master_admin_user'] = 'root';
 $conf['mysql']['master_admin_password'] = '';
 $conf['mysql']['master_ispconfig_user'] = '';
-$conf['mysql']['master_ispconfig_password'] = md5(uniqid(rand()));
+$conf['mysql']['master_ispconfig_password'] = md5(random_bytes(20));
 
 //* Apache
 $conf['apache']['installed'] = false; // will be detected automatically during installation
