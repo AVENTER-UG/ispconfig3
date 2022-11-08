@@ -1600,20 +1600,24 @@ class installer_base {
 
 				// Check if we have a dhparams file and if not, create it
 				if(!file_exists('/etc/dovecot/dh.pem')) {
+					// Create symlink to ISPConfig dhparam file
+					swriteln('Creating symlink /etc/dovecot/dh.pem to ISPConfig DHParam file.');
+					symlink('/usr/local/ispconfig/interface/ssl/dhparam4096.pem', '/etc/dovecot/dh.pem');
+
+					/*
 					swriteln('Creating new DHParams file, this takes several minutes. Do not interrupt the script.');
 					if(file_exists('/var/lib/dovecot/ssl-parameters.dat')) {
 						// convert existing ssl parameters file
 						$command = 'dd if=/var/lib/dovecot/ssl-parameters.dat bs=1 skip=88 | openssl dhparam -inform der > /etc/dovecot/dh.pem';
 						caselog($command.' &> /dev/null', __FILE__, __LINE__, "EXECUTED: $command", "Failed to execute the command $command");
 					} else {
-						/*
-						   Create a new dhparams file. We use 2048 bit only as it simply takes too long
-						   on smaller systems to generate a 4096 bit dh file (> 30 minutes). If you need
-						   a 4096 bit file, create it manually before you install ISPConfig
-						*/
+						//Create a new dhparams file. We use 2048 bit only as it simply takes too long
+						//   on smaller systems to generate a 4096 bit dh file (> 30 minutes). If you need
+						//   a 4096 bit file, create it manually before you install ISPConfig
 						$command = 'openssl dhparam -out /etc/dovecot/dh.pem 2048';
 						caselog($command.' &> /dev/null', __FILE__, __LINE__, "EXECUTED: $command", "Failed to execute the command $command");
 					}
+					*/
 				}
 				//remove #2.3+ comment
 				$content = file_get_contents($config_dir.'/'.$configfile);
@@ -3319,7 +3323,8 @@ class installer_base {
 				// Create symlink to ISPConfig SSL files
 				symlink($ssl_pem_file, $pureftpd_pem);
 				if (!file_exists("$pureftpd_dir/pure-ftpd-dhparams.pem"))
-					exec("cd $pureftpd_dir; openssl dhparam -out dhparam2048.pem 2048; ln -sf dhparam2048.pem pure-ftpd-dhparams.pem");
+					symlink('/usr/local/ispconfig/interface/ssl/dhparam4096.pem', $pureftpd_dir.'/pure-ftpd-dhparams.pem');
+					//exec("cd $pureftpd_dir; openssl dhparam -out dhparam2048.pem 2048; ln -sf dhparam2048.pem pure-ftpd-dhparams.pem");
 			}
 		}
 
