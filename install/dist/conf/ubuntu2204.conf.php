@@ -1,7 +1,7 @@
 <?php
 
 /*
-Copyright (c) 2020, Till Brehm, ISPConfig UG
+Copyright (c) 2022, Till Brehm, ISPConfig UG
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without modification,
@@ -28,11 +28,11 @@ NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
 EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-//***  Ubuntu 20.04 default settings
+//***  Ubuntu 22.04 default settings
 
 //* Main
 $conf['language'] = 'en';
-$conf['distname'] = 'ubuntu2004';
+$conf['distname'] = 'ubuntu2204';
 $conf['hostname'] = 'server1.domain.tld'; // Full hostname
 $conf['ispconfig_install_dir'] = '/usr/local/ispconfig';
 $conf['ispconfig_config_dir'] = '/usr/local/ispconfig';
@@ -43,7 +43,7 @@ $conf['init_scripts'] = '/etc/init.d';
 $conf['runlevel'] = '/etc';
 $conf['shells'] = '/etc/shells';
 $conf['pam'] = '/etc/pam.d';
-$conf['default_php'] = "7.4";
+$conf['default_php'] = "8.1";
 
 //* Services provided by this server, this selection will be overridden by the expert mode
 $conf['services']['mail'] = true;
@@ -85,8 +85,8 @@ $conf['apache']['version'] = '2.4';
 $conf['apache']['vhost_conf_dir'] = '/etc/apache2/sites-available';
 $conf['apache']['vhost_conf_enabled_dir'] = '/etc/apache2/sites-enabled';
 $conf['apache']['vhost_port'] = '8080';
-$conf['apache']['php_ini_path_apache'] = '/etc/php/7.4/apache2/php.ini';
-$conf['apache']['php_ini_path_cgi'] = '/etc/php/7.4/cgi/php.ini';
+$conf['apache']['php_ini_path_apache'] = '/etc/php/8.1/apache2/php.ini';
+$conf['apache']['php_ini_path_cgi'] = '/etc/php/8.1/cgi/php.ini';
 
 //* Website base settings
 $conf['web']['website_basedir'] = '/var/www';
@@ -101,7 +101,7 @@ $conf['web']['apps_vhost_user'] = 'ispapps';
 $conf['web']['apps_vhost_group'] = 'ispapps';
 
 //* Fastcgi
-$conf['fastcgi']['fastcgi_phpini_path'] = '/etc/php/7.4/cgi/';
+$conf['fastcgi']['fastcgi_phpini_path'] = '/etc/php/8.1/cgi/';
 $conf['fastcgi']['fastcgi_starter_path'] = '/var/www/php-fcgi-scripts/[system_user]/';
 $conf['fastcgi']['fastcgi_bin'] = '/usr/bin/php-cgi';
 
@@ -208,11 +208,11 @@ $conf['nginx']['vhost_conf_enabled_dir'] = '/etc/nginx/sites-enabled';
 $conf['nginx']['init_script'] = 'nginx';
 $conf['nginx']['vhost_port'] = '8080';
 $conf['nginx']['cgi_socket'] = '/var/run/fcgiwrap.socket';
-$conf['nginx']['php_fpm_init_script'] = 'php7.4-fpm';
-$conf['nginx']['php_fpm_ini_path'] = '/etc/php/7.4/fpm/php.ini';
-$conf['nginx']['php_fpm_pool_dir'] = '/etc/php/7.4/fpm/pool.d';
+$conf['nginx']['php_fpm_init_script'] = 'php8.1-fpm';
+$conf['nginx']['php_fpm_ini_path'] = '/etc/php/8.1/fpm/php.ini';
+$conf['nginx']['php_fpm_pool_dir'] = '/etc/php/8.1/fpm/pool.d';
 $conf['nginx']['php_fpm_start_port'] = 9010;
-$conf['nginx']['php_fpm_socket_dir'] = '/var/lib/php7.4-fpm';
+$conf['nginx']['php_fpm_socket_dir'] = '/var/lib/php8.1-fpm';
 
 //* OpenVZ
 $conf['openvz']['installed'] = false;

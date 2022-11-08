@@ -87,6 +87,10 @@ class monitor_tools {
 				$mainver = $ver;
 			}
 			switch ($mainver){
+			case "22.04":
+				$relname = "(Jammy Jellyfish)";
+				$distconfid = 'ubuntu2204';
+				break;
 			case "20.04":
 				$relname = "(Focal Fossa)";
 				$distconfid = 'ubuntu2004';
