@@ -98,6 +98,10 @@ function get_distname() {
 				$mainver = current($mainver).'.'.next($mainver);
 			}
 			switch ($mainver){
+			case "22.04":
+				$relname = "(Jammy Jellyfish)";
+				$distconfid = 'ubuntu2204';
+				break;
 			case "20.04":
 				$relname = "(Focal Fossa)";
 				$distconfid = 'ubuntu2004';
