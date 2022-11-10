@@ -17,7 +17,7 @@ syntax:lint:
     - schedules
     - web
     - merge_requests
-    - /^\d+\.\d+\.\d+(p\d+)?$/
+    - /^\d+\.\d+\.\d+([p|b]\d+)?$/
 
   script:
     - echo "Syntax checking PHP files"
@@ -37,7 +37,7 @@ syntax_diff:lint:
     - schedules
     - web
     - merge_requests
-    - /^\d+\.\d+\.\d+(p\d+)?$/
+    - /^\d+\.\d+\.\d+([p|b]\d+)?$/
 
   script:
     - echo "Syntax checking PHP files"
@@ -81,7 +81,7 @@ build:package:
     image: edbizarro/gitlab-ci-pipeline-php:7.2
     only:
         refs:
-            - /^\d+\.\d+\.\d+(p\d+)?$/
+            - /^\d+\.\d+\.\d+([p|b]\d+)?$/
             - web
 
     script:
