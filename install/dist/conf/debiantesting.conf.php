@@ -32,7 +32,7 @@ EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 //* Main
 $conf['language'] = 'en';
-$conf['distname'] = 'debian110';
+$conf['distname'] = 'debian120';
 $conf['hostname'] = 'server1.domain.tld'; // Full hostname
 $conf['ispconfig_install_dir'] = '/usr/local/ispconfig';
 $conf['ispconfig_config_dir'] = '/usr/local/ispconfig';
@@ -43,6 +43,7 @@ $conf['init_scripts'] = '/etc/init.d';
 $conf['runlevel'] = '/etc';
 $conf['shells'] = '/etc/shells';
 $conf['pam'] = '/etc/pam.d';
+$conf['default_php'] = "8.1";
 
 //* Services provided by this server, this selection will be overridden by the expert mode
 $conf['services']['mail'] = true;
@@ -68,6 +69,7 @@ $conf['mysql']['ispconfig_user'] = 'ispconfig';
 $conf['mysql']['ispconfig_password'] = md5(random_bytes(20));
 $conf['mysql']['master_slave_setup'] = 'n';
 $conf['mysql']['master_host'] = '';
+$conf['mysql']['master_port'] = '3306';
 $conf['mysql']['master_database'] = 'dbispconfig';
 $conf['mysql']['master_admin_user'] = 'root';
 $conf['mysql']['master_admin_password'] = '';

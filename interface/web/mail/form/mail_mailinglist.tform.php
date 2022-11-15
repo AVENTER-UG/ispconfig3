@@ -103,6 +103,10 @@ $form["tabs"]['mailinglist'] = array (
 					'errmsg'=> 'listname_error_empty'),
 				1 => array ( 'type' => 'UNIQUE',
 					'errmsg'=> 'listname_error_unique'),
+				2 => array (
+					'type'	=> 'REGEX',
+					'regex' => '/^[_a-z0-9][\w\.\-_\+@]{1,255}$/',
+					'errmsg'=> 'listname_error_regex'),
 			),
 			'filters'   => array(
 					0 => array( 'event' => 'SAVE',

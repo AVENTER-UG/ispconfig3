@@ -39,8 +39,8 @@ ob_start('ob_gzhandler');
 if(isset($conf['timezone']) && $conf['timezone'] != '') date_default_timezone_set($conf['timezone']);
 
 //* Set error reporting level when we are not on a developer system
-if(DEVSYSTEM == 0) {
-	@ini_set('error_reporting', E_ALL & ~E_NOTICE & ~E_DEPRECATED);
+if(DEVSYSTEM !== true) {
+	@ini_set('error_reporting', E_ALL & ~E_NOTICE & ~E_DEPRECATED & ~E_WARNING);
 }
 
 /*

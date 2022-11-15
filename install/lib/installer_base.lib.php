@@ -52,7 +52,7 @@ class installer_base {
 	}
 
 	public function update_acme() {
-		$acme = explode("\n", shell_exec('which acme.sh /usr/local/ispconfig/server/scripts/acme.sh /root/.acme.sh/acme.sh'));
+		$acme = explode("\n", shell_exec('which acme.sh /usr/local/ispconfig/server/scripts/acme.sh /root/.acme.sh/acme.sh 2> /dev/null'));
 		$acme = reset($acme);
 		$val = 0;
 
@@ -83,13 +83,13 @@ class installer_base {
 		global $autoinstall, $autoupdate;
 		$finished = false;
 		do {
-			if($name != '' && $autoinstall[$name] != '') {
+			if($name != '' && isset($autoinstall[$name]) && $autoinstall[$name] != '') {
 				if($autoinstall[$name] == 'default') {
 					$input = $default;
 				} else {
 					$input = $autoinstall[$name];
 				}
-			} elseif($name != '' && $autoupdate[$name] != '') {
+			} elseif($name != '' && isset($autoupdate[$name]) && $autoupdate[$name] != '') {
 				if($autoupdate[$name] == 'default') {
 					$input = $default;
 				} else {
@@ -126,13 +126,13 @@ class installer_base {
 
 	public function free_query($query, $default, $name = '') {
 		global $autoinstall, $autoupdate;
-		if($name != '' && $autoinstall[$name] != '') {
+		if($name != '' && isset($autoinstall[$name]) && $autoinstall[$name] != '') {
 			if($autoinstall[$name] == 'default') {
 				$input = $default;
 			} else {
 				$input = $autoinstall[$name];
 			}
-		} elseif($name != '' && $autoupdate[$name] != '') {
+		} elseif($name != '' && isset($autoupdate[$name]) && $autoupdate[$name] != '') {
 			if($autoupdate[$name] == 'default') {
 				$input = $default;
 			} else {
@@ -246,10 +246,15 @@ class installer_base {
 
 	//** Check prerequisites
 	public function check_prerequisites() {
+		global $conf;
+		
 		$msg = '';
 
-		if(version_compare(phpversion(), '5.4', '<')) $msg .= "PHP Version 5.4 or newer is required. The currently used PHP version is ".phpversion().".\n";
-		if(version_compare(phpversion(), '8.0', '>=')) $msg .= "PHP Version 8 is not supported yet. Change PHP version back to the default version of the OS. The currently used PHP version is ".phpversion().".\n";
+		if ($conf['default_php'] != '') {
+			if(version_compare(phpversion('tidy'), $conf['default_php'], '==')) $msg .= "Your PHP version is not the OS default. Change the PHP version back to the default version of the OS. The currently used PHP version is " . phpversion() . "The default version for your OS is PHP " . $conf['default_php'] . ".\n";
+		}
+		if(version_compare(phpversion(), '5.4', '<')) $msg .= "PHP Version 5.4 or newer is required. The currently used PHP version is " . phpversion() . ".\n";
+		//if(version_compare(phpversion(), '8.2', '>=')) $msg .= "PHP Version 8.2+ is not supported yet. Change the PHP version back to the default version of the OS. The currently used PHP version is " . phpversion() . ".\n";
 		if(!function_exists('curl_init')) $msg .= "PHP Curl Module is missing.\n";
 		if(!function_exists('mysqli_connect')) $msg .= "PHP MySQLi Module is nmissing.\n";
 		if(!function_exists('mb_detect_encoding')) $msg .= "PHP Multibyte Module (MB) is missing.\n";
@@ -892,6 +897,20 @@ class installer_base {
 	public function configure_mailman($status = 'insert') {
 		global $conf;
 
+		// Fix for #6314: bug on Debian 11 systems where Mailman3 is not available and broken routes exist in the Mailman config
+		$data_dir = '/var/lib/mailman';
+		if (($conf['mailman']['installed'] != true) && is_dir($data_dir)) {
+			rename($data_dir, $data_dir . '-bk');
+			//* Create the mailman files
+			if(!is_dir('/var/lib/mailman/data')) exec('mkdir -p /var/lib/mailman/data');
+			if(!is_file('/var/lib/mailman/data/aliases')) touch('/var/lib/mailman/data/aliases');
+			exec('postmap /var/lib/mailman/data/aliases');
+			if(!is_file('/var/lib/mailman/data/virtual-mailman')) touch('/var/lib/mailman/data/virtual-mailman');
+			exec('postmap /var/lib/mailman/data/virtual-mailman');
+			if(!is_file('/var/lib/mailman/data/transport-mailman')) touch('/var/lib/mailman/data/transport-mailman');
+			exec('postmap /var/lib/mailman/data/transport-mailman');
+		}
+
 		$config_dir = $conf['mailman']['config_dir'].'/';
 		$full_file_name = $config_dir.'mm_cfg.py';
 		//* Backup exiting file
@@ -1054,6 +1073,14 @@ class installer_base {
 		return true;
 	}
 
+	public function get_postfix_version() {
+		//* Get postfix version
+		exec('postconf -d mail_version 2>&1', $out);
+		$postfix_version = preg_replace('/.*=\s*/', '', $out[0]);
+		unset($out);
+		return $postfix_version;
+	}
+
 	public function configure_postfix($options = '') {
 		global $conf,$autoinstall;
 		$cf = $conf['postfix'];
@@ -1063,10 +1090,7 @@ class installer_base {
 			$this->error("The postfix configuration directory '$config_dir' does not exist.");
 		}
 
-		//* Get postfix version
-		exec('postconf -d mail_version 2>&1', $out);
-		$postfix_version = preg_replace('/.*=\s*/', '', $out[0]);
-		unset($out);
+		$postfix_version = $this->get_postfix_version();
 
 		//* Install virtual mappings
 		foreach (glob('tpl/mysql-virtual_*.master') as $filename) {
@@ -1465,8 +1489,7 @@ class installer_base {
 
 		$config_dir = $conf['postfix']['config_dir'];
 		$quoted_config_dir = preg_quote($config_dir, '|');
-		$postfix_version = `postconf -d mail_version 2>/dev/null`;
-		$postfix_version = preg_replace( '/mail_version\s*=\s*(.*)\s*/', '$1', $postfix_version );
+		$postfix_version = $this->get_postfix_version();
 
 		//* Configure master.cf and add a line for deliver
 		if(!$this->get_postfix_service('dovecot', 'unix')) {
@@ -1507,7 +1530,7 @@ class installer_base {
 			}
 			$new_options[] = $value;
 		}
-		if ($configure_lmtp && $conf['mail']['content_filter'] === 'amavisd') {
+		if ($configure_lmtp && (!isset($conf['mail']['content_filter']) || $conf['mail']['content_filter'] === 'amavisd')) {
 			for ($i = 0; isset($new_options[$i]); $i++) {
 				if ($new_options[$i] == 'reject_unlisted_recipient') {
 					array_splice($new_options, $i+1, 0, array("check_recipient_access proxy:mysql:${config_dir}/mysql-verify_recipients.cf"));
@@ -1577,20 +1600,24 @@ class installer_base {
 
 				// Check if we have a dhparams file and if not, create it
 				if(!file_exists('/etc/dovecot/dh.pem')) {
+					// Create symlink to ISPConfig dhparam file
+					swriteln('Creating symlink /etc/dovecot/dh.pem to ISPConfig DHParam file.');
+					symlink('/usr/local/ispconfig/interface/ssl/dhparam4096.pem', '/etc/dovecot/dh.pem');
+
+					/*
 					swriteln('Creating new DHParams file, this takes several minutes. Do not interrupt the script.');
 					if(file_exists('/var/lib/dovecot/ssl-parameters.dat')) {
 						// convert existing ssl parameters file
 						$command = 'dd if=/var/lib/dovecot/ssl-parameters.dat bs=1 skip=88 | openssl dhparam -inform der > /etc/dovecot/dh.pem';
 						caselog($command.' &> /dev/null', __FILE__, __LINE__, "EXECUTED: $command", "Failed to execute the command $command");
 					} else {
-						/*
-						   Create a new dhparams file. We use 2048 bit only as it simply takes too long
-						   on smaller systems to generate a 4096 bit dh file (> 30 minutes). If you need
-						   a 4096 bit file, create it manually before you install ISPConfig
-						*/
+						//Create a new dhparams file. We use 2048 bit only as it simply takes too long
+						//   on smaller systems to generate a 4096 bit dh file (> 30 minutes). If you need
+						//   a 4096 bit file, create it manually before you install ISPConfig
 						$command = 'openssl dhparam -out /etc/dovecot/dh.pem 2048';
 						caselog($command.' &> /dev/null', __FILE__, __LINE__, "EXECUTED: $command", "Failed to execute the command $command");
 					}
+					*/
 				}
 				//remove #2.3+ comment
 				$content = file_get_contents($config_dir.'/'.$configfile);
@@ -1653,7 +1680,7 @@ class installer_base {
 		//* These postconf commands will be executed on installation and update
 		$server_ini_rec = $this->db->queryOneRecord("SELECT mail_server, config FROM ?? WHERE server_id = ?", $conf["mysql"]["database"] . '.server', $conf['server_id']);
 		$server_ini_array = ini_to_array(stripslashes($server_ini_rec['config']));
-		$mail_server = ($server_ini_rec['mail_server']) ? true : false;
+		$mail_server = $conf['services']['mail'];
 		unset($server_ini_rec);
 
 		// amavisd user config file
@@ -1708,6 +1735,7 @@ class installer_base {
 						break;
 					}
 				}
+				$postfix_version = $this->get_postfix_version();
 				# postfix < 3.3 needs this when using reject_unverified_recipient:
 				if(version_compare($postfix_version, 3.3, '<')) {
 					$postconf_commands[] = "enable_original_recipient = yes";
@@ -1777,7 +1805,7 @@ class installer_base {
 		//* These postconf commands will be executed on installation and update
 		$server_ini_rec = $this->db->queryOneRecord("SELECT mail_server, config FROM ?? WHERE server_id = ?", $conf["mysql"]["database"] . '.server', $conf['server_id']);
 		$server_ini_array = ini_to_array(stripslashes($server_ini_rec['config']));
-		$mail_server = ($server_ini_rec['mail_server']) ? true : false;
+		$mail_server = $conf['services']['mail'];
 		unset($server_ini_rec);
 
 		$config_dir = $conf['postfix']['config_dir'];
@@ -1914,10 +1942,10 @@ class installer_base {
 			}
 
 			$tpl->setVar('dkim_path', $mail_config['dkim_path']);
-			$tpl->setVar('rspamd_redis_servers', $mail_config['rspamd_redis_servers']);
-			$tpl->setVar('rspamd_redis_password', $mail_config['rspamd_redis_password']);
-			$tpl->setVar('rspamd_redis_bayes_servers', $mail_config['rspamd_redis_bayes_servers']);
-			$tpl->setVar('rspamd_redis_bayes_password', $mail_config['rspamd_redis_bayes_password']);
+			$tpl->setVar('rspamd_redis_servers', (isset($mail_config['rspamd_redis_servers']) ? $mail_config['rspamd_redis_servers'] : ''));
+			$tpl->setVar('rspamd_redis_password', (isset($mail_config['rspamd_redis_password']) ? $mail_config['rspamd_redis_password'] : ''));
+			$tpl->setVar('rspamd_redis_bayes_servers', (isset($mail_config['rspamd_redis_bayes_servers']) ? $mail_config['rspamd_redis_bayes_servers'] : ''));
+			$tpl->setVar('rspamd_redis_bayes_password', (isset($mail_config['rspamd_redis_bayes_password']) ? $mail_config['rspamd_redis_bayes_password'] : ''));
 			if(count($local_addrs) > 0) {
 				$tpl->setLoop('local_addrs', $local_addrs);
 			}
@@ -1981,8 +2009,13 @@ class installer_base {
 
 		exec('chmod a+r /etc/rspamd/local.d/* /etc/rspamd/local.d/maps.d/* /etc/rspamd/override.d/*');
 		# protect passwords in these files
-		exec('chgrp _rspamd /etc/rspamd/local.d/redis.conf /etc/rspamd/local.d/classifier-bayes.conf /etc/rspamd/local.d/worker-controller.inc');
-		exec('chmod 640 /etc/rspamd/local.d/redis.conf /etc/rspamd/local.d/classifier-bayes.conf /etc/rspamd/local.d/worker-controller.inc');
+		exec('chgrp _rspamd /etc/rspamd/local.d/redis.conf /etc/rspamd/local.d/classifier-bayes.conf');
+		exec('chmod 640 /etc/rspamd/local.d/redis.conf /etc/rspamd/local.d/classifier-bayes.conf');
+
+		if(file_exists('/etc/rspamd/local.d/worker-controller.inc')) {
+			exec('chgrp _rspamd /etc/rspamd/local.d/worker-controller.inc');
+			exec('chmod 640 /etc/rspamd/local.d/worker-controller.inc');
+		}
 
 		# unneccesary, since this was done above?
 		$command = 'usermod -a -G amavis _rspamd';
@@ -2168,7 +2201,7 @@ class installer_base {
 
 		//* Backup exiting file
 		if(is_file($full_file_name)) {
-			copy($full_file_name, $config_dir.$configfile.'~');
+			copy($full_file_name, $full_file_name.'~');
 		}
 		$content = rfsel($conf['ispconfig_install_dir'].'/server/conf-custom/install/'.$configfile.'.master', 'tpl/'.$configfile.'.master');
 		$content = str_replace('{mysql_server_ispconfig_user}', $conf['mysql']['ispconfig_user'], $content);
@@ -3012,12 +3045,15 @@ class installer_base {
 				$hook = $pre_hook . $renew_hook;
 			}
 
+			$which_certbot = shell_exec('which certbot /root/.local/share/letsencrypt/bin/letsencrypt /opt/eff.org/certbot/venv/bin/certbot letsencrypt');
+
 			// Get the default LE client name and version
-			$le_client = explode("\n", shell_exec('which certbot /root/.local/share/letsencrypt/bin/letsencrypt /opt/eff.org/certbot/venv/bin/certbot letsencrypt'));
+			$le_client = explode("\n", $which_certbot ? $which_certbot : '');
 			$le_client = reset($le_client);
 
+			$which_acme = shell_exec('which acme.sh /usr/local/ispconfig/server/scripts/acme.sh /root/.acme.sh/acme.sh');
 			// Check for Neilpang acme.sh as well
-			$acme = explode("\n", shell_exec('which acme.sh /usr/local/ispconfig/server/scripts/acme.sh /root/.acme.sh/acme.sh'));
+			$acme = explode("\n", $which_acme ? $which_acme : '');
 			$acme = reset($acme);
 
 			if((!$acme || !is_executable($acme)) && (!$le_client || !is_executable($le_client))) {
@@ -3287,7 +3323,8 @@ class installer_base {
 				// Create symlink to ISPConfig SSL files
 				symlink($ssl_pem_file, $pureftpd_pem);
 				if (!file_exists("$pureftpd_dir/pure-ftpd-dhparams.pem"))
-					exec("cd $pureftpd_dir; openssl dhparam -out dhparam2048.pem 2048; ln -sf dhparam2048.pem pure-ftpd-dhparams.pem");
+					symlink('/usr/local/ispconfig/interface/ssl/dhparam4096.pem', $pureftpd_dir.'/pure-ftpd-dhparams.pem');
+					//exec("cd $pureftpd_dir; openssl dhparam -out dhparam2048.pem 2048; ln -sf dhparam2048.pem pure-ftpd-dhparams.pem");
 			}
 		}
 

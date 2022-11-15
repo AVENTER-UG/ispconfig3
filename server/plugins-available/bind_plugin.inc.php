@@ -323,6 +323,10 @@ class bind_plugin {
 					}
 				}
 			}
+			else {
+				$app->log("DNS zone[".$zone['origin']."] has no records yet, skip...", LOGLEVEL_DEBUG);
+				return;
+			}
 			$tpl->setLoop('zones', $records);
 
 			$filename = $dns_config['bind_zonefiles_dir'].'/' . $this->zone_file_prefix() . str_replace("/", "_", substr($zone['origin'], 0, -1));
@@ -544,11 +548,11 @@ class bind_plugin {
 			if ($tmp['dnssec_wanted'] == 'Y') $zone_file .= '.signed'; //.signed is for DNSSEC-Implementation
 
 			$options = '';
-			if(trim($tmp['xfer']) != '') {
+			if($tmp['xfer'] != null && trim($tmp['xfer']) != '') {
 				$options .= "        allow-transfer {".str_replace(',', ';', $tmp['xfer']).";};\n";
 			}
-			if(trim($tmp['also_notify']) != '') $options .= '        also-notify {'.str_replace(',', ';', $tmp['also_notify']).";};\n";
-			if(trim($tmp['update_acl']) != '') $options .= "        allow-update {".str_replace(',', ';', $tmp['update_acl']).";};\n";
+			if($tmp['also_notify'] != null && trim($tmp['also_notify']) != '') $options .= '        also-notify {'.str_replace(',', ';', $tmp['also_notify']).";};\n";
+			if($tmp['update_acl'] != null && trim($tmp['update_acl']) != '') $options .= "        allow-update {".str_replace(',', ';', $tmp['update_acl']).";};\n";
 
 			if(file_exists($zone_file)) {
 				$zones[] = array( 'zone' => substr($tmp['origin'], 0, -1),

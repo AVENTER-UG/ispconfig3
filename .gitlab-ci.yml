@@ -17,7 +17,7 @@ syntax:lint:
     - schedules
     - web
     - merge_requests
-    - /^\d+\.\d+\.\d+(p\d+)?$/
+    - /^\d+\.\d+\.\d+([p|b]\d+)?$/
 
   script:
     - echo "Syntax checking PHP files"
@@ -37,7 +37,7 @@ syntax_diff:lint:
     - schedules
     - web
     - merge_requests
-    - /^\d+\.\d+\.\d+(p\d+)?$/
+    - /^\d+\.\d+\.\d+([p|b]\d+)?$/
 
   script:
     - echo "Syntax checking PHP files"
@@ -81,7 +81,7 @@ build:package:
     image: edbizarro/gitlab-ci-pipeline-php:7.2
     only:
         refs:
-            - /^\d+\.\d+\.\d+(p\d+)?$/
+            - /^\d+\.\d+\.\d+([p|b]\d+)?$/
             - web
 
     script:
@@ -90,7 +90,7 @@ build:package:
         - if [[ "$VER" == "" ]] ; then VER="3.2dev"$(date +%s) ; fi
         - if [[ "$VER" != "" ]] ; then echo "Replacing 3.2dev by $VER" ; sed -i -r 's/3\.2dev/'${VER}'/g' install/tpl/config.inc.php.master install/sql/ispconfig3.sql ; fi
         - RET=0
-        - tar -cpzf ISPConfig-${VER}.tar.gz --exclude "ISPConfig-${VER}.tar.gz" --exclude ".git*" --exclude ".phplint.yml" --transform 's,^\./,ispconfig3_install/,' . || RET=$?
+        - tar -cpzf ISPConfig-${VER}.tar.gz --exclude "ISPConfig-${VER}.tar.gz" --exclude ".git*" --exclude ".phplint.yml" --transform 's,^\./,ispconfig3_install/,' --mode='0775' ./* || RET=$?
         - if [[ $RET > 1 ]] ; then exit $RET ; fi
         - echo "Listing tar contents for verification"
         - tar -tvf ISPConfig-${VER}.tar.gz

@@ -98,6 +98,7 @@ if($do_uninstall == 'yes') {
 	@exec('chattr -i /var/www/php-fcgi-scripts/ispconfig/.php-fcgi-starter');
 	@unlink("/var/www/php-fcgi-scripts/ispconfig/.php-fcgi-starter");
 	@unlink("/var/www/php-fcgi-scripts/ispconfig");
+	@unlink("/etc/ssl/private/pure-ftpd.pem");
 
 	echo "Backups in /var/backup/ and log files in /var/log/ispconfig are not deleted.";
 	echo "Finished uninstalling.\n";
