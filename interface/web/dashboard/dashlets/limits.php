@@ -149,8 +149,10 @@ class dashlet_limits
 
         if ($limit_to_client_id == 0) {
           $client_id = $_SESSION['s']['user']['client_id'];
+          $user_is_admin = true;
         } else {
           $client_id = $limit_to_client_id;
+          $user_is_admin = false;
         }
 
         $client_group_id = $app->functions->intval($_SESSION["s"]["user"]["default_group"]);
@@ -161,6 +163,12 @@ class dashlet_limits
         foreach ($limits as $limit) {
             $field = $limit['field'];
             $value = $client[$field];
+            if ($user_is_admin) {
+                $value = $wb['unlimited_txt'];
+            } else {
+                $value = $client[$field];
+            }
+
             if ($value != 0 || $value == $wb['unlimited_txt']) {
                 $value_formatted = ($value == '-1')?$wb['unlimited_txt']:$value;
                 if (isset($limit['q_type']) && $limit['q_type'] != '') {
