@@ -61,7 +61,7 @@ $autoupdate['ignore_hostname_dns'] = 'n';
 $autoupdate['ispconfig_postfix_ssl_symlink'] = 'y';
 $autoupdate['ispconfig_pureftpd_ssl_symlink'] = 'y';
 
-/* These are for service-detection (defaulting to old behaviour where alle changes were automatically accepted) */
+/* These are for service-detection (defaulting to old behaviour where all changes were automatically accepted) */
 $autoupdate['svc_detect_change_mail_server'] = 'yes'; // yes (default), no
 $autoupdate['svc_detect_change_web_server'] = 'yes'; // yes (default), no
 $autoupdate['svc_detect_change_dns_server'] = 'yes'; // yes (default), no
