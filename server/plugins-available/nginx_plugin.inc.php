@@ -161,7 +161,7 @@ class nginx_plugin {
         subjectAltName         = @alt_names
 
         [alt_names]
-        DNS.1                  = .$domain";
+        DNS.1                  = $domain";
 
 			$ssl_cnf_file = $ssl_dir.'/openssl.conf';
 			$app->system->file_put_contents($ssl_cnf_file, $ssl_cnf);
