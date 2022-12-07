@@ -1076,11 +1076,10 @@ class backup
     {
         global $app;
         if ( ! is_dir($repos_path)) {
+            $dbt = debug_backtrace();
+            $dbt_info = $dbt[1]['file'] . ':' . $dbt[1]['line'];
             $app->log("Unknown path " . var_export($repos_path, TRUE)
-                . ' called from ' . (function() {
-                    $dbt = debug_backtrace();
-                    return $dbt[1]['file'] . ':' . $dbt[1]['line'];
-                })(), LOGLEVEL_ERROR);
+                . ' called from ' . $dbt_info, LOGLEVEL_ERROR);
             return FALSE;
         }
         switch ($backup_mode) {
