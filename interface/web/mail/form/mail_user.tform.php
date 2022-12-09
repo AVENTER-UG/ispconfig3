@@ -166,7 +166,7 @@ $form["tabs"]['mailuser'] = array(
 					'regex' => '/^([0-9]{1,})$/',
 					'errmsg'=> 'quota_error_value'),
 			),
-			'default' => '-1',
+			'default' => '0',
 			'value'  => '',
 			'width'  => '30',
 			'maxlength' => '255'

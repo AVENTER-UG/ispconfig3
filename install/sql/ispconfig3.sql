@@ -1070,7 +1070,7 @@ CREATE TABLE `mail_user` (
   `gid` int(11) NOT NULL default '5000',
   `maildir` varchar(255) NOT NULL default '',
   `maildir_format` varchar(255) NOT NULL default 'maildir',
-  `quota` bigint(20) NOT NULL default '-1',
+  `quota` bigint(20) NOT NULL default '0',
   `cc` text,
   `forward_in_lda` enum('n','y') NOT NULL default 'n',
   `sender_cc` varchar(255) NOT NULL default '',
