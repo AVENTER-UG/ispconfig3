@@ -304,6 +304,7 @@ class letsencrypt {
 				'domain' => $domain,
 				'key' => $ssl_dir.'/'.$domain.'-le.key',
 				'key2' => $ssl_dir.'/'.$domain.'-le.key.org',
+				'csr' => '', # Not used for LE.
 				'crt' => $ssl_dir.'/'.$domain.'-le.crt',
 				'bundle' => $ssl_dir.'/'.$domain.'-le.bundle'
 			);
