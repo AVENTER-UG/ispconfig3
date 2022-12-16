@@ -281,7 +281,7 @@ class rspamd_plugin {
 				$app->system->mkdirpath($this->users_config_dir);
 			}
 
-			if((!$this->isValidEmail($app->functions->idn_encode($email_address))) || intval($data['new']['policy_id']) == 0) {
+			if((!$this->isValidEmail($app->functions->idn_encode($email_address))) || intval($data['new']['policy_id']) == 0 && $type == 'spamfilter_user') {
 				if(is_file($settings_file)) {
 					unlink($settings_file);
 				}
