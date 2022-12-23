@@ -429,7 +429,7 @@ class mail_plugin {
 		$maildir_path_deleted = false;
 		$old_maildir_path = $data['old']['maildir'];
 		if($old_maildir_path != $mail_config['homedir_path'] && strlen($old_maildir_path) > strlen($mail_config['homedir_path']) && !stristr($old_maildir_path, '//') && !stristr($old_maildir_path, '..') && !stristr($old_maildir_path, '*') && strlen($old_maildir_path) >= 10) {
-			if ($mail_config['mailbox_soft_delete'] == 'y') {
+			if ($mail_config['mailbox_soft_delete'] == 'y' && is_dir($old_maildir_path)) {
 				// Move it, adding a date based suffix. A cronjob should purge or archive.
 				$thrash_maildir_path = $old_maildir_path . '-deleted-' . date("YmdHis");
 				$app->system->exec_safe('mv ? ?', $old_maildir_path, $thrash_maildir_path);
@@ -484,7 +484,7 @@ class mail_plugin {
 		//* Delete maildomain path
 		$old_maildomain_path = $mail_config['homedir_path'].'/'.$data['old']['domain'];
 		if($old_maildomain_path != $mail_config['homedir_path'] && !stristr($old_maildomain_path, '//') && !stristr($old_maildomain_path, '..') && !stristr($old_maildomain_path, '*') && !stristr($old_maildomain_path, '&') && strlen($old_maildomain_path) >= 10  && !empty($data['old']['domain'])) {
-			if ($mail_config['mailbox_soft_delete'] == 'y') {
+			if ($mail_config['mailbox_soft_delete'] == 'y' && is_dir($old_maildomain_path)) {
 				// Move it, adding a date based suffix. A cronjob should purge or archive.
 				$thrash_maildomain_path = $old_maildomain_path . '-deleted-' . date("YmdHis");
 				$app->system->exec_safe('mv ? ?', $old_maildomain_path, $thrash_maildomain_path);
