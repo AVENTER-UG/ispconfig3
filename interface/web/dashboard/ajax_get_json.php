@@ -109,7 +109,7 @@ if($type == 'globalsearch'){
 	$result[] = _search('mail', 'mail_get');
 
 	// dns zones
-	$result[] = _search('dns', 'dns_soa');
+	$result[] = _search('dns', 'dns_soa', '', 'next_tab=dns_records');
 
 	// secondary dns zones
 	$result[] = _search('dns', 'dns_slave');
