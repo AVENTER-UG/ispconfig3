@@ -326,7 +326,7 @@ class quota_lib {
 					if($used_ratio >= 0.8) $databases[$i]['display_colour'] = '#fd934f';
 					if($used_ratio >= 1) $databases[$i]['display_colour'] = '#cc0000';
 
-					if($databases[$i]['database_quota'] == 0){
+					if($databases[$i]['database_quota'] == -1) {
 						$databases[$i]['database_quota'] = $app->lng('unlimited_txt');
 					} else {
 						$databases[$i]['database_quota'] = $databases[$i]['database_quota'] . ' MB';

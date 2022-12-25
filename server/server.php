@@ -94,7 +94,7 @@ if ($app->dbmaster->testConnection()) {
 	// retrieve admin email address for notifications
 	$sys_ini = $app->db->queryOneRecord("SELECT * FROM sys_ini WHERE sysini_id = 1");
 	$conf['sys_ini'] = $app->ini_parser->parse_ini_string(stripslashes($sys_ini['config']));
-	$conf['admin_mail'] = $conf['sys_ini']['mail']['admin_mail'];
+	$conf['admin_mail'] = (isset($conf['sys_ini']['mail']['admin_mail']) ? $conf['sys_ini']['mail']['admin_mail'] : '');
 	unset($sys_ini);
 
 	/*
@@ -170,9 +170,9 @@ if ($app->db->testConnection() && $app->dbmaster->testConnection()) {
 	$app->modules->loadModules('all');
 	//** Load the plugins that are in the plugins-enabled folder
 	$app->plugins->loadPlugins('all');
-	
+
 	$app->plugins->raiseAction('server_plugins_loaded', '');
-	
+
 	if ($tmp_num_records > 0) {
 		$app->log("Found $tmp_num_records changes, starting update process.", LOGLEVEL_DEBUG);
 		//** Go through the sys_datalog table and call the processing functions

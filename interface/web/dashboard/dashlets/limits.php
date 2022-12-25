@@ -169,13 +169,13 @@ class dashlet_limits
             }
             if ($value != 0 || $value == $wb['unlimited_txt']) {
                 $value_formatted = ($value == '-1')?$wb['unlimited_txt']:$value;
-                if ($limit['q_type']!='') {
+                if (isset($limit['q_type']) && $limit['q_type'] != '') {
                     $usage = $this->_get_assigned_quota($limit) . " MB";
                     $value_formatted = ($value == '-1')?$wb['unlimited_txt']:$value . " MB";
                 } else {
                     $usage = $this->_get_limit_usage($limit);
                 }
-                $percentage = ($value == '-1' || $value == 0 ? -1 : round(100 * $usage / $value));
+                $percentage = ($value == '-1' || intval($value) == 0 || trim($value) == '' ? -1 : round(100 * (int)$usage / (int)$value));
                 $progressbar = $percentage > 100 ? 100 : $percentage;
                 $rows[] = array('field' => $field,
                     'field_txt' => $wb[$field.'_txt'],

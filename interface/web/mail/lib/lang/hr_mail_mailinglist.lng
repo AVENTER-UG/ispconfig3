@@ -2,6 +2,7 @@
 $wb['limit_mailmailinglist_txt'] = 'Iskorišten je maksimalan broj email lista.';
 $wb['domain_error_empty'] = 'Domena je prazna.';
 $wb['listname_error_empty'] = 'Naziv liste je prazan.';
+$wb['listname_error_regex'] = 'The list name is invalid. The minimum length is 2 characters (allowed are: [a-z 1-9 - _]).';
 $wb['domain_error_regex'] = 'Neispravan naziv domene.';
 $wb['email_in_use_txt'] = 'Email je u upotrebi';
 $wb['no_domain_perm'] = 'Nemate dozvole za ovu domenu.';
