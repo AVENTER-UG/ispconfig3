@@ -406,6 +406,10 @@ class letsencrypt {
 			$app->log("There were " . $le_domain_count . " domains in the domain list. LE only supports 100, so we strip the rest.", LOGLEVEL_WARN);
 		}
 
+		if ($le_domain_count == 0) {
+			return false;
+		}
+
 		// unset useless data
 		unset($subdomains);
 		unset($aliasdomains);
