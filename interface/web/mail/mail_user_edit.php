@@ -91,14 +91,15 @@ class page_action extends tform_actions {
 
 		// Getting Domains of the user
 		// $sql = "SELECT domain, server_id FROM mail_domain WHERE ".$app->tform->getAuthSQL('r').' ORDER BY domain';
-		$sql = "SELECT domain, server_id FROM mail_domain WHERE (".$app->tform->getAuthSQL('r').") AND domain NOT IN (SELECT SUBSTR(source,2) FROM mail_forwarding WHERE type = 'aliasdomain') ORDER BY domain";
+               $sql = "SELECT domain, server_id, active FROM mail_domain WHERE (".$app->tform->getAuthSQL('r').") AND domain NOT IN (SELECT SUBSTR(source,2) FROM mail_forwarding WHERE type = 'aliasdomain') ORDER BY domain";
 		$domains = $app->db->queryAllRecords($sql);
 		$domain_select = '';
 		if(is_array($domains)) {
 			foreach( $domains as $domain) {
 				$domain['domain'] = $app->functions->idn_decode($domain['domain']);
 				$selected = ($domain["domain"] == @$email_parts[1])?'SELECTED':'';
-				$domain_select .= "<option value='" . $app->functions->htmlentities($domain['domain']) . "' $selected>" . $app->functions->htmlentities($domain['domain']) . "</option>\r\n";
+				$domain_select .= "<option value='" . $app->functions->htmlentities($domain['domain']) . "' $selected>" . $app->functions->htmlentities($domain['domain']) .
+					($domain['active'] == 'n' ? ' (' . $app->lng('inactive') . ')': '') . "</option>\r\n";
 			}
 		}
 		$app->tpl->setVar("email_domain", $domain_select);

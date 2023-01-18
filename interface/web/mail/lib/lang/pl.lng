@@ -47,4 +47,5 @@ $wb['Relay Recipients'] = 'Odbiorcy przekierowania';
 $wb['Mailbox quota'] = 'Użycie skrzynek email';
 $wb['add_header_txt'] = 'Header (adds \"X-Spam: Yes\")';
 $wb['rewrite_subject_txt'] = 'Subject (adds \"***SPAM***\" at the beginning)';
+$wb['inactive'] = 'inactive';
 ?>

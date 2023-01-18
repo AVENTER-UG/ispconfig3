@@ -48,4 +48,5 @@ $wb['Global Filters'] = 'Genel Süzgeçler';
 $wb['Domain Alias'] = 'Takma Etki Alanı';
 $wb['Relay Recipients'] = 'Aktarılan Alıcılar';
 $wb['Mailbox quota'] = 'E-posta Kutusu Kotası';
+$wb['inactive'] = 'inactive';
 ?>
