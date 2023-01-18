@@ -302,6 +302,7 @@ $form["tabs"]['dns_soa'] = array (
 			'separator' => ',',
 			'default' => 'ECDSAP256SHA256',
 			'value'  => array('NSEC3RSASHA1' => '7 (NSEC3RSASHA1)','ECDSAP256SHA256' => '13 (ECDSAP256SHA256)'),
+			'data-check-fields' => 'dnssec_wanted',
 			'width'  => '30',
 			'maxlength' => '255'
 		),
