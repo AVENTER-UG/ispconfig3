@@ -393,7 +393,7 @@ class bind_plugin {
 		//}
 
 		//* Delete old domain file, if domain name has been changed
-		if($data['old']['origin'] != $data['new']['origin']) {
+		if(!empty($data['old']['origin']) && $data['old']['origin'] != $data['new']['origin']) {
 			$filename = $dns_config['bind_zonefiles_dir'].'/' . $this->zone_file_prefix() . str_replace("/", "_", substr($data['old']['origin'], 0, -1));
 
 			if(is_file($filename)) unlink($filename);
