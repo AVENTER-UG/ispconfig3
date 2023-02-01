@@ -169,9 +169,12 @@ if($_SESSION['otp']['type'] == 'email') {
 				if (!empty($clientuser['email'])) {
 					$email_to = $clientuser['email'];
 				}
-				else {
+				elseif(!empty($mail_config['admin_mail'])) {
 					// Admin users are not related to a client, thus use the globally configured email address.
 					$email_to = $mail_config['admin_mail'];
+				}
+				else {
+					$app->error('No mail address available to sent an OTP code to.', 'index.php');
 				}
 			}
 
