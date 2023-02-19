@@ -547,16 +547,15 @@ function remove_blank_lines($input, $file = 1){
 		$content = $input;
 	}
 	$lines = explode("\n", $content);
+	$new_lines = array();
 	if(!empty($lines)){
 		foreach($lines as $line){
 			if(trim($line) != '') $new_lines[] = $line;
 		}
 	}
-	if(is_array($new_lines)){
-		$content = implode("\n", $new_lines);
-	} else {
-		$content = '';
-	}
+
+	$content = implode("\n", $new_lines);
+
 	if($file){
 		wf($input, $content);
 	}else{
