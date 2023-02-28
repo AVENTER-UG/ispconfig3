@@ -1341,7 +1341,7 @@ class apache2_plugin {
 		$vhost_data['custom_sendmail_path'] = (isset($custom_sendmail_path) && $custom_sendmail_path) ? 'y' : 'n';
 
 		$tpl->setVar($vhost_data);
-		$tpl->setVar('apache_version', $app->system->getapacheversion());
+		$tpl->setVar('apache_version', $app->system->getapacheversion(true));
 
 		// Rewrite rules
 		$rewrite_rules = array();
