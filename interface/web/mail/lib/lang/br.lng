@@ -51,3 +51,4 @@ $wb['Relay Recipients'] = 'Destinatários de retransmissão';
 $wb['Mailbox quota'] = 'Cotas das contas de email';
 $wb['add_header_txt'] = 'Cabeçalho (adicionar "X-Spam: Yes")';
 $wb['rewrite_subject_txt'] = 'Assunto (adicionar "***SPAM***" no início)';
+$wb['inactive'] = 'inactive';

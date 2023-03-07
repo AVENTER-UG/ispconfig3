@@ -47,4 +47,5 @@ $wb['Relay Recipients'] = 'Destinataires de relais';
 $wb['Mailbox quota'] = 'Quota courriel';
 $wb['add_header_txt'] = 'Header (adds \"X-Spam: Yes\")';
 $wb['rewrite_subject_txt'] = 'Subject (adds \"***SPAM***\" at the beginning)';
+$wb['inactive'] = 'inactive';
 ?>
