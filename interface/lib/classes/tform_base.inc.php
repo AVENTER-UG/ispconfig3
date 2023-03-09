@@ -560,8 +560,12 @@ class tform_base {
 								foreach($vals as $tvl) {
 									if(trim($tvl) == trim($k)) $checked = ' CHECKED';
 								}
+								$datacheckfields = '';
+								if (isset($field['data-check-fields'])) {
+									$datacheckfields = " data-check-fields=\"{$field['data-check-fields']}\"";
+								}
 								// $out .= "<label for=\"".$key."[]\" class=\"inlineLabel\"><input name=\"".$key."[]\" id=\"".$key."[]\" value=\"$k\" type=\"checkbox\" $checked /> $v</label>\r\n";
-								$out .= "<label for=\"".$key.$elementNo."\" class=\"inlineLabel\"><input name=\"".$key."[]\" id=\"".$key.$elementNo."\" value=\"$k\" type=\"checkbox\" $checked /> $v</label>";
+								$out .= "<label for=\"".$key.$elementNo."\" class=\"inlineLabel\"$datacheckfields><input name=\"".$key."[]\" id=\"".$key.$elementNo."\" value=\"$k\" type=\"checkbox\" $checked /> $v</label>";
 								if (isset($field['render_inline']) && $field['render_inline'] == 'n') {
 									$out .= "<br/>\r\n";
 								}
