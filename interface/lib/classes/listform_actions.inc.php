@@ -226,7 +226,7 @@ class listform_actions {
 		}
 
 		$sql_where = $app->listform->getSearchSQL($sql_where);
-		if(isset($app->listform->listDef['join_sql'])) $sql_where .= ' AND '.$app->listform->listDef['join_sql'];
+		if(isset($app->listform->listDef['join_sql']) && $app->listform->listDef['join_sql'] != '') $sql_where .= ' AND '.$app->listform->listDef['join_sql'];
 		$app->tpl->setVar($app->listform->searchValues);
 
 		$order_by_sql = $this->SQLOrderBy;
