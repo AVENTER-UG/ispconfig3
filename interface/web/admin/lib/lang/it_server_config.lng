@@ -332,6 +332,7 @@ $wb['tooltip_rspamd_redis_bayes_servers_txt'] = 'Redis server(s) che Rspamd user
 $wb['rspamd_redis_bayes_password_txt'] = 'Redis Password per Bayes';
 $wb['tooltip_rspamd_redis_bayes_password_txt'] = 'Password per Bayes Redis Server (lasciare vuoto se non usato).';
 $wb['vhost_proxy_protocol_enabled_txt'] = 'Abilita protocollo PROXY';
+$wb['vhost_proxy_protocol_protocols_txt'] = 'Use PROXY Protocol on';
 $wb['vhost_proxy_protocol_http_port_txt'] = 'Porta HHTP per il protocollo PROXY';
 $wb['vhost_proxy_protocol_https_port_txt'] = 'Porta HHTPS per il protocollo PROXY';
 $wb['jailkit_chroot_authorized_keys_template_txt'] = 'modello Jailkit authorized_keys';
