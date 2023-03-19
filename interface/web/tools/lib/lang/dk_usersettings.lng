@@ -12,4 +12,5 @@ $wb['password_txt'] = 'Password';
 $wb['language_txt'] = 'Sprog';
 $wb['startmodule_txt'] = 'Startmodule';
 $wb['app_theme_txt'] = 'Design';
+$wb['otp_auth_txt'] = 'Two Factor Authentication';
 ?>

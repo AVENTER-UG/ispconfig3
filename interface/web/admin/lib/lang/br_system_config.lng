@@ -107,3 +107,4 @@ $wb['show_aps_menu_note_txt'] = 'APS will be removed from the panel in the near 
 $wb['show_aps_menu_note_url_txt'] = 'Click here for more information.';
 $wb['monitor_key_txt'] = 'Senha do Monitor';
 $wb['dns_show_zoneexport_txt'] = 'Show zone export.';
+$wb['le_caa_autocreate_options_txt'] = 'Enable automatic creation of CAA record on issuing LE';

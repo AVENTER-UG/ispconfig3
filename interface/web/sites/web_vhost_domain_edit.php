@@ -725,6 +725,12 @@ class page_action extends tform_actions {
 			// remove the parent domain part of the domain name before we show it in the text field.
 			if($this->dataRecord["type"] == 'vhostsubdomain') $this->dataRecord["domain"] = str_replace('.'.$selected_domain, '', $this->dataRecord["domain"]);
 
+			// We have to set the client group id value as the client select field is hidden in this mode
+			if($is_admin) {
+				$app->tpl->setVar("client_group_id_value", $this->dataRecord["sys_groupid"], true);
+			} else {
+				$app->tpl->setVar("client_group_id_value", $_SESSION["s"]["user"]["default_group"], true);
+			}
 
 		} else {
 			// remove the parent domain part of the domain name before we show it in the text field.

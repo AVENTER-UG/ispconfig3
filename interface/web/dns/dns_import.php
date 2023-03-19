@@ -622,7 +622,11 @@ if(isset($_FILES['file']['name']) && is_uploaded_file($_FILES['file']['tmp_name'
 		$error[] = $wb['zone_file_soa_parser'];
 $error[] = print_r( $soa, true );
 	}
-	if ($settings['use_domain_module'] == 'y' && ! $app->tools_sites->checkDomainModuleDomain($soa['name']) ) {
+
+  $tmp_soa_name = trim($soa['name'], ".");
+  $tmp_domain_id = $app->db->queryOneRecord('SELECT domain_id FROM domain where domain = ?', $tmp_soa_name);
+
+	if ($settings['use_domain_module'] == 'y' && ! $app->tools_sites->checkDomainModuleDomain($tmp_domain_id['domain_id']) ) {
 		$valid_zone_file = false;
 		$error[] = $wb['zone_not_allowed'];
 	}

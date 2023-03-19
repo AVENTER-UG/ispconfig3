@@ -1,16 +1,16 @@
 <?php
-$wb['list_head_txt'] = 'Existing backups';
-$wb['date_txt'] = 'Date';
-$wb['backup_type_txt'] = 'Type';
+$wb['list_head_txt'] = 'Backups esistenti';
+$wb['date_txt'] = 'Data';
+$wb['backup_type_txt'] = 'Tipo';
 $wb['filename_txt'] = 'Backup file';
-$wb['restore_backup_txt'] = 'Restore';
-$wb['restore_info_txt'] = 'Restore of the backup has been started. This action takes several minutes to be completed.';
-$wb['restore_confirm_txt'] = 'Restoring may overwrite existing files in your mailbox. Do you really want to restore this backup?';
-$wb['download_pending_txt'] = 'There is already a pending backup download job.';
-$wb['restore_pending_txt'] = 'There is already a pending backup restore job.';
-$wb['delete_backup_txt'] = 'Delete Backup';
-$wb['delete_info_txt'] = 'Delete of the backup has been started. This action takes several minutes to be completed.';
-$wb['delete_confirm_txt'] = 'Really delete this backup?';
-$wb['delete_pending_txt'] = 'There is already a pending backup delete job.';
-$wb['filesize_txt'] = 'Filesize';
+$wb['restore_backup_txt'] = 'Ripristina';
+$wb['restore_info_txt'] = 'Il ripristino del backup è iniziato. Questa operazione richiede diversi minuti per essere completata.';
+$wb['restore_confirm_txt'] = 'Il ripristino può sovrascrivere file esistenti nella tua cartella di posta. Vuoi veramente ripristinare questo backup?';
+$wb['download_pending_txt'] = 'Esiste già una operazione di scaricamento backup in corso.';
+$wb['restore_pending_txt'] = 'Esiste già una operazione di ripristino da backup in corso.';
+$wb['delete_backup_txt'] = 'Cancellare Backup';
+$wb['delete_info_txt'] = 'La cancellazione del backup è iniziata. Questa operazione richiede diversi minuti per essere completata.';
+$wb['delete_confirm_txt'] = 'Vuoi veramente cancellare questo backup?';
+$wb['delete_pending_txt'] = 'Esiste già una operazione di cancellazione backup in corso..';
+$wb['filesize_txt'] = 'Dimensione file';
 ?>

@@ -266,7 +266,7 @@ class apache2_plugin {
 		// load the server configuration options
 		$app->uses('getconf');
 		$web_config = $app->getconf->get_server_config($conf['server_id'], 'web');
-		if ($web_config['CA_path']!='' && !file_exists($web_config['CA_path'].'/openssl.cnf'))
+		if (isset($web_config['CA_path']) && $web_config['CA_path'] !='' && !file_exists($web_config['CA_path'].'/openssl.cnf'))
 			$app->log("CA path error, file does not exist:".$web_config['CA_path'].'/openssl.cnf', LOGLEVEL_ERROR);
 
 		//* Only vhosts can have a ssl cert
@@ -296,16 +296,9 @@ class apache2_plugin {
 			if(file_exists($crt_file)) $app->system->rename($crt_file, $crt_file.'.bak');
 
 			$rand_file = $ssl_dir.'/random_file';
-			$rand_data = md5(uniqid(microtime(), 1));
-			for($i=0; $i<1000; $i++) {
-				$rand_data .= md5(uniqid(microtime(), 1));
-				$rand_data .= md5(uniqid(microtime(), 1));
-				$rand_data .= md5(uniqid(microtime(), 1));
-				$rand_data .= md5(uniqid(microtime(), 1));
-			}
-			$app->system->file_put_contents($rand_file, $rand_data);
+			$app->system->exec_safe('dd if=/dev/urandom of=? bs=256 count=1', $rand_file);
 
-			$ssl_password = substr(md5(uniqid(microtime(), 1)), 0, 15);
+			$ssl_password = bin2hex(random_bytes(12));
 
 			$ssl_cnf = "        RANDFILE               = $rand_file
 
@@ -724,6 +717,7 @@ class apache2_plugin {
 		if(!is_dir($data['new']['document_root'].'/cgi-bin')) $app->system->mkdirpath($data['new']['document_root'].'/cgi-bin');
 		if(!is_dir($data['new']['document_root'].'/tmp')) $app->system->mkdirpath($data['new']['document_root'].'/tmp', 0770);
 		if(!is_dir($data['new']['document_root'].'/webdav')) $app->system->mkdirpath($data['new']['document_root'].'/webdav');
+		if(!is_dir($data['new']['document_root'].'/backup')) $app->system->mkdirpath($data['new']['document_root'].'/backup');
 
 		if(!is_dir($data['new']['document_root'].'/.ssh')) {
 			$app->system->mkdirpath($data['new']['document_root'].'/.ssh');
@@ -1175,7 +1169,7 @@ class apache2_plugin {
 		if(!is_dir($web_config['website_basedir'].'/conf')) $app->system->mkdir($web_config['website_basedir'].'/conf');
 
 		//* add open_basedir restriction to custom php.ini content, required for suphp only
-		if(!stristr($data['new']['custom_php_ini'], 'open_basedir') && $data['new']['php'] == 'suphp') {
+		if(isset($data['new']['custom_php_ini']) && !stristr($data['new']['custom_php_ini'], 'open_basedir') && $data['new']['php'] == 'suphp') {
 			$data['new']['custom_php_ini'] .= "\nopen_basedir = '".$data['new']['php_open_basedir']."'\n";
 		}
 
@@ -1200,7 +1194,7 @@ class apache2_plugin {
 		//* Create custom php.ini
 		# Because of custom default PHP directives from snippet
 		# php.ini custom values order os: 1. general settings 2. Directive Snippets settings 3. custom php.ini settings defined in domain settings
-		if(trim($data['new']['custom_php_ini']) != '' || $data['new']['directive_snippets_id'] > "0") {
+		if((isset($data['new']['custom_php_ini']) && trim($data['new']['custom_php_ini']) != '') || $data['new']['directive_snippets_id'] > "0") {
 			$has_custom_php_ini = true;
 			$custom_sendmail_path = false;
 			if(!is_dir($custom_php_ini_dir)) $app->system->mkdirpath($custom_php_ini_dir);
@@ -1406,14 +1400,12 @@ class apache2_plugin {
 
 		$server_alias = array();
 
-		// get autoalias
-		$auto_alias = $web_config['website_autoalias'];
-		if($auto_alias != '') {
+		if(isset($web_config['website_autoalias']) && $web_config['website_autoalias'] != '') {
 			// get the client username
 			$client = $app->db->queryOneRecord("SELECT `username` FROM `client` WHERE `client_id` = ?", $client_id);
 			$aa_search = array('[client_id]', '[website_id]', '[client_username]', '[website_domain]');
 			$aa_replace = array($client_id, $data['new']['domain_id'], $client['username'], $data['new']['domain']);
-			$auto_alias = str_replace($aa_search, $aa_replace, $auto_alias);
+			$auto_alias = str_replace($aa_search, $aa_replace, $web_config['website_autoalias']);
 			unset($client);
 			unset($aa_search);
 			unset($aa_replace);
@@ -1799,7 +1791,7 @@ class apache2_plugin {
 
 		//if proxy protocol is enabled we need to add a new port to lsiten to
 		if($web_config['vhost_proxy_protocol_enabled'] == 'y' && $data['new']['proxy_protocol'] == 'y'){
-			if((int)$web_config['vhost_proxy_protocol_http_port'] > 0) {
+			if(isset($web_config['vhost_proxy_protocol_http_port']) && (int)$web_config['vhost_proxy_protocol_http_port'] > 0) {
 				$tmp_vhost_arr['port']           = (int)$web_config['vhost_proxy_protocol_http_port'];
 				$tmp_vhost_arr['use_proxy_protocol'] = $data['new']['proxy_protocol'];
 				$vhosts[]                        = $tmp_vhost_arr;
@@ -1837,10 +1829,9 @@ class apache2_plugin {
 		//* Add vhost for IPv6 IP
 		if($data['new']['ipv6_address'] != '') {
 			//* rewrite ipv6 on mirrors
-			/* chang $conf to $web_config */
-			if ($web_config['serverconfig']['web']['vhost_rewrite_v6'] == 'y') {
-				if (isset($web_config['serverconfig']['server']['v6_prefix']) && $web_config['serverconfig']['server']['v6_prefix'] <> '') {
-					$explode_v6prefix=explode(':', $web_config['serverconfig']['server']['v6_prefix']);
+			if (isset($conf['serverconfig']['web']['vhost_rewrite_v6']) && $conf['serverconfig']['web']['vhost_rewrite_v6'] == 'y') {
+				if (isset($conf['serverconfig']['server']['v6_prefix']) && $conf['serverconfig']['server']['v6_prefix'] <> '') {
+					$explode_v6prefix=explode(':', $conf['serverconfig']['server']['v6_prefix']);
 					$explode_v6=explode(':', $data['new']['ipv6_address']);
 
 					for ( $i = 0; $i <= count($explode_v6prefix)-1; $i++ ) {
@@ -1949,7 +1940,7 @@ class apache2_plugin {
 			unset($ht_file);
 
 			if(!is_file($data['new']['document_root'].'/web/stats/.htpasswd_stats') || $data['new']['stats_password'] != $data['old']['stats_password']) {
-				if(trim($data['new']['stats_password']) != '') {
+				if(isset($data['new']['stats_password']) && trim($data['new']['stats_password']) != '') {
 					$htp_file = 'admin:'.trim($data['new']['stats_password']);
 					$app->system->web_folder_protection($data['new']['document_root'], false);
 					$app->system->file_put_contents($data['new']['document_root'].'/web/stats/.htpasswd_stats', $htp_file);

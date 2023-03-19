@@ -196,6 +196,24 @@ class remoting_mail extends remoting {
 		return $app->remoting_lib->getDataRecord($primary_id);
 	}
 
+	//* Get mail user details for all account that belong to a client.
+	public function mail_user_get_all_by_client($session_id, $client_id)
+	{
+		global $app;
+
+		if(!$this->checkPerm($session_id, 'mail_user_get_all_by_client')) {
+			throw new SoapFault('permission_denied', 'You do not have the permissions to access this function.');
+			return false;
+		}
+		$app->uses('remoting_lib');
+		$sql = "SELECT u.* FROM `mail_user` u
+			LEFT JOIN `sys_group` g ON (u.sys_groupid=g.groupid)
+			WHERE g.client_id=?";
+		$params[] = $client_id;
+
+		$result = $app->db->queryAllRecords($sql, true, $params);
+		return $result;
+	}
 
 	//* Add mail domain
 	public function mail_user_add($session_id, $client_id, $params){
@@ -205,7 +223,7 @@ class remoting_mail extends remoting {
 			throw new SoapFault('permission_denied', 'You do not have the permissions to access this function.');
 			return false;
 		}
-		
+
 		// Email addresses must always be lower case
 		$params['email'] = strtolower($params['email']);
 
@@ -313,17 +331,17 @@ class remoting_mail extends remoting {
 		// $app->plugin->raiseEvent('mail:mail_user_filter:on_after_delete',$this);
 		return $affected_rows;
 	}
-	
+
 	// Mail backup list function by Dominik Müller, info@profi-webdesign.net
 	public function mail_user_backup_list($session_id, $primary_id = null)
 	{
 		global $app;
-	
+
 		if(!$this->checkPerm($session_id, 'mail_user_backup')) {
 			throw new SoapFault('permission_denied', 'You do not have the permissions to access this function.');
 			return false;
 		}
-	
+
 		$params = array();
 		if ($site_id != null) {
 			$params[] = $site_id;
@@ -332,47 +350,47 @@ class remoting_mail extends remoting {
 		else {
 			$sql  = "SELECT * FROM mail_backup";
 		}
-	
+
 		$result = $app->db->queryAllRecords($sql, true, $params);
 		return $result;
 	}
-	
+
 	// Mail backup restore/download functions by Dominik Müller, info@profi-webdesign.net
 	public function mail_user_backup($session_id, $primary_id, $action_type)
 	{
 		global $app;
-	
+
 		if(!$this->checkPerm($session_id, 'mail_user_backup')) {
 			throw new SoapFault('permission_denied', 'You do not have the permissions to access this function.');
 			return false;
 		}
-	
+
 		//*Set variables
 		$backup_record  =       $app->db->queryOneRecord("SELECT * FROM `mail_backup` WHERE `backup_id`=?", $primary_id);
 		$server_id      =       $backup_record['server_id'];
-	
+
 		//*Set default action state
 		$action_state   =       "pending";
 		$tstamp         =       time();
-	
+
 		//* Basic validation of variables
 		if ($server_id <= 0) {
 			throw new SoapFault('invalid_backup_id', "Invalid or non existant backup_id $primary_id");
 			return false;
 		}
-	
+
 		if (/*$action_type != 'backup_download_mail' and*/ $action_type != 'backup_restore_mail' and $action_type != 'backup_delete_mail') {
 			throw new SoapFault('invalid_action', "Invalid action_type $action_type");
 			return false;
 		}
-	
+
 		//* Validate instance
 		$instance_record        =       $app->db->queryOneRecord("SELECT * FROM `sys_remoteaction` WHERE `action_param`=? and `action_type`=? and `action_state`='pending'", $primary_id, $action_type);
 		if ($instance_record['action_id'] >= 1) {
 			throw new SoapFault('duplicate_action', "There is already a pending $action_type action");
 			return false;
 		}
-	
+
 		//* Save the record
 		if ($app->db->query("INSERT INTO `sys_remoteaction` SET `server_id` = ?, `tstamp` = ?, `action_type` = ?, `action_param` = ?, `action_state` = ?", $server_id, $tstamp, $action_type, $primary_id, $action_state)) {
 			return true;
@@ -648,7 +666,55 @@ class remoting_mail extends remoting {
 		$affected_rows = $this->deleteQuery('../mail/form/mail_relay_recipient.tform.php', $primary_id);
 		return $affected_rows;
 	}
-	
+
+    //* add relay domain
+    public function mail_relay_domain_add($session_id, $client_id, $params)
+	{
+    	if(!$this->checkPerm($session_id, 'mail_relay_add'))
+		{
+            throw new SoapFault('permission_denied', 'You do not have the permissions to access this function.');
+            return false;
+    	}
+    	$affected_rows = $this->insertQuery('../mail/form/mail_relay_domain.tform.php', $client_id, $params);
+    	return $affected_rows;
+	}
+
+    public function mail_relay_domain_delete($session_id, $primary_id)
+    {
+        if(!$this->checkPerm($session_id, 'mail_relay_delete'))
+        {
+            throw new SoapFault('permission_denied', 'You do not have the permissions to access this function.');
+            return false;
+        }
+        $affected_rows = $this->deleteQuery('../mail/form/mail_relay_domain.tform.php', $primary_id);
+        return $affected_rows;
+    }
+
+    public function mail_relay_domain_get($session_id, $primary_id)
+    {
+        global $app;
+
+        if(!$this->checkPerm($session_id, 'mail_relay_get'))
+        {
+            throw new SoapFault('permission_denied', 'You do not have the permissions to access this function.');
+            return false;
+        }
+        $app->uses('remoting_lib');
+		$app->remoting_lib->loadFormDef('../mail/form/mail_relay_domain.tform.php');
+		return $app->remoting_lib->getDataRecord($primary_id);
+    }
+
+    public function mail_relay_domain_update($session_id, $client_id, $primary_id, $params)
+    {
+        if(!$this->checkPerm($session_id, 'mail_relay_update'))
+        {
+            throw new SoapFault('permission_denied', 'You do not have the permissions to access this function.');
+            return false;
+        }
+        $affected_rows = $this->updateQuery('../mail/form/mail_relay_domain.tform.php', $client_id, $primary_id, $params);
+		return $affected_rows;
+    }
+
 	//* Get spamfilter whitelist details
 	public function mail_spamfilter_whitelist_get($session_id, $primary_id)
 	{
@@ -1099,12 +1165,12 @@ class remoting_mail extends remoting {
 	{
 		global $app;
 		$app->uses('quota_lib');
-		
+
 		if(!$this->checkPerm($session_id, 'mailquota_get_by_user')) {
 			throw new SoapFault('permission_denied', 'You do not have the permissions to access this function.');
 			return false;
 		}
-		
+
 		return $app->quota_lib->get_mailquota_data($client_id, false);
 	}
 

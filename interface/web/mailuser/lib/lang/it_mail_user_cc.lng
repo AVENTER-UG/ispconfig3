@@ -4,9 +4,9 @@ $wb['cc_txt'] = 'Manda copia a';
 $wb['email_txt'] = 'Email';
 $wb['email_txt'] = 'E-mail ricevute da';
 $wb['cc_error_isemail'] = 'Indirizzo e-mail non valido';
-$wb['email_is_cc_error'] = 'Specificare un indirizzo e-mail diverso dalll\'attuale e-mail.';
+$wb['email_is_cc_error'] = 'Specificare un indirizzo e-mail diverso dall\'attuale e-mail.';
 $wb['name_optional_txt'] = '(Opzionale)';
 $wb['cc_note_txt'] = '(Separare con una virgola e-mail multiple)';
-$wb['forward_in_lda_txt'] = 'Copy during delivery';
-$wb['tooltip_forward_in_lda_txt'] = 'Controls if mail copy is forwarded before or during delivery to mailbox.';
+$wb['forward_in_lda_txt'] = 'Copia durante la consegna';
+$wb['tooltip_forward_in_lda_txt'] = 'Controlla se copia della mail viene inoltrata prima o durante la consegna alla casella di posta.';
 ?>

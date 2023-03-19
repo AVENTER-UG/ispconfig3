@@ -44,7 +44,7 @@ class letsencrypt {
 	}
 
 	public function get_acme_script() {
-		$acme = explode("\n", shell_exec('which acme.sh /usr/local/ispconfig/server/scripts/acme.sh /root/.acme.sh/acme.sh'));
+		$acme = explode("\n", shell_exec('which acme.sh /usr/local/ispconfig/server/scripts/acme.sh /root/.acme.sh/acme.sh 2> /dev/null'));
 		$acme = reset($acme);
 		if(is_executable($acme)) {
 			return $acme;
@@ -74,13 +74,14 @@ class letsencrypt {
 			$cert_arg = '--fullchain-file ' . escapeshellarg($bundle_file) . ' --cert-file ' . escapeshellarg($cert_file);
 		}
 
-		$cmd = 'R=0 ; C=0 ; ' . $letsencrypt . ' --issue ' . $cmd . ' -w /usr/local/ispconfig/interface/acme --always-force-new-domain-key --keylength 4096; R=$? ; if [[ $R -eq 0 || $R -eq 2 ]] ; then ' . $letsencrypt . ' --install-cert ' . $cmd . ' --key-file ' . escapeshellarg($key_file) . ' ' . $cert_arg . ' --reloadcmd ' . escapeshellarg($this->get_reload_command()) . ' --log ' . escapeshellarg($conf['ispconfig_log_dir'].'/acme.log') . '; C=$? ; fi ; if [[ $C -eq 0 ]] ; then exit $R ; else exit $C  ; fi';
+		$cmd = 'R=0 ; C=0 ; ' . $letsencrypt . ' --issue ' . $cmd . ' -w /usr/local/ispconfig/interface/acme --always-force-new-domain-key --keylength 4096; R=$? ; if [ $R -eq 0 -o $R -eq 2 ] ; then ' . $letsencrypt . ' --install-cert ' . $cmd . ' --key-file ' . escapeshellarg($key_file) . ' ' . $cert_arg . ' --reloadcmd ' . escapeshellarg($this->get_reload_command()) . ' --log ' . escapeshellarg($conf['ispconfig_log_dir'].'/acme.log') . '; C=$? ; fi ; if [ $C -eq 0 ] ; then exit $R ; else exit $C  ; fi';
 
 		return $cmd;
 	}
 
 	public function get_certbot_script() {
-		$letsencrypt = explode("\n", shell_exec('which certbot /root/.local/share/letsencrypt/bin/letsencrypt /opt/eff.org/certbot/venv/bin/certbot letsencrypt'));
+		$which_certbot = shell_exec('which certbot /root/.local/share/letsencrypt/bin/letsencrypt /opt/eff.org/certbot/venv/bin/certbot letsencrypt');
+		$letsencrypt = explode("\n", $which_certbot ? $which_certbot : '');
 		$letsencrypt = reset($letsencrypt);
 		if(is_executable($letsencrypt)) {
 			return $letsencrypt;
@@ -303,6 +304,7 @@ class letsencrypt {
 				'domain' => $domain,
 				'key' => $ssl_dir.'/'.$domain.'-le.key',
 				'key2' => $ssl_dir.'/'.$domain.'-le.key.org',
+				'csr' => '', # Not used for LE.
 				'crt' => $ssl_dir.'/'.$domain.'-le.crt',
 				'bundle' => $ssl_dir.'/'.$domain.'-le.bundle'
 			);
@@ -373,7 +375,7 @@ class letsencrypt {
 		$temp_domains = array_unique($temp_domains);
 
 		// check if domains are reachable to avoid letsencrypt verification errors
-		$le_rnd_file = uniqid('le-') . '.txt';
+		$le_rnd_file = uniqid('le-', true) . '.txt';
 		$le_rnd_hash = md5(uniqid('le-', true));
 		if(!is_dir('/usr/local/ispconfig/interface/acme/.well-known/acme-challenge/')) {
 			$app->system->mkdir('/usr/local/ispconfig/interface/acme/.well-known/acme-challenge/', false, 0755, true);
@@ -415,6 +417,10 @@ class letsencrypt {
 		if($use_acme) {
 			$letsencrypt_cmd = $this->get_acme_command($temp_domains, $key_file, $bundle_file, $crt_file, $server_type);
 			$allow_return_codes = array(2);
+			// Cleanup ssl cert symlinks, if exists
+			if(@is_link($key_file)) unlink($key_file);
+			if(@is_link($bundle_file)) unlink($bundle_file);
+			if(@is_link($crt_file)) unlink($crt_file);
 		} else {
 			$letsencrypt_cmd = $this->get_certbot_command($temp_domains);
 			umask($old_umask);

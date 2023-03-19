@@ -1070,7 +1070,7 @@ CREATE TABLE `mail_user` (
   `gid` int(11) NOT NULL default '5000',
   `maildir` varchar(255) NOT NULL default '',
   `maildir_format` varchar(255) NOT NULL default 'maildir',
-  `quota` bigint(20) NOT NULL default '-1',
+  `quota` bigint(20) NOT NULL default '0',
   `cc` text,
   `forward_in_lda` enum('n','y') NOT NULL default 'n',
   `sender_cc` varchar(255) NOT NULL default '',
@@ -1842,6 +1842,10 @@ CREATE TABLE `sys_user` (
   `lost_password_function` tinyint(1) NOT NULL default '1',
   `lost_password_hash` VARCHAR(50) NOT NULL default '',
   `lost_password_reqtime` DATETIME NULL default NULL,
+  `otp_type` set('none', 'email') NOT NULL DEFAULT 'none',
+  `otp_data` varchar(255) DEFAULT NULL,
+  `otp_recovery` varchar(64) DEFAULT NULL,
+  `otp_attempts` tinyint(4) NOT NULL DEFAULT 0,
   PRIMARY KEY  (`userid`)
 ) DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
 

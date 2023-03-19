@@ -28,6 +28,8 @@ NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
 EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
+require_once __DIR__.'/../compatibility.inc.php';
+
 //* The purpose of this library is to provide some general functions.
 //* This class is loaded automatically by the ispconfig framework.
 
@@ -332,6 +334,14 @@ class functions {
 			$domain = substr($domain, strrpos($domain, '@') + 1);
 		}
 
+		// idn_to_* chokes on leading dots, but we need them for amavis, so remove it for later
+		if(substr($domain, 0, 1) === '.') {
+			$leading_dot = true;
+			$domain = substr($domain, 1);
+		} else {
+			$leading_dot = false;
+		}
+
 		if($encode == true) {
 			if(function_exists('idn_to_ascii')) {
 				if(defined('IDNA_NONTRANSITIONAL_TO_ASCII') && defined('INTL_IDNA_VARIANT_UTS46') && constant('IDNA_NONTRANSITIONAL_TO_ASCII')) {
@@ -374,6 +384,10 @@ class functions {
 				}
 				$domain = $this->idn_converter->decode($domain);
 			}
+		}
+
+		if($leading_dot == true) {
+			$domain = '.' . $domain;
 		}
 
 		if($user_part !== false) return $user_part . '@' . $domain;
@@ -437,10 +451,10 @@ class functions {
 		$iteration = 0;
 		$password = "";
 		$maxLength = $minLength + 5;
-		$length = $this->getRandomInt($minLength, $maxLength);
+		$length = random_int($minLength, $maxLength);
 
 		while($iteration < $length){
-			$randomNumber = (floor(((mt_rand() / mt_getrandmax()) * 100)) % 94) + 33;
+			$randomNumber = random_int(33, 126);
 			if(!$special){
 				if (($randomNumber >=33) && ($randomNumber <=47)) { continue; }
 				if (($randomNumber >=58) && ($randomNumber <=64)) { continue; }
@@ -453,10 +467,6 @@ class functions {
 		$app->uses('validate_password');
 		if($app->validate_password->password_check('', $password, '') !== false) $password = $this->password($minLength, $special);
 		return $password;
-	}
-
-	public function getRandomInt($min, $max){
-		return floor((mt_rand() / mt_getrandmax()) * ($max - $min + 1)) + $min;
 	}
 
 	public function generate_customer_no(){
@@ -474,14 +484,17 @@ class functions {
 		global $app;
 
 		// generate the SSH key pair for the client
-		$id_rsa_file = '/tmp/'.uniqid('',true);
+		if (! $tmpdir = $app->system->exec_safe('mktemp -dt id_rsa.XXXXXXXX')) {
+			$app->log("mktemp failed, cannot create SSH keypair for ".$username, LOGLEVEL_WARN);
+		}
+		$id_rsa_file = $tmpdir . uniqid('',true);
 		$id_rsa_pub_file = $id_rsa_file.'.pub';
 		if(file_exists($id_rsa_file)) unset($id_rsa_file);
 		if(file_exists($id_rsa_pub_file)) unset($id_rsa_pub_file);
 		if(!file_exists($id_rsa_file) && !file_exists($id_rsa_pub_file)) {
 			$app->system->exec_safe('ssh-keygen -t rsa -C ? -f ? -N ""', $username.'-rsa-key-'.time(), $id_rsa_file);
 			$app->db->query("UPDATE client SET created_at = UNIX_TIMESTAMP(), id_rsa = ?, ssh_rsa = ? WHERE client_id = ?", @file_get_contents($id_rsa_file), @file_get_contents($id_rsa_pub_file), $client_id);
-			$app->system->exec_safe('rm -f ? ?', $id_rsa_file, $id_rsa_pub_file);
+			$app->system->rmdir($tmpdir, true);
 		} else {
 			$app->log("Failed to create SSH keypair for ".$username, LOGLEVEL_WARN);
 		}

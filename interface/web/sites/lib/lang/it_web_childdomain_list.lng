@@ -11,8 +11,8 @@ $wb['domain_error_acme_invalid'] = 'Domain name acme.invalid not permitted.';
 $wb['no_redirect_txt'] = 'No redirect';
 $wb['no_flag_txt'] = 'No flag';
 $wb['none_txt'] = 'None';
-$wb['add_new_subdomain_txt'] = 'Add new Subdomain';
-$wb['add_new_aliasdomain_txt'] = 'Add new Aliasdomain';
-$wb['aliasdomain_list_head_txt'] = 'Aliasdomains';
-$wb['subdomain_list_head_txt'] = 'Subdomains';
+$wb['add_new_subdomain_txt'] = 'Aggiungi un Sottodominio';
+$wb['add_new_aliasdomain_txt'] = 'AAggiungi un Alias di dominio';
+$wb['aliasdomain_list_head_txt'] = 'Dominio Alias';
+$wb['subdomain_list_head_txt'] = 'Sottodominio';
 ?>

@@ -126,13 +126,6 @@ function process_login_request(app $app, &$error, $conf, $module)
 			}
 		}
 
-		$app->plugin->raiseEvent('login', $username);
-
-		//* Save successful login message to var
-		$authlog = 'Successful login for user \''.$username.'\' from '.$_SERVER['REMOTE_ADDR'].' at '.date('Y-m-d H:i:s').' with session ID '.session_id();
-		$authlog_handle = fopen($conf['ispconfig_log_dir'].'/auth.log', 'a');
-		fwrite($authlog_handle, $authlog."\n");
-		fclose($authlog_handle);
 
 		/*
 		* We need LOGIN_REDIRECT instead of HEADER_REDIRECT to load the
@@ -141,10 +134,33 @@ function process_login_request(app $app, &$error, $conf, $module)
 
 		if ($loginAs) {
 			echo 'LOGIN_REDIRECT:'.$_SESSION['s']['module']['startpage'];
+			$app->plugin->raiseEvent('login', $username);
+			$app->auth_log('Successful login for user \''. $username .'\' ' . $msg . ' from '. $_SERVER['REMOTE_ADDR'] .' at '. date('Y-m-d H:i:s') . ' with session ID ' .session_id());
 			exit;
 		} else {
-			header('Location: ../index.php');
-			die();
+
+			//* Do 2FA authentication
+			if(isset($user['otp_type']) && $user['otp_type'] != 'none') {
+
+				//* Save session in pending state and destroy original session
+				$_SESSION['s_pending'] = $_SESSION['s'];
+				unset($_SESSION['s']);
+
+				//* Create OTP session
+				$_SESSION['otp']['session_attempts'] = 0;
+				$_SESSION['otp']['type'] = $user['otp_type'];
+				$_SESSION['otp']['data'] = $user['otp_data'];
+				//$_SESSION['otp']['recovery_debug'] = $user['otp_recovery']; // For DEBUG only.
+
+				//* Redirect to otp script
+				header('Location: otp.php');
+				die();
+			} else {
+				$app->plugin->raiseEvent('login', $username);
+				$app->auth_log('Successful login for user \''. $username .'\' ' . $msg . ' from '. $_SERVER['REMOTE_ADDR'] .' at '. date('Y-m-d H:i:s') . ' with session ID ' .session_id());
+				header('Location: ../index.php');
+				die();
+			}
 		}
 	} else {
 		if (!$alreadyfailed['times']) {
@@ -161,11 +177,7 @@ function process_login_request(app $app, &$error, $conf, $module)
 		if ($app->db->errorMessage != '') $error .= '<br />'.$app->db->errorMessage != '';
 
 		$app->plugin->raiseEvent('login_failed', $username);
-		//* Save failed login message to var
-		$authlog = 'Failed login for user \''.$username.'\' from '.$_SERVER['REMOTE_ADDR'].' at '.date('Y-m-d H:i:s');
-		$authlog_handle = fopen($conf['ispconfig_log_dir'].'/auth.log', 'a');
-		fwrite($authlog_handle, $authlog."\n");
-		fclose($authlog_handle);
+		$app->auth_log('Failed login for user \''. $username .'\ from '. $_SERVER['REMOTE_ADDR'] .' at '. date('Y-m-d H:i:s'));
 	}
 }
 
@@ -190,7 +202,7 @@ function is_admin_ip_whitelisted($ip, $conf)
 		// exclude empty lines and comments
 		if ($line === '' || $line[0] === '#') return false;
 
-		return ip_matches_cidr($ip, $line);
+		return ipv6_matches_cidr($ip, $line) || ipv4_matches_cidr($ip, $line);
 	});
 
 	return count($matches) > 0;
@@ -198,22 +210,57 @@ function is_admin_ip_whitelisted($ip, $conf)
 
 // based on https://www.php.net/manual/en/ref.network.php (comments)
 /**
- * Checks if the given IP address matches the given CIDR.
- * @param $ip
- * @param $cidr
-
+ * Checks if the given IPv4 address matches the given CIDR.
+ * @param string $ip The IPv4 address.
+ * @param string $cidr The CIDR in the IPv4 format.
  * @return bool
  */
-function ip_matches_cidr ($ip, $cidr) {
+function ipv4_matches_cidr ($ip, $cidr)
+{
+	if (strpos($ip, '.') === false) return false;
+
 	list ($net, $mask) = explode ('/', $cidr);
 	if (!$mask) $mask = 32;
 
 	$ip_net = ip2long ($net);
+	$ip_ip = ip2long ($ip);
 	$ip_mask = ~((1 << (32 - $mask)) - 1);
 
-	$ip_ip = ip2long ($ip);
-
 	return (($ip_ip & $ip_mask) == ($ip_net & $ip_mask));
+}
+
+// based on https://stackoverflow.com/a/7951507/2428861
+/**
+ * Checks if the given IPv6 address matches the given CIDR.
+ * @param string $ip The IPv6 address.
+ * @param string $cidr The CIDR in the IPv6 format.
+ * @return bool
+ */
+function ipv6_matches_cidr($ip, $cidr)
+{
+	if (strpos($ip, ':') === false) return false;
+
+	list ($net, $mask) = explode('/', $cidr);
+	if (!$mask) $mask = 128;
+
+	$ip_net = in_addr_to_bitstring(inet_pton($net));
+	$ip_ip = in_addr_to_bitstring(inet_pton($ip));
+
+	return substr($ip_ip, 0, $mask) === substr($ip_net, 0, $mask);
+}
+
+/**
+ * Converts the output of {@see inet_pton()} to string of bits.
+ * @param string $in_addr The in_addr representation of the IP address.
+ * @return string String of bits representing given in_addr representation of the IP address.
+ */
+function in_addr_to_bitstring($in_addr)
+{
+	$result = '';
+	foreach (str_split($in_addr) as $c) {
+		$result .= str_pad(decbin(ord($c)), 8, '0', STR_PAD_LEFT);
+	}
+	return $result;
 }
 
 /**

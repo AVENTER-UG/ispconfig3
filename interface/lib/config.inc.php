@@ -46,7 +46,7 @@ $revision = str_replace(array('Revision:', '$', ' '), '', $svn_revision);
 //** Application
 define('ISPC_APP_TITLE', 'ISPConfig');
 define('ISPC_APP_VERSION', '3.2dev');
-define('DEVSYSTEM', 0);
+define('DEVSYSTEM', false);
 
 
 //** Database

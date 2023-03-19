@@ -28,6 +28,10 @@ NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
 EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
+if(version_compare(phpversion(), '7.0', '<')) {
+	require_once 'compatibility.inc.php';
+}
+
 //* Enable gzip compression for the interface
 ob_start('ob_gzhandler');
 
@@ -35,8 +39,8 @@ ob_start('ob_gzhandler');
 if(isset($conf['timezone']) && $conf['timezone'] != '') date_default_timezone_set($conf['timezone']);
 
 //* Set error reporting level when we are not on a developer system
-if(DEVSYSTEM == 0) {
-	@ini_set('error_reporting', E_ALL & ~E_NOTICE & ~E_DEPRECATED);
+if(DEVSYSTEM !== true) {
+	@ini_set('error_reporting', E_ALL & ~E_NOTICE & ~E_DEPRECATED & ~E_WARNING);
 }
 
 /*
@@ -206,6 +210,12 @@ class app {
 			}
 			*/
 		}
+	}
+
+	public function auth_log($msg) {
+		$authlog_handle = fopen($this->_conf['ispconfig_log_dir'].'/auth.log', 'a');
+		fwrite($authlog_handle, $msg . PHP_EOL);
+		fclose($authlog_handle);
 	}
 
 	/** Priority values are: 0 = DEBUG, 1 = WARNING,  2 = ERROR */

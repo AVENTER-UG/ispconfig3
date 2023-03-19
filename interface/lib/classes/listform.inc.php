@@ -80,7 +80,7 @@ class listform {
 
 	private function getDatasourceData($field)
 	{
-		global $app;
+		global $app, $api;
 		$values = array();
 
 		if($field['datasource']['type'] == 'SQL') {
@@ -97,7 +97,8 @@ class listform {
 			$querystring = str_replace("{AUTHSQL}", $app->tform->getAuthSQL('r'), $querystring);
 			$querystring = str_replace("{AUTHSQL-A}", $app->tform->getAuthSQL('r', 'a'), $querystring);
 			$querystring = str_replace("{AUTHSQL-B}", $app->tform->getAuthSQL('r', 'b'), $querystring);
-			$querystring = preg_replace_callback('@{AUTHSQL::(.+?)}@', create_function('$matches','global $app; $tmp = $app->tform->getAuthSQL("r", $matches[1]); return $tmp;'), $querystring);
+			//$querystring = preg_replace_callback('@{AUTHSQL::(.+?)}@', create_function('$matches','global $app; $tmp = $app->tform->getAuthSQL("r", $matches[1]); return $tmp;'), $querystring);
+			$querystring = preg_replace_callback('@{AUTHSQL::(.+?)}@', function($matches) {global $app; $tmp = $app->tform->getAuthSQL("r", $matches[1]); return $tmp;}, $querystring);
 
 			//* Getting the records
 			$tmp_records = $app->db->queryAllRecords($querystring);
@@ -195,9 +196,9 @@ class listform {
 		if(@is_array($this->listDef['item'])) {
 			foreach($this->listDef['item'] as $i) {
 				$field = $i['field'];
-				$table = $i['table'];
+				$table = (isset($i['table']))?$i['table']:'';
 
-				$searchval = $_SESSION['search'][$list_name][$search_prefix.$field];
+				$searchval = (isset($_SESSION['search'][$list_name][$search_prefix.$field]))?$_SESSION['search'][$list_name][$search_prefix.$field]:'';
 				// IDN
 				if($searchval != ''){
 					if(is_array($i['filters'])) {
@@ -325,7 +326,7 @@ class listform {
 		if($this->searchChanged == 1) $_SESSION['search'][$list_name]['page'] = 0;
 
 		$sql_von = $app->functions->intval($_SESSION['search'][$list_name]['page'] * $records_per_page);
-		$record_count = $app->db->queryOneRecord("SELECT count(*) AS anzahl FROM ??".($app->listform->listDef['additional_tables'] != ''? ','.$app->listform->listDef['additional_tables'] : '')." WHERE $sql_where", $table);
+		$record_count = $app->db->queryOneRecord("SELECT count(*) AS anzahl FROM ??".(isset($app->listform->listDef['additional_tables']) && $app->listform->listDef['additional_tables'] != ''? ','.$app->listform->listDef['additional_tables'] : '')." WHERE $sql_where", $table);
 		$pages = $app->functions->intval(($record_count['anzahl'] - 1) / $records_per_page);
 
 

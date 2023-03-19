@@ -3,7 +3,7 @@
 # You can create and activate a per-user sieve script (manually or via managesieve),
 # which will execute after this.
 
-require ["fileinto", "mailbox", "regex", "date", "relational", "vacation", "imap4flags", "envelope", "subaddress", "copy", "reject"];
+require ["body", "copy", "date", "envelope", "fileinto", "imap4flags", "mailbox", "regex", "reject", "relational", "subaddress", "vacation", "variables"];
 
 <tmpl_if name="move_junk" op="==" value="y">
 # Move spam to spam folder
@@ -29,7 +29,7 @@ redirect :copy "<tmpl_var name='address'>";
 # You can create and activate a per-user sieve script (manually or via managesieve),
 # which will execute before this.
 
-require ["fileinto", "mailbox", "regex", "date", "relational", "vacation", "imap4flags", "envelope", "subaddress", "copy", "reject"];
+require ["body", "copy", "date", "envelope", "fileinto", "imap4flags", "mailbox", "regex", "reject", "relational", "subaddress", "vacation", "variables"];
 
 <tmpl_if name="move_junk" op="==" value="a">
 # Move spam to spam folder

@@ -64,9 +64,11 @@ class db
 	public function __destruct() {
 		if($this->_iConnId) mysqli_close($this->_iConnId);
 	}
-	
+
 	private function do_connect() {
 		global $conf;
+
+		mysqli_report(MYSQLI_REPORT_OFF);
 		
 		if($this->_iConnId) return true;
 		$this->dbHost = $conf['mysql']['host'];
@@ -77,7 +79,7 @@ class db
 		$this->dbCharset = $conf["mysql"]["charset"];
 		$this->dbNewLink = false;
 		$this->dbClientFlags = null;
-		
+
 		$this->_iConnId = mysqli_connect($this->dbHost, $this->dbUser, $this->dbPass, '', (int)$this->dbPort);
 		$try = 0;
 		while((!is_object($this->_iConnId) || mysqli_connect_error()) && $try < 5) {
@@ -92,19 +94,19 @@ class db
 			$this->_sqlerror('Zugriff auf Datenbankserver fehlgeschlagen! / Database server not accessible!');
 			return false;
 		}
-		
+
 		if($this->dbName) $this->setDBName($this->dbName);
 
 		$this->_setCharset();
 	}
-	
+
 	public function setDBData($host, $user, $password, $port) {
 		$this->dbHost = $host;
 		$this->dbUser = $user;
 		$this->dbPass = $password;
 		$this->dbPort = $port;
 	}
-	
+
 	public function setDBName($name) {
 		$this->dbName = $name;
 		$this->_iConnId = mysqli_connect($this->dbHost, $this->dbUser, $this->dbPass, '', (int)$this->dbPort);
@@ -114,7 +116,7 @@ class db
 			return false;
 		}
 	}
-	
+
 	public function close() {
 		if($this->_iConnId) mysqli_close($this->_iConnId);
 		$this->_iConnId = null;
@@ -192,7 +194,7 @@ class db
 	}
 
 	private function _query($sQuery = '') {
-		
+
 		$aArgs = func_get_args();
 		$this->do_connect();
 
@@ -284,7 +286,7 @@ class db
 	 * @return array result row or NULL if none found
 	 */
 	public function queryOneRecord($sQuery = '') {
-		
+
 		$aArgs = func_get_args();
 		if(!empty($aArgs)) {
 			$sQuery = array_shift($aArgs);
@@ -293,7 +295,7 @@ class db
 		}
 		array_unshift($aArgs, $sQuery);
 		}
-  
+
 		$oResult = call_user_func_array([&$this, 'query'], $aArgs);
 		if(!$oResult) return null;
 
@@ -534,7 +536,7 @@ class db
 			if($debug == 1) echo "mySQL Error Message: ".$this->errorMessage;
 		}
 	}
-	
+
 	/* TODO: rewrite SQL */
 	function update($tablename, $form, $bedingung, $debug = 0)
 	{
@@ -761,14 +763,14 @@ class db
 			break;
 		}
 	}
-	
+
 	/**
 	 * Get the database type (mariadb or mysql)
 	 *
 	 * @access public
 	 * @return string 'mariadb' or string 'mysql'
 	 */
-	
+
 	public function getDatabaseType() {
 		$tmp = $this->queryOneRecord('SELECT VERSION() as version');
 		if(stristr($tmp['version'],'mariadb')) {
@@ -777,7 +779,7 @@ class db
 			return 'mysql';
 		}
 	}
-	
+
 	/**
 	 * Get the database version
 	 *
@@ -785,7 +787,7 @@ class db
 	 * @param bool   $major_version_only = true will return the major version only, e.g. 8 for MySQL 8
 	 * @return string version number
 	 */
-	
+
 	public function getDatabaseVersion($major_version_only = false) {
 		$tmp = $this->queryOneRecord('SELECT VERSION() as version');
 		$version = explode('-', $tmp['version']);

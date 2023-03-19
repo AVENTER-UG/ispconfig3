@@ -39,6 +39,9 @@ $liste['paging_tpl']  = 'templates/paging.tpl.htm';
 //* Enable auth
 $liste['auth']    = 'no';
 
+// mark columns for php sorting (no real mySQL columns)
+$liste["phpsort"] = array('usage');
+
 
 /*****************************************************
 * Suchfelder

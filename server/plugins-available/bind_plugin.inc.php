@@ -90,7 +90,7 @@ class bind_plugin {
 		if (!file_exists($dns_config['bind_zonefiles_dir'].'/'.$this->zone_file_prefix().$domain)) return false;
 
 		//* Check Entropy
-		if (file_get_contents('/proc/sys/kernel/random/entropy_avail') < 400) {
+		if (file_get_contents('/proc/sys/kernel/random/entropy_avail') < 200) {
 			$app->log('DNSSEC ERROR: We are low on entropy. Not generating new Keys for '.$domain.'. Please consider installing package haveged.', LOGLEVEL_WARN);
 			echo "DNSSEC ERROR: We are low on entropy. Not generating new Keys for $domain. Please consider installing package haveged.\n";
 			return false;
@@ -98,11 +98,11 @@ class bind_plugin {
 
 		//* Verify that we do not already have keys (overwriting-protection)
 		if($data['old']['dnssec_algo'] == $data['new']['dnssec_algo']) {
-			if (file_exists($dns_config['bind_zonefiles_dir'].'/dsset-'.$domain.'.')) {
+			if (file_exists($dns_config['bind_keyfiles_dir'].'/dsset-'.$domain.'.')) {
 				return $this->soa_dnssec_update($data);
 			} else if ($data['new']['dnssec_initialized'] == 'Y') { //In case that we generated keys but the dsset-file was not generated
 				$keycount=0;
-				foreach (glob($dns_config['bind_zonefiles_dir'].'/K'.$domain.'*.key') as $keyfile) {
+				foreach (glob($dns_config['bind_keyfiles_dir'].'/K'.$domain.'*.key') as $keyfile) {
 					$keycount++;
 				}
 				if ($keycount > 0) {
@@ -116,11 +116,11 @@ class bind_plugin {
 		$dnssec_algo = explode(',',$data['new']['dnssec_algo']);
 
 		//* Create the Zone Signing and Key Signing Keys
-		if(in_array('ECDSAP256SHA256',$dnssec_algo) && count(glob($dns_config['bind_zonefiles_dir'].'/K'.$domain.'.+013*.key')) == 0) {
-			$app->system->exec_safe('cd ?; dnssec-keygen -3 -a ECDSAP256SHA256 -n ZONE ?; dnssec-keygen -f KSK -3 -a ECDSAP256SHA256 -n ZONE ?', $dns_config['bind_zonefiles_dir'], $domain, $domain);
+		if(in_array('ECDSAP256SHA256',$dnssec_algo) && count(glob($dns_config['bind_keyfiles_dir'].'/K'.$domain.'.+013*.key')) == 0) {
+			$app->system->exec_safe('cd ?; dnssec-keygen -3 -a ECDSAP256SHA256 -n ZONE ?; dnssec-keygen -f KSK -3 -a ECDSAP256SHA256 -n ZONE ?', $dns_config['bind_keyfiles_dir'], $domain, $domain);
 		}
-		if(in_array('NSEC3RSASHA1',$dnssec_algo) && count(glob($dns_config['bind_zonefiles_dir'].'/K'.$domain.'.+007*.key')) == 0) {
-			$app->system->exec_safe('cd ?; dnssec-keygen -a NSEC3RSASHA1 -b 2048 -n ZONE ?; dnssec-keygen -f KSK -a NSEC3RSASHA1 -b 4096 -n ZONE ?', $dns_config['bind_zonefiles_dir'], $domain, $domain);
+		if(in_array('NSEC3RSASHA1',$dnssec_algo) && count(glob($dns_config['bind_keyfiles_dir'].'/K'.$domain.'.+007*.key')) == 0) {
+			$app->system->exec_safe('cd ?; dnssec-keygen -a NSEC3RSASHA1 -b 2048 -n ZONE ?; dnssec-keygen -f KSK -a NSEC3RSASHA1 -b 4096 -n ZONE ?', $dns_config['bind_keyfiles_dir'], $domain, $domain);
 		}
 
 		$this->soa_dnssec_sign($data); //Now sign the zone for the first time
@@ -149,8 +149,8 @@ class bind_plugin {
 
 		//* Include ECDSAP256SHA256 keys in zone
 		if(in_array('ECDSAP256SHA256',$dnssec_algo)) {
-			foreach (glob($dns_config['bind_zonefiles_dir'].'/K'.$domain.'.+013*.key') as $keyfile) {
-				$includeline = '$INCLUDE '.basename($keyfile);
+			foreach (glob($dns_config['bind_keyfiles_dir'].'/K'.$domain.'.+013*.key') as $keyfile) {
+				$includeline = '$INCLUDE ' . $keyfile;
 				if (!preg_match('@'.preg_quote($includeline).'@', $zonefile)) $zonefile .= "\n".$includeline."\n";
 				$keycount++;
 			}
@@ -158,8 +158,8 @@ class bind_plugin {
 
 		//* Include NSEC3RSASHA1 keys in zone
 		if(in_array('NSEC3RSASHA1',$dnssec_algo)) {
-			foreach (glob($dns_config['bind_zonefiles_dir'].'/K'.$domain.'.+007*.key') as $keyfile) {
-				$includeline = '$INCLUDE '.basename($keyfile);
+			foreach (glob($dns_config['bind_keyfiles_dir'].'/K'.$domain.'.+007*.key') as $keyfile) {
+				$includeline = '$INCLUDE ' . $keyfile;
 				if (!preg_match('@'.preg_quote($includeline).'@', $zonefile)) $zonefile .= "\n".$includeline."\n";
 				$keycount++;
 			}
@@ -171,20 +171,20 @@ class bind_plugin {
 		file_put_contents($dns_config['bind_zonefiles_dir'].'/'.$filespre.$domain, $zonefile);
 
 		//* Sign the zone and set it valid for max. 16 days
-		$app->system->exec_safe('cd ?; dnssec-signzone -A -e +1382400 -3 $(head -c 1000 /dev/random | sha1sum | cut -b 1-16) -N increment -o ? -t ?', $dns_config['bind_zonefiles_dir'], $domain, $filespre.$domain);
+		$app->system->exec_safe('cd ?; dnssec-signzone -A -e +1382400 -3 $(head -c 1000 /dev/random | sha1sum | cut -b 1-16) -N increment -o ? -K ? -t ?', $dns_config['bind_zonefiles_dir'], $domain, $dns_config['bind_keyfiles_dir'], $dns_config['bind_zonefiles_dir'].'/'.$filespre.$domain);
 
 		//* Write Data back ino DB
-		$dnssecdata = "DS-Records:\n".file_get_contents($dns_config['bind_zonefiles_dir'].'/dsset-'.$domain.'.');
+		$dnssecdata = "DS-Records:\n".file_get_contents($dns_config['bind_keyfiles_dir'].'/dsset-'.$domain.'.');
 		$dnssecdata .= "\n------------------------------------\n\nDNSKEY-Records:\n";
 
 		if(in_array('ECDSAP256SHA256',$dnssec_algo)) {
-			foreach (glob($dns_config['bind_zonefiles_dir'].'/K'.$domain.'.+013*.key') as $keyfile) {
+			foreach (glob($dns_config['bind_keyfiles_dir'].'/K'.$domain.'.+013*.key') as $keyfile) {
 				$dnssecdata .= file_get_contents($keyfile)."\n\n";
 			}
 		}
 
 		if(in_array('NSEC3RSASHA1',$dnssec_algo)) {
-			foreach (glob($dns_config['bind_zonefiles_dir'].'/K'.$domain.'.+007*.key') as $keyfile) {
+			foreach (glob($dns_config['bind_keyfiles_dir'].'/K'.$domain.'.+007*.key') as $keyfile) {
 				$dnssecdata .= file_get_contents($keyfile)."\n\n";
 			}
 		}
@@ -213,7 +213,7 @@ class bind_plugin {
 			return false;
 		}
 
-		if (!$new && !file_exists($dns_config['bind_zonefiles_dir'].'/dsset-'.$domain.'.')) $this->soa_dnssec_create($data);
+		if (!$new && !file_exists($dns_config['bind_keyfiles_dir'].'/dsset-'.$domain.'.')) $this->soa_dnssec_create($data);
 
 		$dbdata = $app->db->queryOneRecord('SELECT id,serial FROM dns_soa WHERE id=?', intval($data['new']['id']));
 		$app->system->exec_safe('cd ?; named-checkzone ? ? | egrep -ho \'[0-9]{10}\'', $dns_config['bind_zonefiles_dir'], $domain, $dns_config['bind_zonefiles_dir'].'/'.$filespre.$domain);
@@ -237,12 +237,12 @@ class bind_plugin {
 
 		$domain = substr($data['new']['origin'], 0, strlen($data['new']['origin'])-1);
 
-		$key_files = glob($dns_config['bind_zonefiles_dir'].'/K'.$domain.'.+*');
+		$key_files = glob($dns_config['bind_keyfiles_dir'].'/K'.$domain.'.+*');
 		foreach($key_files as $file) {
 			unlink($file);
 		}
 		unlink($dns_config['bind_zonefiles_dir'].'/'.$this->zone_file_prefix().$domain.'.signed');
-		unlink($dns_config['bind_zonefiles_dir'].'/dsset-'.$domain.'.');
+		unlink($dns_config['bind_keyfiles_dir'].'/dsset-'.$domain.'.');
 
 		if ($app->dbmaster !== $app->db) $app->dbmaster->query('UPDATE dns_soa SET dnssec_info=\'\', dnssec_initialized=\'N\' WHERE id=?', intval($data['new']['id']));
 		$app->db->query('UPDATE dns_soa SET dnssec_info=\'\', dnssec_initialized=\'N\' WHERE id=?', intval($data['new']['id']));
@@ -322,6 +322,10 @@ class bind_plugin {
 						$records[$i]['data'] = $data_new;
 					}
 				}
+			}
+			else {
+				$app->log("DNS zone[".$zone['origin']."] has no records yet, skip...", LOGLEVEL_DEBUG);
+				return;
 			}
 			$tpl->setLoop('zones', $records);
 
@@ -544,11 +548,11 @@ class bind_plugin {
 			if ($tmp['dnssec_wanted'] == 'Y') $zone_file .= '.signed'; //.signed is for DNSSEC-Implementation
 
 			$options = '';
-			if(trim($tmp['xfer']) != '') {
+			if($tmp['xfer'] != null && trim($tmp['xfer']) != '') {
 				$options .= "        allow-transfer {".str_replace(',', ';', $tmp['xfer']).";};\n";
 			}
-			if(trim($tmp['also_notify']) != '') $options .= '        also-notify {'.str_replace(',', ';', $tmp['also_notify']).";};\n";
-			if(trim($tmp['update_acl']) != '') $options .= "        allow-update {".str_replace(',', ';', $tmp['update_acl']).";};\n";
+			if($tmp['also_notify'] != null && trim($tmp['also_notify']) != '') $options .= '        also-notify {'.str_replace(',', ';', $tmp['also_notify']).";};\n";
+			if($tmp['update_acl'] != null && trim($tmp['update_acl']) != '') $options .= "        allow-update {".str_replace(',', ';', $tmp['update_acl']).";};\n";
 
 			if(file_exists($zone_file)) {
 				$zones[] = array( 'zone' => substr($tmp['origin'], 0, -1),

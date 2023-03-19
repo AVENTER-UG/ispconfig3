@@ -42,7 +42,7 @@ class validate_datetime
 	{
 		if (is_array($field_value) && count($field_value) >= 5)
 		{
-			$result = array_filter($field_value, create_function('$dt_unit', 'return ($dt_unit > 0);'));
+			$result = array_filter($field_value, function($dt_unit) {return ($dt_unit > 0);});
 			return count($result) !== 0;
 		}
 
@@ -86,7 +86,7 @@ class validate_datetime
 	{
 		if(!is_array($field_value)) return 0;
 		$second = 0;
-		$filtered_values = array_map(create_function('$item', 'return (int)$item;'), $field_value);
+		$filtered_values = array_map(function($item) {return (int)$item;}, $field_value);
 		extract($filtered_values, EXTR_OVERWRITE);
 
 		return mktime($hour, $minute, $second, $month, $day, $year);

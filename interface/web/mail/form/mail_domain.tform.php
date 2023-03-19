@@ -132,7 +132,7 @@ $form["tabs"]['domain'] = array (
 			'width'  => '20',
 			'maxlength' => '63',
 			'validators' => array (  0 => array (   'type' => 'REGEX',
-					'regex' => '/^[a-z0-9]{0,63}$/',
+					'regex' => '/^(?=.*[a-z])[a-z0-9]{1,63}$/',
 					'errmsg'=> 'dkim_selector_error'),
 			),
 		),

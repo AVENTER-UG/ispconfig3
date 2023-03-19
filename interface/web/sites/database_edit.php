@@ -369,7 +369,7 @@ class page_action extends tform_actions {
 			} else {
 				$remote_ips = explode(",", $global_config['default_remote_dbserver']);
 			}
-			if (!in_array($server_config['ip_address'], $default_remote_db)) { $remote_ips[] = $server_config['ip_address']; }
+			if (!in_array($server_config['ip_address'], $remote_ips)) { $remote_ips[] = $server_config['ip_address']; }
 
 			if($server_config['ip_address']!='') {
 				if($this->dataRecord['remote_access'] != 'y'){
@@ -459,7 +459,7 @@ class page_action extends tform_actions {
 				$remote_ips = explode(",", $global_config['default_remote_dbserver']);
 			}
 			
-			if (!in_array($server_config['ip_address'], $default_remote_db)) { $remote_ips[] = $server_config['ip_address']; }
+			if (!in_array($server_config['ip_address'], $remote_ips)) { $remote_ips[] = $server_config['ip_address']; }
 
 			if($server_config['ip_address']!='') {
 				if($this->dataRecord['remote_access'] != 'y'){

@@ -1,19 +1,19 @@
 <?php
 $wb['server_id_txt'] = 'Server';
-$wb['zone_txt'] = 'Zone';
+$wb['zone_txt'] = 'Zona';
 $wb['name_txt'] = 'Hostname';
-$wb['type_txt'] = 'type';
-$wb['data_txt'] = 'Text';
+$wb['type_txt'] = 'tipo';
+$wb['data_txt'] = 'Testo';
 $wb['ttl_txt'] = 'TTL';
 $wb['active_txt'] = 'Attivo';
-$wb['limit_dns_record_txt'] = 'The max. number of DNS records raggiunto per il tuo account.';
-$wb['no_zone_perm'] = 'You do not have the permission to add a record to this DNS zone.';
-$wb['name_error_empty'] = 'The hostname  vuoto.';
-$wb['name_error_regex'] = 'The hostname has the wrong format.';
-$wb['data_error_empty'] = 'Text empty';
-$wb['data_error_regex'] = 'Text format invalid';
-$wb['ttl_range_error'] = 'Min. TTL time is 60 seconds.';
-$wb['invalid_type_dkim'] = 'DKIM is not allowed. Use the DKIM button';
+$wb['limit_dns_record_txt'] = 'Hai raggiunto il massimo numero di record DNS per il tuo profilo.';
+$wb['no_zone_perm'] = 'Non hai il permesso di aggiungere record a questa zona DNS.';
+$wb['name_error_empty'] = 'Campo hostname vuoto.';
+$wb['name_error_regex'] = 'L\'hostname ha un formato non valido.';
+$wb['data_error_empty'] = 'Testo vuoto';
+$wb['data_error_regex'] = 'Formato testo non valido';
+$wb['ttl_range_error'] = 'Minimo TTL è 60 secondi.';
+$wb['invalid_type_dkim'] = 'DKIM non consentito. Usare il tasto DKIM';
 $wb['invalid_type_dmarc'] = 'DMARC is not allowed. Use the DMARC button';
-$wb['invalid_type_spf'] = 'SPF is not allowed. Use the SPF button.';
+$wb['invalid_type_spf'] = 'SPF non è consentito. Usare il tasto SPF.';
 ?>

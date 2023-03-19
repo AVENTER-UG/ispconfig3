@@ -13,7 +13,7 @@ mailbox_show_autoresponder_tab=y
 mailbox_show_mail_filter_tab=y
 mailbox_show_custom_rules_tab=y
 mailboxlist_webmail_link=y
-webmail_url=/webmail
+webmail_url=https://[SERVERNAME]:8081/webmail
 dkim_path=/var/lib/amavis/dkim
 smtp_enabled=y
 smtp_host=localhost
@@ -28,7 +28,7 @@ ftpuser_prefix=[CLIENTNAME]
 shelluser_prefix=[CLIENTNAME]
 webdavuser_prefix=[CLIENTNAME]
 dblist_phpmyadmin_link=y
-phpmyadmin_url=/phpmyadmin
+phpmyadmin_url=https://[SERVERNAME]:8081/phpmyadmin
 webftp_url=
 vhost_subdomains=n
 vhost_aliasdomains=n
@@ -39,6 +39,7 @@ web_php_options=no,fast-cgi,mod,php-fpm
 show_aps_menu=n
 client_protection=y
 ssh_authentication=
+le_caa_autocreate_options=y
 
 
 [tools]

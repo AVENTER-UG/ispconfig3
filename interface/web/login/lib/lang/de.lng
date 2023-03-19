@@ -27,9 +27,18 @@ $wb['error_maintenance_mode'] = 'Diese ISPConfig Installation wird gerade gewart
 $wb['theme_not_compatible'] = 'Das gewählte Design ist mit dieser ISPConfig Version nicht kompatibel. Bitte prüfen Sie, ob ein Update des Themes verfügbar ist.<br />Es wurde nun automatisch das Standard Design aktiviert.';
 $wb['back_txt'] = 'Zur&uuml;ck';
 $wb['stay_logged_in_txt'] = 'Dauerhaft eingeloggt bleiben';
-$wb['email_error'] = 'Email contains unallowed characters or has a invalid format.';
+$wb['email_error'] = 'Die E-Mail-Adresse enthält unzulässige Zeichen oder hat ein ungültiges Format.';
 $wb['lost_password_function_disabled_txt'] = 'Die Passwort vergessen Funktion steht für diesen Benutzer nicht zur Verfügung.';
 $wb['lost_password_function_wait_txt'] = 'Sie können im Moment kein neues Passwort anfordern. Bitte warten Sie einige Minuten.';
 $wb['lost_password_function_expired_txt'] = 'Der Passwortlink ist abgelaufen. Bitte fordern Sie einen neuen an.';
 $wb['lost_password_function_denied_txt'] = 'Dieser Passwortlink ist ungültig.';
-?>
+$wb['otp_code_txt'] = 'Zwei-Faktor-Authentifizierung';
+$wb['otp_code_desc_txt'] = 'Geben Sie den Code ein, den Sie von Ihrer Authentifizierungs-App oder per E-Mail erhalten haben.';
+$wb['otp_code_placeholder_txt'] = 'OTP Code';
+$wb['otp_code_email_sent_txt'] = 'Eine E-Mail wurde versandt an';
+$wb['otp_code_email_subject_txt'] = 'ISPConfig Login Authentifizierung';
+$wb['otp_code_email_template_txt'] = 'Ihr einmaliger Anmeldecode lautet %s' . PHP_EOL . 'Dieser Code ist 10 Minuten lang gültig.' . PHP_EOL;
+$wb['otp_code_resend_txt'] = 'Neuen Code anfordern';
+$wb['otp_code_email_sent_failed_txt'] = 'Senden einer E-Mail an %s fehlgeschlagen';
+$wb['otp_code_email_sent_wait_txt'] = 'Bitte warten Sie, das erneute Senden des Codes ist erst nach %s Sekunden möglich';
+

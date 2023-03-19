@@ -1,13 +1,4 @@
 # http://wiki.dovecot.org/AuthDatabase/SQL
-#
-# CREATE TABLE users (
-#     userid VARCHAR(128) NOT NULL,
-#     password VARCHAR(64) NOT NULL,
-#     home VARCHAR(255) NOT NULL,
-#     uid INTEGER NOT NULL,
-#     gid INTEGER NOT NULL,
-#     active CHAR(1) DEFAULT 'Y' NOT NULL
-# );
 
 driver = mysql
 connect = host={mysql_server_host} dbname={mysql_server_database} user={mysql_server_ispconfig_user} password={mysql_server_ispconfig_password} port={mysql_server_port}
@@ -20,4 +11,4 @@ user_query = SELECT email as user, maildir as home, CONCAT( maildir_format, ':',
 
 # The iterate_query is required for the doveadm command only and works only on dovecot 2 servers.
 # Do not enable it on Dovecot 1.x servers
-# iterate_query = SELECT email as user FROM mail_user WHERE server_id = '{server_id}'
+# iterate_query = SELECT email as user FROM mail_user WHERE disabledoveadm='n' AND server_id = '{server_id}'

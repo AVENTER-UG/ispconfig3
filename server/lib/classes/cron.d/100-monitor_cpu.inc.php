@@ -78,7 +78,7 @@ class cronjob_monitor_cpu extends cronjob {
 
 				$part = preg_split('/:/', $line);
 				$key = trim($part[0]);
-				$value = trim($part[1]);
+				$value = (isset($part[1]))?trim($part[1]):'';
 				if ($key == 'processor')
 					$processor = intval($value);
 				if ($key != '')

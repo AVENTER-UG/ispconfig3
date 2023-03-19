@@ -82,6 +82,8 @@ class db
 		$this->dbClientFlags = ($flags !== NULL) ? $flags : $conf['db_client_flags'];
 		$this->_iConnId = mysqli_init();
 
+		mysqli_report(MYSQLI_REPORT_OFF);
+
 		mysqli_real_connect($this->_iConnId, $this->dbHost, $this->dbUser, $this->dbPass, '', (int)$this->dbPort, NULL, $this->dbClientFlags);
 		for($try=0;(!is_object($this->_iConnId) || mysqli_connect_errno()) && $try < 5;++$try) {
 			sleep($try);
@@ -524,7 +526,7 @@ class db
 			$sString = '';
 		}
 
-		$cur_encoding = mb_detect_encoding($sString);
+		$cur_encoding = mb_detect_encoding($sString, "auto");
 		if($cur_encoding != "UTF-8") {
 			if($cur_encoding != 'ASCII') {
 				if(is_object($app) && method_exists($app, 'log')) $app->log('String ' . substr($sString, 0, 25) . '... is ' . $cur_encoding . '.', LOGLEVEL_DEBUG);

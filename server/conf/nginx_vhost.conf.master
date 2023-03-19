@@ -69,6 +69,16 @@ server {
         <tmpl_if name='exclude_own_hostname'>if ($http_host != "<tmpl_var name='exclude_own_hostname'>") { </tmpl_if>rewrite ^<tmpl_var name='rewrite_exclude'>(.*)$ <tmpl_var name='rewrite_target'>$2 <tmpl_var name='rewrite_type'>;<tmpl_if name='exclude_own_hostname'> }</tmpl_if>
 </tmpl_if>
 <tmpl_if name='use_proxy'>
+        ## no proxy for acme-challenge
+        location ^~ /.well-known/acme-challenge/ {
+            access_log off;
+            log_not_found off;
+            root /usr/local/ispconfig/interface/acme/;
+            autoindex off;
+            index index.html;
+            try_files $uri $uri/ =404;
+        }
+
         location / {
             proxy_pass <tmpl_var name='rewrite_target'>;
             <tmpl_if name='rewrite_subdir'>rewrite ^/<tmpl_var name='rewrite_subdir'>(.*) /$1;</tmpl_if>

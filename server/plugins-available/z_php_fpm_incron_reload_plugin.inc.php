@@ -106,7 +106,7 @@ class z_php_fpm_incron_reload_plugin {
 		$app->uses('getconf');
 		$serverConfig = $app->getconf->get_server_config($conf['server_id'], 'web');
 
-		return $serverConfig['php_fpm_incron_reload'] === 'y';
+		return (isset($serverConfig['php_fpm_incron_reload']) && $serverConfig['php_fpm_incron_reload'] === 'y');
 	}
 
 	private function createIncronConfiguration($triggerFile, $systemUser, $fastcgiPhpVersion) {

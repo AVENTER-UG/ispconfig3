@@ -318,7 +318,7 @@ $form["tabs"]['address'] = array (
 		'country' => array (
 			'datatype' => 'VARCHAR',
 			'formtype' => 'SELECT',
-			'default' => (isset($conf['language']) ? strtoupper($conf['language']) : ''),
+                       'default' => (isset($conf['default_country'])) ? strtoupper($conf['default_country']) : ((isset($conf['language'])) ? strtoupper($conf['language']) : ''),
 			'datasource' => array (  'type'          => 'SQL',
 				'querystring'   => 'SELECT iso,printable_name FROM country ORDER BY printable_name ASC',
 				'keyfield'      => 'iso',
