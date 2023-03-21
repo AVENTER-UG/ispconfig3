@@ -1599,17 +1599,15 @@ class nginx_plugin {
 		}
 
 		//proxy protocol settings
-		if($web_config['vhost_proxy_protocol_enabled'] == "y"){
-		    if((int)$web_config['vhost_proxy_protocol_https_port'] > 0) {
-			    $vhost_data['use_proxy_protocol'] = $data['new']['proxy_protocol'];
-			    $vhost_data['proxy_protocol_http'] = (int)$web_config['vhost_proxy_protocol_http_port'];
-			    $vhost_data['proxy_protocol_https'] = (int)$web_config['vhost_proxy_protocol_https_port'];
-		    } else {
-		        $vhost_data['use_proxy_protocol'] = "n";
-		    }
-		}else{
-			$vhost_data['use_proxy_protocol'] = "n";
-		}
+		$proxy_protocol_protocols = explode(',', $web_config['vhost_proxy_protocol_protocols']);
+		$proxy_protocol_ipv4 = in_array('ipv4', $proxy_protocol_protocols);
+		$proxy_protocol_ipv6 = in_array('ipv6', $proxy_protocol_protocols);
+		$proxy_protocol_site = $web_config['vhost_proxy_protocol_enabled'] == 'all';
+		$proxy_protocol_site |= $web_config['vhost_proxy_protocol_enabled'] == 'y' && $data['new']['proxy_protocol'] == 'y';
+		$vhost_data['proxy_protocol_http'] = isset($web_config['vhost_proxy_protocol_http_port']) ? (int)$web_config['vhost_proxy_protocol_http_port'] : 0;
+		$vhost_data['proxy_protocol_https'] = isset($web_config['vhost_proxy_protocol_https_port']) ? (int)$web_config['vhost_proxy_protocol_https_port'] : 0;
+		$vhost_data['use_proxy_protocol'] = ($proxy_protocol_site && $proxy_protocol_ipv4) ? 'y' : 'n';
+		$vhost_data['use_proxy_protocol_ipv6'] = ($proxy_protocol_site && $proxy_protocol_ipv6) ? 'y' : 'n';
 
 		// set logging variable
 		$vhost_data['logging'] = $web_config['logging'];
