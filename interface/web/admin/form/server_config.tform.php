@@ -938,7 +938,6 @@ $form["tabs"]['web'] = array(
             'datatype' => 'VARCHAR',
             'formtype' => 'SELECT',
             'value' => array(
-                'none' => 'None',
                 'ipv4' => 'IPv4',
                 'ipv6' => 'IPv6',
                 'ipv4,ipv6' => 'IPv4 + IPv6'
