@@ -318,6 +318,8 @@ class shelluser_jailkit_plugin {
 				$options = array('hardlink');
 			} elseif ($this->jailkit_config['jailkit_hardlinks'] == 'no') {
 				$options = array();
+			} else {
+				$options = array();
 			}
 		} else {
 			$options = array('allow_hardlink');
@@ -527,7 +529,11 @@ class shelluser_jailkit_plugin {
 			// Remove duplicate keys
 			$existing_keys = @file($sshkeys, FILE_IGNORE_NEW_LINES);
 			$new_keys = explode("\n", $userkey);
-			$final_keys_arr = @array_merge($existing_keys, $new_keys);
+			if(is_array($existing_keys)) {
+				$final_keys_arr = @array_merge($existing_keys, $new_keys);
+			} else {
+				$final_keys_arr = $new_keys;
+			}
 			$new_final_keys_arr = array();
 			if(is_array($final_keys_arr) && !empty($final_keys_arr)){
 				foreach($final_keys_arr as $key => $val){

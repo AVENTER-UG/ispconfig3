@@ -124,9 +124,11 @@ class file{
 				if(trim($line) != '') $new_lines[] = $line;
 			}
 		}
-
-		$content = implode("\n", $new_lines);
-
+		if(!empty($new_lines)){
+			$content = implode("\n", $new_lines);
+		} else {
+			$content = '';
+		}
 		if($file){
 			$this->wf($input, $content);
 		} else {
