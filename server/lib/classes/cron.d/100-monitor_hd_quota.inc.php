@@ -70,7 +70,6 @@ class cronjob_monitor_hd_quota extends cronjob {
 		//* The state of the harddisk_quota.
 		$state = 'ok';
 
-<<<<<<< server/lib/classes/cron.d/100-monitor_hd_quota.inc.php
 				if(!$app->system->is_installed('setquota')) {
 			//* No Quota on this System ... 
 
@@ -89,7 +88,7 @@ class cronjob_monitor_hd_quota extends cronjob {
 
 			//* ignore the first 5 lines, process the rest
 			for ($i = 0; $i <= sizeof($df); $i++) {
-				if ($df[$i] != '') {
+				if (isset($df[$i]) && $df[$i] != '') {
 					//* Make a array of the data
 					$s1 = preg_split('/[\s]+/', $df[$i]);
 					$s2 = preg_split('/\//', $s1[1]);
@@ -157,7 +156,6 @@ class cronjob_monitor_hd_quota extends cronjob {
 							$data['user'][$username]['hard'] = $s[4];
 							$data['user'][$username]['files'] = $s[5];
 						}
-=======
 		//* Fetch the data for all users
 		$dfData = shell_exec('repquota -au 2>/dev/null');
 
@@ -181,12 +179,10 @@ class cronjob_monitor_hd_quota extends cronjob {
 						$data['user'][$username]['soft'] = $s[3];
 						$data['user'][$username]['hard'] = $s[4];
 						$data['user'][$username]['files'] = $s[5];
->>>>>>> server/lib/classes/cron.d/100-monitor_hd_quota.inc.php
 					}
 				}
 			}
 
-<<<<<<< server/lib/classes/cron.d/100-monitor_hd_quota.inc.php
 			//** Fetch the data for all users
 			$dfData = shell_exec('repquota -ag 2>/dev/null');
 
@@ -195,7 +191,7 @@ class cronjob_monitor_hd_quota extends cronjob {
 
 			//* ignore the first 5 lines, process the rest
 			for ($i = 5; $i <= sizeof($df); $i++) {
-				if ($df[$i] != '') {
+				if (isset($df[$i]) && $df[$i] != '') {
 					//* Make a array of the data
 					$s = preg_split('/[\s]+/', $df[$i]);
 					$groupname = $s[0];
@@ -209,7 +205,6 @@ class cronjob_monitor_hd_quota extends cronjob {
 							$data['group'][$groupname]['soft'] = $s[3];
 							$data['group'][$groupname]['hard'] = $s[4];
 						}
-=======
 		//** Fetch the data for all users
 		$dfData = shell_exec('repquota -ag 2>/dev/null');
 
@@ -231,7 +226,6 @@ class cronjob_monitor_hd_quota extends cronjob {
 						$data['group'][$groupname]['used'] = $s[2];
 						$data['group'][$groupname]['soft'] = $s[3];
 						$data['group'][$groupname]['hard'] = $s[4];
->>>>>>> server/lib/classes/cron.d/100-monitor_hd_quota.inc.php
 					}
 				}
 			}
