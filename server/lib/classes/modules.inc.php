@@ -186,7 +186,7 @@ class modules {
 						$app->db->query($sql, $d['dbtable'], $idx[0], $idx[1]);
 						if($app->db->errorNumber > 0) {
 							$replication_error = true;
-							$app->log("Replication failed. Error: (" . $d[dbtable] . ") " . $app->db->errorMessage . " # SQL: " . $sql, LOGLEVEL_ERROR);
+							$app->log("Replication failed. Error: (" . $d['dbtable'] . ") " . $app->db->errorMessage . " # SQL: " . $sql, LOGLEVEL_ERROR);
 						}
 						$log = $app->db->_build_query_string($sql, $d['dbtable'], $idx[0], $idx[1]);
 						$app->log('Replicated from master: '.$log, LOGLEVEL_DEBUG);
