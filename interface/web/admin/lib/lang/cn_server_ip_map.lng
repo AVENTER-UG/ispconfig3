@@ -1,0 +1,14 @@
+<?php
+$wb['server_ip_map_title'] = 'IPv4地址映射';
+$wb['server_ip_map_desc'] = '用于Web服务器的IPv4地址映射表单';
+$wb['server_id_txt'] = '重写服务器';
+$wb['source_txt'] = '源IP';
+$wb['destination_txt'] = '目标IP';
+$wb['active_txt'] = '启用';
+$wb['ip_error_wrong'] = '目标IP地址无效';
+$wb['destination_ip_empty'] = '目标IP为空。';
+$wb['source_ip_empty'] = '源IP为空。';
+$wb['server_empty_error'] = '服务器为空。';
+$wb['duplicate_mapping_error'] = '映射已存在。';
+$wb['ip_mapping_error'] = '源IP不能是重写服务器的IP地址';
+?>

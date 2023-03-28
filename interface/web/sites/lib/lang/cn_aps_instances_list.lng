@@ -1,0 +1,11 @@
+<?php
+$wb['list_head_txt'] = '已安装的软件包';
+$wb['name_txt'] = '名称';
+$wb['version_txt'] = '版本';
+$wb['customer_txt'] = '客户';
+$wb['status_txt'] = '状态';
+$wb['install_location_txt'] = '安装位置';
+$wb['pkg_delete_confirmation'] = '您确定要删除此安装吗？';
+$wb['filter_txt'] = '搜索';
+$wb['delete_txt'] = '删除';
+?>

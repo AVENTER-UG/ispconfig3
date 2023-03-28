@@ -1,0 +1,6 @@
+<?php
+$wb['list_head_txt'] = 'DNS-Wizard 模板';
+$wb['visible_txt'] = '可见';
+$wb['name_txt'] = '名称';
+$wb['add_new_record_txt'] = '添加新记录';
+?>

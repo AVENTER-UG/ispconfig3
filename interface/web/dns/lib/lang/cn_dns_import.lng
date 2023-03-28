@@ -1,0 +1,25 @@
+<?php
+$wb['zone_file_import_txt'] = '导入区域文件';
+$wb['server_id_txt'] = '服务器';
+$wb['client_txt'] = '客户';
+$wb['btn_save_txt'] = '导入区域文件';
+$wb['btn_cancel_txt'] = '取消';
+$wb['domain_txt'] = '域名';
+$wb['zone_file_successfully_imported_txt'] = '区域文件已成功导入。';
+$wb['error_no_valid_zone_file_txt'] = '此区域文件无效。';
+$wb['zonefile_to_import_txt'] = '区域文件';
+$wb['domain_field_desc_txt'] = '如果为空，域名将从SOA记录中获取。';
+$wb['title'] = '导入区域文件';
+$wb['no_file_uploaded_error'] = '未上传区域文件。';
+$wb['error_no_server_id'] = '未提供服务器。';
+$wb['error_not_allowed_server_id'] = '所选服务器不允许此帐户使用。';
+$wb['zone_already_exists'] = '该区域已存在，请先删除或重命名。';
+$wb['zone_not_allowed'] = '此区域不允许此帐户使用。';
+$wb['zone_file_missing_soa'] = '区域文件必须包含SOA记录。';
+$wb['zone_file_multiple_soa'] = '区域文件不能包含多个SOA记录。';
+$wb['zone_file_soa_parser'] = '此区域文件中的SOA记录无法处理。确保SERIAL、REFRESH、RETRY、EXPIRE和MINIMUM都与其他数据分别在一行上。';
+$wb['ignore_record_not_class_in'] = '忽略DNS记录，不是IN类。';
+$wb['ignore_record_unknown_type'] = '忽略DNS记录，未知类型。';
+$wb['ignore_record_invalid_owner'] = '忽略DNS记录，无法验证所有者名称。';
+$wb['zone_file_import_fail'] = '区域文件未导入。';
+?>

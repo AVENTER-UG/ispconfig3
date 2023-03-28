@@ -1,0 +1,13 @@
+<?php
+$wb['server_id_txt'] = '服务器';
+$wb['priority_txt'] = '优先级';
+$wb['policy_id_txt'] = '策略';
+$wb['email_txt'] = '邮件（模式）';
+$wb['fullname_txt'] = '名称';
+$wb['local_txt'] = '本地';
+$wb['email_error_notempty'] = '邮件地址不能为空。';
+$wb['fullname_error_notempty'] = '名称不能为空。';
+$wb['10 - highest'] = '10 - 最高';
+$wb['5 - medium'] = '5 - 中等';
+$wb['1 - lowest'] = '1 - 最低';
+$wb['inherit_policy'] = '- 继承域设置 -';

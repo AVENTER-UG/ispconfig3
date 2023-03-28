@@ -1,0 +1,17 @@
+<?php
+$wb['head_txt'] = 'VM虚拟机操作：';
+$wb['start_txt'] = '启动虚拟机';
+$wb['stop_txt'] = '停止虚拟机';
+$wb['restart_txt'] = '重启虚拟机';
+$wb['ostemplate_txt'] = '创建操作系统模板';
+$wb['ostemplate_desc_txt'] = '（例如：debian-6.0-i386-custom）';
+$wb['btn_save_txt'] = '执行所选操作';
+$wb['btn_cancel_txt'] = '取消';
+$wb['start_exec_txt'] = '启动命令已发送到虚拟机宿主服务器。可能需要一分钟才能启动虚拟机。';
+$wb['stop_exec_txt'] = '停止命令已发送到虚拟机宿主服务器。可能需要一分钟才能停止虚拟机。';
+$wb['restart_exec_txt'] = '重启命令已发送到虚拟机宿主服务器。可能需要一分钟才能重启虚拟机。';
+$wb['ostemplate_name_error'] = '操作系统模板名称包含不允许的字符。';
+$wb['ostemplate_name_unique_error'] = '已存在具有该名称的操作系统模板。';
+$wb['ostemplate_exec_txt'] = '创建操作系统模板的命令已发送到宿主服务器。将需要几分钟时间才能创建操作系统模板。';
+
+?>

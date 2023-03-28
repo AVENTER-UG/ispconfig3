@@ -1,0 +1,9 @@
+<?php
+$wb['mail_relay_domain_title'] = 'Email 中转域';
+$wb['tab_relay_domain_title'] = '中转域';
+$wb['server_id_txt'] = '服务器';
+$wb['active_txt'] = '启用';
+$wb['domain_txt'] = '域名';
+$wb['domain_error_regex'] = '无效的域名。';
+$wb['domain_error_empty'] = '域名为空。';
+$wb['domain_error_unique'] = '该域名已存在于此服务器上作为邮件中继域。';

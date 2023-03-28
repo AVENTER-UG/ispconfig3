@@ -1,0 +1,8 @@
+<?php
+$wb['list_head_txt'] = '邮件流量';
+$wb['email_txt'] = '电子邮件';
+$wb['this_month_txt'] = '本月';
+$wb['last_month_txt'] = '上月';
+$wb['this_year_txt'] = '今年';
+$wb['last_year_txt'] = '去年';
+?>

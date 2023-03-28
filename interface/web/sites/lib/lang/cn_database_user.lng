@@ -1,0 +1,25 @@
+<?php
+$wb['database_user_txt'] = '数据库用户';
+$wb['database_password_txt'] = '数据库密码';
+$wb['password_strength_txt'] = '密码强度';
+$wb['client_txt'] = '客户';
+$wb['active_txt'] = '启用';
+$wb['database_user_error_empty'] = '数据库用户为空。';
+$wb['database_user_error_unique'] = '服务器上已存在使用该名称的数据库用户。要获得唯一的名称，例如在用户名之前加上您的域名。';
+$wb['database_user_error_regex'] = '无效的数据库用户名。用户名可以包含以下字符：a-z、A-Z、0-9和下划线。长度：2 - 64个字符。';
+$wb['database_user_error_len'] = '数据库用户名-{user}太长。最大的数据库用户名长度包括前缀为16个字符。';
+$wb['btn_save_txt'] = '保存';
+$wb['btn_cancel_txt'] = '取消';
+$wb['generate_password_txt'] = '生成密码';
+$wb['repeat_password_txt'] = '重复密码';
+$wb['password_mismatch_txt'] = '密码不匹配。';
+$wb['password_match_txt'] = '密码匹配。';
+$wb['globalsearch_resultslimit_of_txt'] = '的';
+$wb['globalsearch_resultslimit_results_txt'] = '结果';
+$wb['globalsearch_noresults_text_txt'] = '没有结果。';
+$wb['globalsearch_noresults_limit_txt'] = '0个结果';
+$wb['globalsearch_searchfield_watermark_txt'] = '搜索';
+$wb['globalsearch_suggestions_text_txt'] = '建议';
+$wb['limit_database_user_txt'] = '已达到数据库用户的最大数量。';
+$wb['database_password_error_empty'] = '数据库密码为空。';
+?>

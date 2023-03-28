@@ -1,0 +1,8 @@
+<?php
+$wb['head_txt'] = '从Vpopmail导入电子邮件配置';
+$wb['legend_txt'] = '远程数据库服务器连接详细信息';
+$wb['btn_start_txt'] = '开始导入';
+$wb['btn_connect_txt'] = '连接到远程服务器';
+$wb['btn_cancel_txt'] = '取消';
+
+?>

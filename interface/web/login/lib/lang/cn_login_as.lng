@@ -1,0 +1,15 @@
+<?php
+$wb['login_1_txt'] = '您是否要登录为用户';
+$wb['login_2_txt'] = '如果您这样做，可以通过点击注销来“返回”。';
+$wb['btn_yes_txt'] = '是的，作为客户端登录';
+$wb['btn_back_txt'] = '否，返回列表';
+$wb['udp_port_help_txt'] = '用逗号分隔';
+$wb['active_txt'] = '激活';
+$wb['firewall_error_unique'] = '此服务器已有防火墙记录。';
+$wb['active_txt'] = '激活';
+$wb['tcp_ports_error_regex'] = 'tcp端口定义中不允许使用该字符。允许使用的字符包括数字、":"和","。';
+$wb['udp_ports_error_regex'] = 'udp端口定义中不允许使用该字符。允许使用的字符包括数字、":"和","。';
+$wb['login_as_or_logout_txt'] = '您是否要重新登录为 {UTYPE} 或注销？';
+$wb['btn_reloginas_txt'] = '是的，作为 %s 重新登录';
+$wb['btn_nologout_txt'] = '否，注销';
+?>

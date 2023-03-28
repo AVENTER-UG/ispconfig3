@@ -1,0 +1,12 @@
+<?php
+$wb['page_head_txt'] = '邮箱设置';
+$wb['page_desc_txt'] = '在这里，您可以编辑电子邮件帐户的设置。';
+$wb['email_txt'] = '电子邮件地址';
+$wb['login_txt'] = '登录名';
+$wb['server_address_txt'] = '邮件服务器地址';
+$wb['cc_txt'] = '抄送到（CC）';
+$wb['quota_txt'] = '邮箱大小';
+$wb['unlimited_txt'] = '无限制';
+$wb['mb_txt'] = 'MB';
+$wb['none_txt'] = '无';
+?>

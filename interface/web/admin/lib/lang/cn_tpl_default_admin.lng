@@ -1,0 +1,18 @@
+<?php
+$wb['tpl_default_admin_head_txt'] = '全局默认主题设置';
+$wb['tpl_default_admin_desc_txt'] = '';
+$wb['server_id_txt'] = '服务器';
+$wb['client_id_txt'] = '客户';
+$wb['name_txt'] = 'PHP名称';
+$wb['Name'] = '名称';
+$wb['FastCGI Settings'] = 'FastCGI设置';
+$wb['PHP-FPM Settings'] = 'PHP-FPM设置';
+$wb['Additional PHP Versions'] = '其他PHP版本';
+$wb['Form to edit additional PHP versions'] = '编辑其他PHP版本的表单';
+$wb['server_php_name_error_empty'] = '名称字段不能为空。';
+$wb['php_fastcgi_binary_txt'] = 'PHP FastCGI二进制文件路径';
+$wb['php_fastcgi_ini_dir_txt'] = 'php.ini目录路径';
+$wb['php_fpm_init_script_txt'] = 'PHP-FPM init脚本路径';
+$wb['php_fpm_ini_dir_txt'] = 'php.ini目录路径';
+$wb['php_fpm_pool_dir_txt'] = 'PHP-FPM池目录路径';
+?>

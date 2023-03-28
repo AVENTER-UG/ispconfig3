@@ -1,0 +1,27 @@
+<?php
+$wb['i'] = '插入';
+$wb['u'] = '更新';
+$wb['d'] = '删除';
+$wb['list_head_txt'] = '数据日志历史记录';
+$wb['id_txt'] = 'ID';
+$wb['timestamp_txt'] = '时间戳';
+$wb['table_txt'] = '表格';
+$wb['action_txt'] = '操作';
+$wb['session_id_txt'] = '会话ID';
+$wb['fields_txt'] = '字段';
+$wb['fields_inserted_txt'] = '插入的字段';
+$wb['fields_updated_txt'] = '更新的字段';
+$wb['fields_deleted_txt'] = '删除的字段';
+$wb['no_changes_txt'] = '没有变化（重新同步）';
+$wb['is_diff_txt'] = '差异已标出';
+$wb['is_diff_inserts_txt'] = '插入';
+$wb['is_diff_deletes_txt'] = '删除';
+$wb['field_txt'] = '字段';
+$wb['value_txt'] = '值';
+$wb['old_txt'] = '旧';
+$wb['new_txt'] = '新';
+$wb['btn_cancel_txt'] = '返回';
+$wb['undo_txt'] = '撤销操作';
+$wb['undo_confirmation_txt'] = '确定要撤销此操作吗？';
+$wb['username_txt'] = '用户名';
+?>

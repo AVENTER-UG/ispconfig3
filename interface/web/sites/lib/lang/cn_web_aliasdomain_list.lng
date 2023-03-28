@@ -1,0 +1,14 @@
+<?php
+$wb['list_head_txt'] = '别名域名';
+$wb['active_txt'] = '已激活';
+$wb['server_id_txt'] = '服务器';
+$wb['parent_domain_id_txt'] = '网站';
+$wb['domain_txt'] = '别名域名';
+$wb['add_new_record_txt'] = '添加新别名域名';
+$wb['domain_error_empty'] = '域名为空。';
+$wb['domain_error_unique'] = '域名必须唯一。';
+$wb['domain_error_regex'] = '域名格式不正确。';
+$wb['no_redirect_txt'] = '不重定向';
+$wb['no_flag_txt'] = '不使用标记';
+$wb['none_txt'] = '无';
+?>

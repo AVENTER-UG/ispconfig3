@@ -1,0 +1,5 @@
+<?php
+$wb['list_head_txt'] = '邮件列表';
+$wb['domain_txt'] = '域名';
+$wb['listname_txt'] = '列表名';
+?>

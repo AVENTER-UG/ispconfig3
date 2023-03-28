@@ -1,0 +1,12 @@
+<?php
+$wb['server_id_txt'] = '服务器';
+$wb['source_txt'] = '黑名单地址';
+$wb['recipient_txt'] = '收件人';
+$wb['active_txt'] = '启用';
+$wb['source_error_notempty'] = '地址为空。';
+$wb['type_txt'] = '类型';
+$wb['limit_mailfilter_txt'] = '您的帐户已达到电子邮件过滤器的最大数量限制。';
+$wb['limit_mail_wblist_txt'] = '您的帐户已达到电子邮件白名单 / 黑名单的最大数量限制。';
+$wb['mail_access_unique'] = '黑名单地址已经在使用中。';
+$wb['client_txt'] = '客户';
+$wb['sender_txt'] = '发件人';

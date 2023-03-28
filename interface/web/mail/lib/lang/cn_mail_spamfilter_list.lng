@@ -1,0 +1,8 @@
+<?php
+$wb['list_head_txt'] = '垃圾邮件过滤器';
+$wb['active_txt'] = '激活';
+$wb['server_id_txt'] = '服务器';
+$wb['server_name_txt'] = '服务器名称';
+$wb['email_txt'] = '电子邮件';
+$wb['add_new_record_txt'] = '添加新的垃圾邮件过滤记录';
+?>

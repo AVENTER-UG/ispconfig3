@@ -1,0 +1,16 @@
+<?php
+$wb['server_id_txt'] = '服务器';
+$wb['zone_txt'] = '区域';
+$wb['name_txt'] = '服务描述符';
+$wb['type_txt'] = '类型';
+$wb['data_txt'] = 'TLSA数据';
+$wb['ttl_txt'] = 'TTL';
+$wb['active_txt'] = '激活';
+$wb['limit_dns_record_txt'] = '您的帐户已达到最大DNS记录数。';
+$wb['no_zone_perm'] = '您没有权限向此DNS区域添加记录。';
+$wb['name_error_empty'] = '主机名为空。';
+$wb['name_error_regex'] = '主机名格式错误。正确格式：_&lt;端口&gt;._(tcp|udp).&lt;主机名&gt;';
+$wb['data_error_empty'] = 'TLSA数据为空。';
+$wb['data_error_regex'] = 'TLSA数据格式不正确。正确格式：n n n HASH';
+$wb['ttl_range_error'] = '最小TTL时间为60秒。';
+?>

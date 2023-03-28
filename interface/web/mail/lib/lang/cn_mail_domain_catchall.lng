@@ -1,0 +1,14 @@
+<?php
+$wb['domain_txt'] = '域名';
+$wb['destination_txt'] = '目标邮箱';
+$wb['active_txt'] = '激活';
+$wb['domain_error_unique'] = '此域名已经存在一个Catchall记录。';
+$wb['no_domain_perm'] = '您没有此域名的权限。';
+$wb['domain_error_regex'] = '无效的域名或域名包含无效字符。';
+$wb['limit_mailcatchall_txt'] = '您的帐户的邮件catchall帐户数量已达到最大限制。';
+$wb['domain_txt'] = '域名';
+$wb['source_txt'] = '来源';
+$wb['destination_error_isemail'] = '目标不是有效的电子邮件地址。';
+$wb['greylisting_txt'] = '启用灰名单';
+$wb['send_as_txt'] = '发送为';
+$wb['send_as_exp'] = '允许目标从此域中的电子邮件地址发送。';

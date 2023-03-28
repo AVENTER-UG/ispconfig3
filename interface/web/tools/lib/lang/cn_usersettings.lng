@@ -1,0 +1,20 @@
+<?php
+$wb['password_txt'] = '密码';
+$wb['password_strength_txt'] = '密码强度';
+$wb['language_txt'] = '语言';
+$wb['password_mismatch'] = '第二个密码框中的密码与第一个密码框中的密码不匹配。';
+$wb['Form to edit the user password and language.'] = '用户密码和语言编辑表单';
+$wb['Settings'] = '设置';
+$wb['generate_password_txt'] = '生成密码';
+$wb['repeat_password_txt'] = '重复密码';
+$wb['password_mismatch_txt'] = '两次输入的密码不匹配。';
+$wb['password_match_txt'] = '两次输入的密码匹配。';
+$wb['language_txt'] = '语言';
+$wb['startmodule_txt'] = '起始模块';
+$wb['app_theme_txt'] = '界面主题';
+$wb['startmodule_empty'] = '起始模块为空。';
+$wb['startmodule_regex'] = '起始模块含有无效字符。';
+$wb['app_theme_empty'] = '界面主题为空。';
+$wb['app_theme_regex'] = '界面主题含有无效字符。';
+$wb['otp_auth_txt'] = '双重身份认证';
+?>

@@ -1,0 +1,11 @@
+<?php
+$wb['server_id_txt'] = '服务器';
+$wb['domain_txt'] = '域名';
+$wb['destination_txt'] = '目的地';
+$wb['type_txt'] = '类型';
+$wb['mx_txt'] = '无 MX 查询';
+$wb['sort_order_txt'] = '排序';
+$wb['active_txt'] = '激活';
+$wb['limit_mailrouting_txt'] = '您的帐户的路由最大数量已达到。';
+$wb['transport_txt'] = '传输';
+$wb['domain_error_unique'] = '此域名的邮件传输已存在于此服务器上。';

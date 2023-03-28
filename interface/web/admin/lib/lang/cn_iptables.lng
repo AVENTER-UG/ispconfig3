@@ -1,0 +1,15 @@
+<?php
+
+$wb['server_id_txt'] = '服务器';
+$wb['multiport_txt'] = '多端口';
+$wb['singleport_txt'] = '单端口';
+$wb['protocol_txt'] = '协议';
+$wb['table_txt'] = '表';
+$wb['target_txt'] = '目标';
+$wb['state_txt'] = '状态';
+$wb['destination_ip_txt'] = '目标地址';
+$wb['source_ip_txt'] = '源地址';
+$wb['active_txt'] = '激活';
+$wb['iptables_error_unique'] = '此服务器已存在防火墙记录。';
+
+?>

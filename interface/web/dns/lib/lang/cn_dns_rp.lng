@@ -1,0 +1,16 @@
+<?php
+$wb['server_id_txt'] = '服务器';
+$wb['zone_txt'] = '域名区域';
+$wb['name_txt'] = '主机名';
+$wb['type_txt'] = '类型';
+$wb['data_txt'] = '负责人';
+$wb['ttl_txt'] = 'TTL';
+$wb['active_txt'] = '激活';
+$wb['limit_dns_record_txt'] = '已达到您的帐户的DNS记录的最大数量。';
+$wb['no_zone_perm'] = '您没有权限向此DNS区域添加记录。';
+$wb['name_error_empty'] = '主机名为空。';
+$wb['name_error_regex'] = '主机名格式不正确。';
+$wb['data_error_empty'] = '负责人字段为空。';
+$wb['data_error_regex'] = '负责人字段格式无效。';
+$wb['ttl_range_error'] = '最小TTL时间为60秒。';
+?>

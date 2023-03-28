@@ -1,0 +1,13 @@
+<?php
+$wb['server_ip_edit_title'] = 'IP地址';
+$wb['server_ip_edit_desc'] = '编辑系统IP地址的表单';
+$wb['server_id_txt'] = '服务器';
+$wb['client_id_txt'] = '客户';
+$wb['ip_type_txt'] = '类型';
+$wb['ip_address_txt'] = 'IP地址';
+$wb['virtualhost_txt'] = 'HTTP NameVirtualHost';
+$wb['virtualhost_port_txt'] = 'HTTP端口';
+$wb['ip_error_wrong'] = 'IP地址无效';
+$wb['ip_error_unique'] = 'IP地址必须唯一';
+$wb['error_port_syntax'] = '端口字段中有无效字符，请只输入逗号分隔的数字。例如：80,443';
+?>

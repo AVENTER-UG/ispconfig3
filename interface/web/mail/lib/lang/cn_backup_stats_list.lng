@@ -1,0 +1,9 @@
+<?php
+$wb['list_head_txt'] = '备份统计';
+$wb['active_txt'] = '激活';
+$wb['domain_txt'] = '邮件';
+$wb['backup_count_txt'] = '备份次数';
+$wb['backup_server_txt'] = '服务器';
+$wb['backup_interval_txt'] = '备份间隔 / 次数';
+$wb['backup_size_txt'] = '备份大小';
+?>

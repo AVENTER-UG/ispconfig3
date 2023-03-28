@@ -1,0 +1,8 @@
+<?php
+$wb['list_head_txt'] = '邮件过滤规则';
+$wb['rulename_txt'] = '名称';
+$wb['add_new_record_txt'] = '添加新过滤器';
+$wb['page_txt'] = '页数';
+$wb['page_of_txt'] = '/';
+$wb['delete_confirmation'] = '确定要删除该邮件过滤器吗？';
+?>

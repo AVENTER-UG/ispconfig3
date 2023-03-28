@@ -1,0 +1,17 @@
+<?php
+$wb['server_id_txt'] = '服务器';
+$wb['origin_txt'] = 'DNS区域';
+$wb['secondary_zone_txt'] = '从属DNS区域';
+$wb['ns_txt'] = 'NS（IP地址）';
+$wb['active_txt'] = '激活';
+$wb['limit_dns_slave_zone_txt'] = '您的帐户的从属DNS区域数量已达到上限。';
+$wb['client_txt'] = '客户';
+$wb['xfer_txt'] = '允许区域转移到这些IP（以逗号分隔的列表）<br />';
+$wb['server_id_error_empty'] = '未选择服务器';
+$wb['origin_error_empty'] = '区域为空。';
+$wb['origin_error_unique'] = '此区域已存在记录。';
+$wb['origin_error_regex'] = '区域格式无效。';
+$wb['ns_error_regex'] = 'NS格式无效。';
+$wb['eg_domain_tld'] = '例如：domain.tld。';
+$wb['ipv4_form_txt'] = '用逗号分隔多个IP。';
+?>

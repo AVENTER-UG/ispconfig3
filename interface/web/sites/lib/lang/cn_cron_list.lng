@@ -1,0 +1,13 @@
+<?php
+$wb['list_head_txt'] = '计划任务';
+$wb['active_txt'] = '激活';
+$wb['server_id_txt'] = '服务器';
+$wb['run_min_txt'] = '分钟';
+$wb['run_hour_txt'] = '小时';
+$wb['run_mday_txt'] = '每月日期';
+$wb['run_month_txt'] = '月份';
+$wb['run_wday_txt'] = '星期';
+$wb['command_txt'] = '命令';
+$wb['add_new_cron_txt'] = '添加新的计划任务';
+$wb['parent_domain_id_txt'] = '网站';
+?>

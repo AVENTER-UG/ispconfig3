@@ -1,0 +1,17 @@
+<?php
+$wb['email_txt'] = '电子邮件';
+$wb['spam_rewrite_score_int_txt'] = '重写得分';
+$wb['spam_redirect_score_int_txt'] = '重定向得分';
+$wb['spam_delete_score_int_txt'] = '删除得分';
+$wb['spam_rewrite_subject_txt'] = '重写主题';
+$wb['spam_redirect_maildir_txt'] = '重定向邮箱';
+$wb['active_txt'] = '启用';
+$wb['spam_rewrite_txt'] = '当得分高于此值时，重写电子邮件主题。';
+$wb['spam_redirect_txt'] = '当得分高于此值时，将电子邮件重定向到选择的邮箱。';
+$wb['spam_delete_txt'] = '当得分高于此值时，删除电子邮件。';
+$wb['disable_txt'] = '提示：要禁用过滤选项，请将分数设置为 0.00。';
+$wb['email_error_isemail'] = '电子邮件地址无效。';
+$wb['email_error_unique'] = '此电子邮件地址已经存在 Spamfilter 记录。';
+$wb['spam_redirect_maildir_purge_txt'] = '重定向后清除 Maildir 时间';
+$wb['days_txt'] = '天。';
+?>

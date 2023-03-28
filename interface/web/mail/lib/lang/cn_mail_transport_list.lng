@@ -1,0 +1,9 @@
+<?php
+$wb['list_head_txt'] = '高级电子邮件路由';
+$wb['active_txt'] = '激活';
+$wb['server_id_txt'] = '服务器';
+$wb['domain_txt'] = '域名';
+$wb['transport_txt'] = '传输';
+$wb['sort_order_txt'] = '排序';
+$wb['add_new_record_txt'] = '添加新传输';
+?>

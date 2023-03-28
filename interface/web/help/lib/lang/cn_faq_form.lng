@@ -1,0 +1,6 @@
+<?php
+$wb['faq_faq_txt'] = '常见问题';
+$wb['faq_question_txt'] = '问题';
+$wb['faq_answer_txt'] = '答案';
+$wb['faq_section_txt'] = '章节';
+?>

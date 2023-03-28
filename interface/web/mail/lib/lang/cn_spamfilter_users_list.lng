@@ -1,0 +1,10 @@
+<?php
+$wb['list_head_txt'] = '垃圾邮件过滤用户';
+$wb['local_txt'] = '本地';
+$wb['server_id_txt'] = '服务器';
+$wb['priority_txt'] = '优先级';
+$wb['policy_id_txt'] = '策略';
+$wb['fullname_txt'] = '姓名';
+$wb['email_txt'] = '电子邮件';
+$wb['add_new_record_txt'] = '添加垃圾邮件过滤用户';
+?>

@@ -1,0 +1,8 @@
+<?php
+$wb['quota_txt'] = '网站硬盘配额';
+$wb['domain_txt'] = '域名 / 网站';
+$wb['used_txt'] = '已用空间';
+$wb['hard_txt'] = '硬限制';
+$wb['soft_txt'] = '软限制';
+$wb['no_sites_txt'] = '未找到网站。';
+?>

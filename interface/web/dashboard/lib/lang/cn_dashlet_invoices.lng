@@ -1,0 +1,18 @@
+<?php
+$wb['invoices_txt'] = '发票';
+$wb['invoice_no_txt'] = '发票号码';
+$wb['amount_txt'] = '金额';
+$wb['date_txt'] = '日期';
+$wb['invoice_status_txt'] = '状态';
+$wb['no_invoices_txt'] = '无可用发票。';
+$wb['paid_txt'] = '已付款';
+$wb['unpaid_txt'] = '未付款';
+$wb['paynow_txt'] = '立即付款';
+$wb['proforma_txt'] = '形式发票';
+$wb['refunded_txt'] = '已退款';
+$wb['not_refunded_txt'] = '未退款';
+$wb['invoice_type_invoice_txt'] = '发票';
+$wb['invoice_type_proforma_txt'] = '形式发票';
+$wb['invoice_type_refund_txt'] = '退款';
+$wb['invoice_type_reminder_txt'] = '催款';
+?>

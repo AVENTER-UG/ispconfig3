@@ -1,0 +1,15 @@
+<?php
+$wb['list_head_txt'] = 'XMPP 用户账户';
+$wb['jid_txt'] = 'Jabber ID';
+$wb['active_txt'] = '启用';
+$wb['cryptpwd_txt'] = '密码';
+$wb['password_strength_txt'] = '密码强度';
+$wb['error_no_pwd'] = '密码为空。';
+$wb['password_txt'] = '密码';
+$wb['generate_password_txt'] = '生成密码';
+$wb['repeat_password_txt'] = '重复密码';
+$wb['password_mismatch_txt'] = '两次输入的密码不一致。';
+$wb['password_match_txt'] = '两次输入的密码一致。';
+$wb['no_domain_perm'] = '您没有该域名的权限。';
+$wb['limit_xmpp_user_txt'] = '您的账户已达到最大 XMPP 账户数。';
+?>

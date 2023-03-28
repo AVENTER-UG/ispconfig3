@@ -1,0 +1,30 @@
+<?php
+$wb['data_txt'] = 'SPF记录';
+$wb['name_txt'] = '主机名';
+$wb['spf_mechanism_txt'] = 'SPF机制';
+$wb['spf_mechanism_pass_txt'] = '通过 - 允许其他发件人发送邮件';
+$wb['spf_mechanism_fail_txt'] = '失败 - 拒绝其他发件人发送邮件';
+$wb['spf_mechanism_softfail_txt'] = 'SoftFail - 允许其他发件人发送邮件但标记邮件';
+$wb['spf_mechanism_neutral_txt'] = '中性 - 不做任何事情';
+$wb['spf_mx_txt'] = '允许列为MX的服务器发送此域的电子邮件';
+$wb['spf_a_txt'] = '允许此域的当前IP地址发送电子邮件';
+$wb['spf_ip_txt'] = '以CIDR格式提供或中继此域邮件的其他IP地址';
+$wb['spf_ip_note_txt'] = '（用空格分隔IP）';
+$wb['spf_invalid_ip_txt'] = '无效的IP地址';
+$wb['spf_hostname_txt'] = '可能传递或中继此域邮件的任何其他服务器主机名';
+$wb['spf_hostname_note_txt'] = '（用空格分隔主机名）';
+$wb['spf_invalid_hostname_txt'] = '无效的主机名';
+$wb['spf_domain_txt'] = '可能传递或中继此域邮件的任何域名';
+$wb['spf_domain_note_txt'] = '（用空格分隔域名）';
+$wb['spf_invalid_domain_txt'] = '无效的域名';
+$wb['ttl_txt'] = 'TTL';
+$wb['active_txt'] = '激活';
+$wb['record_exists_txt'] = 'DNS记录已存在';
+$wb['spf_record_exists_txt'] = '主机名"{hostname}"已存在SPF记录。您要<a href="#" data-load-content="dns/dns_spf_edit.php?id={existing_record_id}">编辑现有记录</a>吗？';
+$wb['spf_record_exists_multiple_txt'] = '主机名"{hostname}"存在多个SPF记录。这会导致收件人拒绝您的邮件！删除或合并重复的现有记录，然后重试。';
+$wb['limit_dns_record_txt'] = '您的帐户达到了DNS记录的最大数量。';
+$wb['no_zone_perm'] = '您无权向此DNS区域添加记录。';
+$wb['ttl_range_error'] = '最小TTL时间为60秒。';
+$wb['name_error_regex'] = '主机名格式错误。';
+$wb['btn_edit_as_txt_record_txt'] = '作为TXT记录编辑';
+?>

@@ -1,0 +1,10 @@
+$wb['template_name_txt'] = '模板名称';
+$wb['template_file_txt'] = '模板文件名';
+$wb['server_id_txt'] = '服务器';
+$wb['allservers_txt'] = '全部服务器';
+$wb['active_txt'] = '状态';
+$wb['description_txt'] = '描述';
+$wb['template_name_error_empty'] = '模板名称为空。';
+$wb['template_file_error_empty'] = '模板文件名为空。';
+$wb['Template'] = '模板';
+?>

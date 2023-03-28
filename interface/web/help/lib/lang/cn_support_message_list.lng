@@ -1,0 +1,7 @@
+<?php
+$wb['list_head_txt'] = '支持消息';
+$wb['sender_id_txt'] = '发件人';
+$wb['subject_txt'] = '主题';
+$wb['add_new_record_txt'] = '创建新的支持消息';
+$wb['date_txt'] = '日期';
+?>

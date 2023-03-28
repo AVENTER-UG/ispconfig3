@@ -1,0 +1,20 @@
+<?php
+$wb['server_id_txt'] = '服务器';
+$wb['zone_txt'] = '区域';
+$wb['name_txt'] = '主机名';
+$wb['type_txt'] = '类型';
+$wb['target_txt'] = '目标';
+$wb['weight_txt'] = '权重';
+$wb['port_txt'] = '端口';
+$wb['ttl_txt'] = 'TTL';
+$wb['active_txt'] = '启用';
+$wb['aux_txt'] = '优先级';
+$wb['limit_dns_record_txt'] = '您的帐户的 DNS 记录已达到最大数量。';
+$wb['no_zone_perm'] = '您没有向此 DNS 区域添加记录的权限。';
+$wb['name_error_empty'] = '主机名为空。';
+$wb['name_error_regex'] = '主机名格式错误。';
+$wb['data_error_empty'] = '服务器记录为空。';
+$wb['data_error_regex'] = '服务器记录格式无效。';
+$wb['srv_error_regex'] = '无效的服务器记录格式。服务器记录必须包含由空格分隔的 3 个文本字符串。';
+$wb['ttl_range_error'] = '最小 TTL 时间为 60 秒。';
+?>

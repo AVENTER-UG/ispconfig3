@@ -1,0 +1,7 @@
+<?php
+$wb['mailbox_spamfilter_txt'] = '垃圾邮件过滤器';
+$wb['spamfilter_txt'] = '垃圾邮件过滤器';
+$wb['email_txt'] = '电子邮件';
+$wb['inherit_policy'] = '- 继承域设置 -';
+$wb['policy_txt'] = '策略';
+?>

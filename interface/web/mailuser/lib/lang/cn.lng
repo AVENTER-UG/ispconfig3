@@ -1,0 +1,9 @@
+<?php
+$wb['Email Account'] = '邮件账号';
+$wb['Overview'] = '概览';
+$wb['Password'] = '密码';
+$wb['Autoresponder'] = '自动回复';
+$wb['Send copy'] = '抄送';
+$wb['Spamfilter'] = '垃圾邮件过滤';
+$wb['Email Filters'] = '邮件过滤器';
+?>
