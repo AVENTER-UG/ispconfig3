@@ -2327,6 +2327,16 @@ class system{
 		return true;
 	}
 
+	public function is_redhat_os() {
+		global $app;
+
+		if(file_exists('/etc/redhat-release') && (filesize('/etc/redhat-release') > 0)) {
+			return true;
+		} else {
+			return false;
+		}
+	}
+
 	public function is_allowed_path($path) {
 		global $app;
 
