@@ -16,8 +16,13 @@ try {
 
 	//* Set the function parameters.
 	$domain_id = 2;
+	$domain_name = 'example.com';
 
+	// Lookup by ID.
 	$domain_record = $client->sites_web_domain_get($session_id, $domain_id);
+
+	// Lookup by name.
+	$domain_record = $client->sites_web_domain_get($session_id, array('domain' => $domain_name));
 
 	print_r($domain_record);
 
