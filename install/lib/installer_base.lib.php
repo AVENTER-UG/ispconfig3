@@ -838,9 +838,9 @@ class installer_base {
 			$addr_cleanup = "'%u'";
 			foreach (str_split($out[0]) as $delim) {
 				$recipient_delimiter = $this->db->escape( str_replace('%', '%%', $delim) );
-				$addr_cleanup = "SUBSTRING_INDEX(${addr_cleanup}, '${recipient_delimiter}', 1)";
+				$addr_cleanup = "SUBSTRING_INDEX({$addr_cleanup}, '{$recipient_delimiter}', 1)";
 			}
-			$no_addr_extension = "CONCAT(${addr_cleanup}, '@%d')";
+			$no_addr_extension = "CONCAT({$addr_cleanup}, '@%d')";
 		} else {
 			$no_addr_extension = "''";
 		}
@@ -1525,7 +1525,7 @@ class installer_base {
 		foreach ($options as $value) {
 			$value = trim($value);
 			if ($value == '') continue;
-			if (preg_match("|check_recipient_access\s+proxy:mysql:${quoted_config_dir}/mysql-verify_recipients.cf|", $value)) {
+			if (preg_match("|check_recipient_access\s+proxy:mysql:{$quoted_config_dir}/mysql-verify_recipients.cf|", $value)) {
 				continue;
 			}
 			$new_options[] = $value;
@@ -1533,7 +1533,7 @@ class installer_base {
 		if ($configure_lmtp && (!isset($conf['mail']['content_filter']) || $conf['mail']['content_filter'] === 'amavisd')) {
 			for ($i = 0; isset($new_options[$i]); $i++) {
 				if ($new_options[$i] == 'reject_unlisted_recipient') {
-					array_splice($new_options, $i+1, 0, array("check_recipient_access proxy:mysql:${config_dir}/mysql-verify_recipients.cf"));
+					array_splice($new_options, $i+1, 0, array("check_recipient_access proxy:mysql:{$config_dir}/mysql-verify_recipients.cf"));
 					break;
 				}
 			}
@@ -1712,7 +1712,7 @@ class installer_base {
 			// Check for amavisd -> pure webserver with postfix for mailing without antispam
 			if ($conf['amavis']['installed']) {
 				$content_filter_service = ($configure_lmtp) ? 'lmtp' : 'amavis';
-				$postconf_commands[] = "content_filter = ${content_filter_service}:[127.0.0.1]:10024";
+				$postconf_commands[] = "content_filter = {$content_filter_service}:[127.0.0.1]:10024";
 				$postconf_commands[] = 'receive_override_options = no_address_mappings';
 				$postconf_commands[] = 'address_verify_virtual_transport = smtp:[127.0.0.1]:10025';
 				$postconf_commands[] = 'address_verify_transport_maps = static:smtp:[127.0.0.1]:10025';
@@ -1723,7 +1723,7 @@ class installer_base {
 			foreach ($options as $value) {
 				$value = trim($value);
 				if ($value == '') continue;
-				if (preg_match("|check_recipient_access\s+proxy:mysql:${quoted_config_dir}/mysql-verify_recipients.cf|", $value)) {
+				if (preg_match("|check_recipient_access\s+proxy:mysql:{$quoted_config_dir}/mysql-verify_recipients.cf|", $value)) {
 					continue;
 				}
 				$new_options[] = $value;
@@ -1731,7 +1731,7 @@ class installer_base {
 			if ($configure_lmtp) {
 				for ($i = 0; isset($new_options[$i]); $i++) {
 					if ($new_options[$i] == 'reject_unlisted_recipient') {
-						array_splice($new_options, $i+1, 0, array("check_recipient_access proxy:mysql:${config_dir}/mysql-verify_recipients.cf"));
+						array_splice($new_options, $i+1, 0, array("check_recipient_access proxy:mysql:{$config_dir}/mysql-verify_recipients.cf"));
 						break;
 					}
 				}
@@ -1868,7 +1868,7 @@ class installer_base {
 				if (preg_match('/check_policy_service\s+inet:127.0.0.1:10023/', $value)) {
 					continue;
 				}
-				if (preg_match("|check_recipient_access\s+proxy:mysql:${quoted_config_dir}/mysql-verify_recipients.cf|", $value)) {
+				if (preg_match("|check_recipient_access\s+proxy:mysql:{$quoted_config_dir}/mysql-verify_recipients.cf|", $value)) {
 					continue;
 				}
 				$new_options[] = $value;
@@ -1935,10 +1935,10 @@ class installer_base {
 		);
 		foreach ($local_d as $f) {
 			$tpl = new tpl();
-			if (file_exists($conf['ispconfig_install_dir']."/server/conf-custom/install/rspamd_${f}.master")) {
-				$tpl->newTemplate($conf['ispconfig_install_dir']."/server/conf-custom/install/rspamd_${f}.master");
+			if (file_exists($conf['ispconfig_install_dir']."/server/conf-custom/install/rspamd_{$f}.master")) {
+				$tpl->newTemplate($conf['ispconfig_install_dir']."/server/conf-custom/install/rspamd_{$f}.master");
 			} else {
-				$tpl->newTemplate("rspamd_${f}.master");
+				$tpl->newTemplate("rspamd_{$f}.master");
 			}
 
 			$tpl->setVar('dkim_path', $mail_config['dkim_path']);
@@ -1950,7 +1950,7 @@ class installer_base {
 				$tpl->setLoop('local_addrs', $local_addrs);
 			}
 
-			wf("/etc/rspamd/local.d/${f}", $tpl->grab());
+			wf("/etc/rspamd/local.d/{$f}", $tpl->grab());
 		}
 
 
@@ -1967,10 +1967,10 @@ class installer_base {
 			'arc.conf',
 		);
 		foreach ($local_d as $f) {
-			if(file_exists($conf['ispconfig_install_dir']."/server/conf-custom/install/rspamd_${f}.master")) {
-				exec('cp '.$conf['ispconfig_install_dir']."/server/conf-custom/install/rspamd_${f}.master /etc/rspamd/local.d/${f}");
+			if(file_exists($conf['ispconfig_install_dir']."/server/conf-custom/install/rspamd_{$f}.master")) {
+				exec('cp '.$conf['ispconfig_install_dir']."/server/conf-custom/install/rspamd_{$f}.master /etc/rspamd/local.d/{$f}");
 			} else {
-				exec("cp tpl/rspamd_${f}.master /etc/rspamd/local.d/${f}");
+				exec("cp tpl/rspamd_{$f}.master /etc/rspamd/local.d/{$f}");
 			}
 		}
 
@@ -1980,10 +1980,10 @@ class installer_base {
 			'surbl_group.conf',
 		);
 		foreach ($override_d as $f) {
-			if(file_exists($conf['ispconfig_install_dir']."/server/conf-custom/install/rspamd_${f}.master")) {
-				exec('cp '.$conf['ispconfig_install_dir']."/server/conf-custom/install/rspamd_${f}.master /etc/rspamd/override.d/${f}");
+			if(file_exists($conf['ispconfig_install_dir']."/server/conf-custom/install/rspamd_{$f}.master")) {
+				exec('cp '.$conf['ispconfig_install_dir']."/server/conf-custom/install/rspamd_{$f}.master /etc/rspamd/override.d/{$f}");
 			} else {
-				exec("cp tpl/rspamd_${f}.master /etc/rspamd/override.d/${f}");
+				exec("cp tpl/rspamd_{$f}.master /etc/rspamd/override.d/{$f}");
 			}
 		}
 
@@ -1995,10 +1995,10 @@ class installer_base {
 			'spf_whitelist.inc.ispc',
 		);
 		foreach ($maps_d as $f) {
-			if(file_exists($conf['ispconfig_install_dir']."/server/conf-custom/install/rspamd_${f}.master")) {
-				exec('cp '.$conf['ispconfig_install_dir']."/server/conf-custom/install/rspamd_${f}.master /etc/rspamd/local.d/maps.d/${f}");
+			if(file_exists($conf['ispconfig_install_dir']."/server/conf-custom/install/rspamd_{$f}.master")) {
+				exec('cp '.$conf['ispconfig_install_dir']."/server/conf-custom/install/rspamd_{$f}.master /etc/rspamd/local.d/maps.d/{$f}");
 			} else {
-				exec("cp tpl/rspamd_${f}.master /etc/rspamd/local.d/maps.d/${f}");
+				exec("cp tpl/rspamd_{$f}.master /etc/rspamd/local.d/maps.d/{$f}");
 			}
 		}
 
