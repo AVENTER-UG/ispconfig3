@@ -57,11 +57,18 @@ class cronjob_quota_notify extends cronjob {
 
 		$web_config = $app->getconf->get_server_config($conf['server_id'], 'web');
 
-		// Get client email and eventual reseller email
-		$client_group_id = $rec["sys_groupid"];
-		$client = $app->db->queryOneRecord("SELECT client.email, client.parent_client_id FROM sys_group, client WHERE sys_group.client_id = client.client_id and sys_group.groupid = ?", $client_group_id);
-		if($client['parent_client_id'] > 0) {
-			$reseller = $app->db->queryOneRecord("SELECT email FROM client WHERE client_id = ?", $client['parent_client_id']);
+		// Get client email and eventual reseller email in array
+		$clients = [];
+		$sql = "SELECT client.email,client.parent_client_id, sys_group.groupid FROM sys_group, client WHERE sys_group.client_id = client.client_id";
+		$records = $app->db->queryAllRecords($sql);
+		if(is_array($records)) {
+			foreach($records as $rec) {
+				$reseller = ($rec['parent_client_id'] > 0) ? $app->db->queryOneRecord("SELECT email FROM client WHERE client_id = ?", $rec['parent_client_id']) : '';
+				$clients[$rec['groupid']] = [
+					'email' => $rec['email'],
+					'reseller' => $reseller
+				];
+			}
 		}
 
 		//######################################################################################################
@@ -114,15 +121,15 @@ class cronjob_quota_notify extends cronjob {
 
 							//* Send email to reseller
 							if($web_config['overtraffic_notify_reseller'] == 'y') {
-								if($reseller['email'] != '') {
-									$recipients[] = $reseller['email'];
+								if($clients[$rec['sys_groupid']]['reseller'] != '') {
+									$recipients[] = $clients[$rec['sys_groupid']]['reseller'];
 								}
 							}
 
 							//* Send email to client
 							if($web_config['overtraffic_notify_client'] == 'y') {
-								if($client['email'] != '') {
-									$recipients[] = $client['email'];
+								if($clients[$rec['sys_groupid']]['email'] != '') {
+									$recipients[] = $clients[$rec['sys_groupid']]['email'];
 								}
 							}
 
@@ -245,15 +252,15 @@ class cronjob_quota_notify extends cronjob {
 
 							//* Send email to reseller
 							if($web_config['overquota_notify_reseller'] == 'y') {
-								if($reseller['email'] != '') {
-									$recipients[] = $reseller['email'];
+								if($clients[$rec['sys_groupid']]['reseller'] != '') {
+									$recipients[] = $clients[$rec['sys_groupid']]['reseller'];
 								}
 							}
 
 							//* Send email to client
 							if($web_config['overquota_notify_client'] == 'y') {
-								if($client['email'] != '') {
-									$recipients[] = $client['email'];
+								if($clients[$rec['sys_groupid']]['email'] != '') {
+									$recipients[] = $clients[$rec['sys_groupid']]['email'];
 								}
 							}
 							$this->_tools->send_notification_email('web_quota_ok_notification', $placeholders, $recipients);
@@ -285,15 +292,15 @@ class cronjob_quota_notify extends cronjob {
 
 							//* Send email to reseller
 							if($web_config['overquota_notify_reseller'] == 'y') {
-								if($reseller['email'] != '') {
-									$recipients[] = $reseller['email'];
+								if($clients[$rec['sys_groupid']]['reseller'] != '') {
+									$recipients[] = $clients[$rec['sys_groupid']]['reseller'];
 								}
 							}
 
 							//* Send email to client
 							if($web_config['overquota_notify_client'] == 'y') {
-								if($client['email'] != '') {
-									$recipients[] = $client['email'];
+								if($clients[$rec['sys_groupid']]['email'] != '') {
+									$recipients[] = $clients[$rec['sys_groupid']]['email'];
 								}
 							}
 							$this->_tools->send_notification_email('web_quota_notification', $placeholders, $recipients);
@@ -383,15 +390,15 @@ class cronjob_quota_notify extends cronjob {
 
 							//* Send email to reseller
 							if($web_config['overquota_notify_reseller'] == 'y') {
-								if($reseller['email'] != '') {
-									$recipients[] = $reseller['email'];
+								if($clients[$rec['sys_groupid']]['reseller'] != '') {
+									$recipients[] = $clients[$rec['sys_groupid']]['reseller'];
 								}
 							}
 
 							//* Send email to client
 							if($mail_config['overquota_notify_client'] == 'y') {
-								if($client['email'] != '') {
-									$recipients[] = $client['email'];
+								if($clients[$rec['sys_groupid']]['email'] != '') {
+									$recipients[] = $clients[$rec['sys_groupid']]['email'];
 								}
 							}
 
@@ -423,15 +430,15 @@ class cronjob_quota_notify extends cronjob {
 
 							//* Send email to reseller
 							if($web_config['overquota_notify_reseller'] == 'y') {
-								if($reseller['email'] != '') {
-									$recipients[] = $reseller['email'];
+								if($clients[$rec['sys_groupid']]['reseller'] != '') {
+									$recipients[] = $clients[$rec['sys_groupid']]['reseller'];
 								}
 							}
 
 							//* Send email to client
 							if($mail_config['overquota_notify_client'] == 'y') {
-								if($client['email'] != '') {
-									$recipients[] = $client['email'];
+								if($clients[$rec['sys_groupid']]['email'] != '') {
+									$recipients[] = $clients[$rec['sys_groupid']]['email'];
 								}
 							}
 
@@ -512,15 +519,15 @@ class cronjob_quota_notify extends cronjob {
 
 										//* Send email to reseller
 										if($web_config['overquota_db_notify_reseller'] == 'y') {
-											if($reseller['email'] != '') {
-												$recipients[] = $reseller['email'];
+											if($clients[$rec['sys_groupid']]['reseller'] != '') {
+												$recipients[] = $clients[$rec['sys_groupid']]['reseller'];
 											}
 										}
 										
 										//* Send email to client
 										if($web_config['overquota_db_notify_client'] == 'y') {
-											if($client['email'] != '') {
-												$recipients[] = $client['email'];
+											if($clients[$rec['sys_groupid']]['email'] != '') {
+												$recipients[] = $clients[$rec['sys_groupid']]['email'];
 											}
 										}
 										$this->_tools->send_notification_email('db_quota_notification', $placeholders, $recipients);
@@ -550,19 +557,17 @@ class cronjob_quota_notify extends cronjob {
 
 										//* Send email to reseller
 										if($web_config['overquota_db_notify_reseller'] == 'y') {
-											if($reseller['email'] != '') {
-												$recipients[] = $reseller['email'];
+											if($clients[$rec['sys_groupid']]['reseller'] != '') {
+												$recipients[] = $clients[$rec['sys_groupid']]['reseller'];
 											}
 										}
 
 										//* Send email to client
 										if($mail_config['overquota_notify_client'] == 'y') {
-											if($client['email'] != '') {
-												$recipients[] = $client['email'];
+											if($clients[$rec['sys_groupid']]['email'] != '') {
+												$recipients[] = $clients[$rec['sys_groupid']]['email'];
 											}
 										}
-											
-
 										$this->_tools->send_notification_email('db_quota_ok_notification', $placeholders, $recipients);
 
 									}
