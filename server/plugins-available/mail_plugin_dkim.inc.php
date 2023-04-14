@@ -155,7 +155,7 @@ class mail_plugin_dkim {
 					$app->system->mkdirpath($mail_config['dkim_path'], 0750, $amavis_user, $amavis_group);
 				} else {
 					$app->system->mkdirpath($mail_config['dkim_path'], 0755);
-					$app->log('No user amavis or vscan found - using root for '.$mail_config['dkim_path'], LOGLEVEL_WARNING);
+					$app->log('No user amavis or vscan found - using root for '.$mail_config['dkim_path'], LOGLEVEL_WARN);
 				}
             } else {
 				if (!$app->system->checkpath($mail_config['dkim_path'])) {
