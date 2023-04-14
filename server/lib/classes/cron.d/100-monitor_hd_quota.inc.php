@@ -33,7 +33,6 @@ class cronjob_monitor_hd_quota extends cronjob {
 	// job schedule
 	protected $_schedule = '*/5 * * * *';
 	protected $_run_at_new = true;
-
 	private $_tools = null;
 
 	/* this function is optional if it contains no custom code */
@@ -70,7 +69,7 @@ class cronjob_monitor_hd_quota extends cronjob {
 		//* The state of the harddisk_quota.
 		$state = 'ok';
 
-				if(!$app->system->is_installed('setquota')) {
+		if(!$app->system->is_installed('setquota')) {
 			//* No Quota on this System ... 
 
 			//** Fetch the data for all users
@@ -88,7 +87,7 @@ class cronjob_monitor_hd_quota extends cronjob {
 
 			//* ignore the first 5 lines, process the rest
 			for ($i = 0; $i <= sizeof($df); $i++) {
-				if (isset($df[$i]) && $df[$i] != '') {
+				if ($df[$i] != '') {
 					//* Make a array of the data
 					$s1 = preg_split('/[\s]+/', $df[$i]);
 					$s2 = preg_split('/\//', $s1[1]);
@@ -109,7 +108,7 @@ class cronjob_monitor_hd_quota extends cronjob {
 			
 			//* ignore the first 5 lines, process the rest
 			for ($i = 0; $i <= sizeof($df); $i++) {
-				if (isset($df[$i]) && $df[$i] != '') {
+				if ($df[$i] != '') {
 					//* Make a array of the data
 					$s1 = preg_split('/[\s]+/', $df[$i]);
 					$s2 = preg_split('/\//', $s1[1]);
@@ -129,9 +128,7 @@ class cronjob_monitor_hd_quota extends cronjob {
 					}
 				}
 			}
-			
-		}else{			
-		
+		}else{		
 			//* Fetch the data for all users
 			$dfData = shell_exec('repquota -au 2>/dev/null');
 
@@ -140,7 +137,7 @@ class cronjob_monitor_hd_quota extends cronjob {
 
 			//* ignore the first 5 lines, process the rest
 			for ($i = 5; $i <= sizeof($df); $i++) {
-				if (isset($df[$i]) && $df[$i] != '') {
+				if ($df[$i] != '') {
 					//* Make a array of the data
 					$s = preg_split('/[\s]+/', $df[$i]);
 					$username = $s[0];
@@ -156,29 +153,6 @@ class cronjob_monitor_hd_quota extends cronjob {
 							$data['user'][$username]['hard'] = $s[4];
 							$data['user'][$username]['files'] = $s[5];
 						}
-		//* Fetch the data for all users
-		$dfData = shell_exec('repquota -au 2>/dev/null');
-
-		//* Split into array
-		$df = explode("\n", $dfData);
-
-		//* ignore the first 5 lines, process the rest
-		for ($i = 5; $i <= sizeof($df); $i++) {
-			if (isset($df[$i]) && $df[$i] != '') {
-				//* Make a array of the data
-				$s = preg_split('/[\s]+/', $df[$i]);
-				$username = $s[0];
-				if (substr($username, 0, 3) == 'web') {
-					if (isset($data['user'][$username])) {
-						$data['user'][$username]['used'] += $s[2];
-						$data['user'][$username]['soft'] += $s[3];
-						$data['user'][$username]['hard'] += $s[4];
-						$data['user'][$username]['files'] += $s[5];
-					} else {
-						$data['user'][$username]['used'] = $s[2];
-						$data['user'][$username]['soft'] = $s[3];
-						$data['user'][$username]['hard'] = $s[4];
-						$data['user'][$username]['files'] = $s[5];
 					}
 				}
 			}
@@ -191,7 +165,7 @@ class cronjob_monitor_hd_quota extends cronjob {
 
 			//* ignore the first 5 lines, process the rest
 			for ($i = 5; $i <= sizeof($df); $i++) {
-				if (isset($df[$i]) && $df[$i] != '') {
+				if ($df[$i] != '') {
 					//* Make a array of the data
 					$s = preg_split('/[\s]+/', $df[$i]);
 					$groupname = $s[0];
@@ -205,32 +179,10 @@ class cronjob_monitor_hd_quota extends cronjob {
 							$data['group'][$groupname]['soft'] = $s[3];
 							$data['group'][$groupname]['hard'] = $s[4];
 						}
-		//** Fetch the data for all users
-		$dfData = shell_exec('repquota -ag 2>/dev/null');
-
-		//* split into array
-		$df = explode("\n", $dfData);
-
-		//* ignore the first 5 lines, process the rest
-		for ($i = 5; $i <= sizeof($df); $i++) {
-			if (isset($df[$i]) && $df[$i] != '') {
-				//* Make a array of the data
-				$s = preg_split('/[\s]+/', $df[$i]);
-				$groupname = $s[0];
-				if (substr($groupname, 0, 6) == 'client') {
-					if (isset($data['group'][$groupname])) {
-						$data['group'][$groupname]['used'] += $s[2];
-						$data['group'][$groupname]['soft'] += $s[3];
-						$data['group'][$groupname]['hard'] += $s[4];
-					} else {
-						$data['group'][$groupname]['used'] = $s[2];
-						$data['group'][$groupname]['soft'] = $s[3];
-						$data['group'][$groupname]['hard'] = $s[4];
 					}
 				}
 			}
-		}
-
+		}			
 		$res = array();
 		$res['server_id'] = $server_id;
 		$res['type'] = $type;
