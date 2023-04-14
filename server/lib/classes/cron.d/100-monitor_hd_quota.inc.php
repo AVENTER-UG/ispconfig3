@@ -87,7 +87,7 @@ class cronjob_monitor_hd_quota extends cronjob {
 
 			//* ignore the first 5 lines, process the rest
 			for ($i = 0; $i <= sizeof($df); $i++) {
-				if ($df[$i] != '') {
+				if (isset($df[$i]) && $df[$i] != '') {
 					//* Make a array of the data
 					$s1 = preg_split('/[\s]+/', $df[$i]);
 					$s2 = preg_split('/\//', $s1[1]);
@@ -108,7 +108,7 @@ class cronjob_monitor_hd_quota extends cronjob {
 			
 			//* ignore the first 5 lines, process the rest
 			for ($i = 0; $i <= sizeof($df); $i++) {
-				if ($df[$i] != '') {
+				if (isset($df[$i]) && $df[$i] != '') {
 					//* Make a array of the data
 					$s1 = preg_split('/[\s]+/', $df[$i]);
 					$s2 = preg_split('/\//', $s1[1]);
@@ -137,7 +137,7 @@ class cronjob_monitor_hd_quota extends cronjob {
 
 			//* ignore the first 5 lines, process the rest
 			for ($i = 5; $i <= sizeof($df); $i++) {
-				if ($df[$i] != '') {
+				if (isset($df[$i]) && $df[$i] != '') {
 					//* Make a array of the data
 					$s = preg_split('/[\s]+/', $df[$i]);
 					$username = $s[0];
@@ -165,7 +165,7 @@ class cronjob_monitor_hd_quota extends cronjob {
 
 			//* ignore the first 5 lines, process the rest
 			for ($i = 5; $i <= sizeof($df); $i++) {
-				if ($df[$i] != '') {
+				if (isset($df[$i]) && $df[$i] != '') {
 					//* Make a array of the data
 					$s = preg_split('/[\s]+/', $df[$i]);
 					$groupname = $s[0];
