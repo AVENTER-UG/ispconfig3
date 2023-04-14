@@ -1,0 +1,11 @@
+<?php
+$wb['source_txt'] = '源';
+$wb['destination_txt'] = '目标';
+$wb['active_txt'] = '激活';
+$wb['no_domain_perm'] = '您没有此域名的权限。';
+$wb['limit_mailaliasdomain_txt'] = '您的帐户已达到电子邮件别名域的最大数量。';
+$wb['source_destination_identical_txt'] = '源域和目标域相同。';
+$wb['source_error_empty'] = '源域为空。';
+$wb['source_error_unique'] = '源域重复。';
+$wb['source_error_regex'] = '无效的源域名。';
+?>

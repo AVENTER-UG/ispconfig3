@@ -1,0 +1,8 @@
+<?php
+$wb['server_id_txt'] = '服务器';
+$wb['parent_domain_id_txt'] = '网站';
+$wb['path_txt'] = '路径';
+$wb['active_txt'] = '激活';
+$wb['path_error_regex'] = '无效的文件夹路径。';
+$wb['error_folder_already_protected_txt'] = '此文件夹已受保护。';
+?>

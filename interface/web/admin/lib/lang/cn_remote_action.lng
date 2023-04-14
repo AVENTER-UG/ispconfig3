@@ -1,0 +1,12 @@
+<?php
+$wb['select_server_txt'] = '选择服务器';
+$wb['btn_do_txt'] = '执行操作';
+$wb['do_osupdate_caption'] = '在远程服务器上执行操作系统更新';
+$wb['do_osupdate_desc'] = '此操作将在所选服务器上执行 "apt -y upgrade" 命令。<br><br><strong>请自行承担风险！</strong>';
+$wb['do_ispcupdate_caption'] = '在远程服务器上执行 ISPConfig 3 更新';
+$wb['do_ispcupdate_desc'] = '此操作将在所选服务器上执行 ISPConfig3 更新。<br><br><strong>请自行承担风险！</strong>';
+$wb['action_scheduled'] = '操作已安排执行';
+$wb['select_all_server'] = '所有服务器';
+$wb['ispconfig_update_title'] = 'ISPConfig 更新说明';
+$wb['ispconfig_update_text'] = '以 root 用户身份登录服务器 shell，执行命令<br /><br /> <strong>ispconfig_update.sh</strong><br /><br />以开始 ISPConfig 更新。<br /><br /><a href="https://www.faqforge.com/linux/controlpanels/ispconfig3/how-to-update-ispconfig-3/" target="_blank">单击此处获取详细的更新说明</a>';
+?>

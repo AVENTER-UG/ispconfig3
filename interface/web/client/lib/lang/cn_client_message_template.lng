@@ -1,0 +1,13 @@
+<?php
+$wb['template_type_txt'] = '电子邮件类型';
+$wb['template_name_txt'] = '模板名称';
+$wb['subject_txt'] = '主题';
+$wb['message_txt'] = '消息';
+$wb['Email template'] = '电子邮件模板';
+$wb['Settings'] = '设置';
+$wb['variables_txt'] = '变量';
+$wb['variables_description_txt'] = '（用户名和密码变量仅在欢迎电子邮件中可用。）';
+$wb['duplicate_welcome_error'] = '只能有一个默认的欢迎电子邮件模板。请编辑现有模板，而不是添加新模板。';
+$wb['subject_error_empty'] = '主题为空';
+$wb['message_error_empty'] = '消息为空';
+?>

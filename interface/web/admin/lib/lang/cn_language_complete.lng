@@ -1,0 +1,7 @@
+<?php
+$wb['list_head_txt'] = '合并语言文件';
+$wb['list_desc_txt'] = '将所选语言文件与英文主语言文件合并。<br />这将把英文主语言文件中缺失的字符串添加到所选语言文件中。';
+$wb['language_select_txt'] = '选择语言';
+$wb['btn_save_txt'] = '立即合并文件';
+$wb['btn_cancel_txt'] = '返回';
+?>

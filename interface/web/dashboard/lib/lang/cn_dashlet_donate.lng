@@ -1,0 +1,7 @@
+<?php
+$wb['donate_txt'] = 'ISPConfig Hosting控制面板是免费软件。也许您知道，开发、维护和支持这样一个复杂的软件项目需要大量的时间和精力。如果您想支持ISPConfig的进一步发展，请考虑捐赠。作为奖励，您将获得当前ISPConfig手册的副本。';
+$wb['donate2_txt'] = '捐赠金额可以为5欧元或更多，金额在结账时选择。支付方式为PayPal。您将收到来自ISPConfig UG的PDF收据。';
+$wb['hide_btn_txt'] = '隐藏';
+$wb['donate_btn_txt'] = '支持ISPConfig并获取手册';
+$wb['more_btn_txt'] = '更多';
+?>

@@ -1,0 +1,60 @@
+<?php
+
+$wb['Groups'] = '用户组';
+$wb['groups_description'] = '编辑系统用户组的表单。';
+
+$wb['Servers'] = '服务器';
+$wb['Config'] = '配置';
+
+$wb['Add user'] = '添加用户';
+$wb['Edit user'] = '编辑用户';
+$wb['Add group'] = '添加组';
+$wb['Edit group'] = '编辑组';
+$wb['Edit server'] = '编辑服务器';
+
+$wb['Sync. Now'] = '立即同步';
+$wb['DB Sync.'] = '数据库同步。';
+
+$wb['User Management'] = '用户管理';
+$wb['CP Users'] = '控制面板用户';
+$wb['Remote Users'] = '远程用户';
+
+$wb['System'] = '系统';
+$wb['Server Services'] = '服务器服务';
+$wb['Services'] = '服务';
+$wb['Server Config'] = '服务器配置';
+$wb['Server'] = '服务器';
+$wb['Mail'] = '邮件';
+$wb['Getmail'] = 'Getmail';
+$wb['Web'] = 'Web';
+$wb['FastCGI'] = 'FastCGI';
+$wb['Jailkit'] = 'Jailkit';
+$wb['Rescue'] = '救援';
+$wb['Server IP addresses'] = '服务器IP地址';
+$wb['Additional PHP Versions'] = '额外的PHP版本';
+$wb['Directive Snippets'] = '指令片段';
+$wb['Firewall'] = '防火墙';
+
+$wb['Interface'] = '界面';
+$wb['Interface Config'] = '主配置';
+$wb['Sites'] = '网站';
+$wb['DNS'] = 'DNS';
+$wb['Domains'] = '域名';
+$wb['Misc'] = '杂项';
+
+$wb['Software'] = '应用与插件';
+$wb['Repositories'] = '软件源';
+$wb['Packages'] = '软件包';
+$wb['Updates'] = '更新';
+
+$wb['Language Editor'] = '语言编辑器';
+$wb['Languages'] = '语言';
+$wb['New Language'] = '新语言';
+$wb['Merge'] = '合并';
+$wb['Export'] = '导出';
+$wb['Import'] = '导入';
+
+$wb['Remote Actions'] = '远程操作';
+$wb['Do OS-Update'] = '执行操作系统更新';
+$wb['Do ISPConfig-Update'] = '执行ISPConfig更新';
+?>

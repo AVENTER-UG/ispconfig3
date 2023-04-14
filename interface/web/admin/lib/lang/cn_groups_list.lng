@@ -1,0 +1,7 @@
+<?php
+$wb['list_head_txt'] = '系统用户组';
+$wb['description_txt'] = '描述';
+$wb['name_txt'] = '用户组';
+$wb['add_new_record_txt'] = '添加新用户组';
+$wb['warning_txt'] = '<b>警告：</b>请勿在此处编辑或修改任何用户设置。请改用客户端模块中的客户端和经销商设置。在此处修改用户或组可能会导致数据丢失！';
+?>

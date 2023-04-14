@@ -1,0 +1,9 @@
+<?php
+$wb['list_head_txt'] = '用户列表';
+$wb['username_txt'] = '用户名';
+$wb['client_id_txt'] = '用户ID';
+$wb['active_txt'] = '激活状态';
+$wb['groups_txt'] = '用户组';
+$wb['add_new_record_txt'] = '添加新用户';
+$wb['warning_txt'] = '<b>警告：</b>不要在此处编辑或修改任何客户端用户设置。请改用客户端模块中的客户端和经销商设置。在此修改或更改客户端用户或组可能会导致数据丢失！';
+?>

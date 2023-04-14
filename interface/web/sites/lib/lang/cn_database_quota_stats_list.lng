@@ -1,0 +1,9 @@
+<?php
+$wb['database_txt'] = '数据库';
+$wb['server_name_txt'] = '服务器';
+$wb['client_txt'] = '客户';
+$wb['used_txt'] = '已用空间';
+$wb['quota_txt'] = '配额';
+$wb['percentage_txt'] = '使用百分比';
+$wb['list_head_txt'] = '数据库配额';
+?>

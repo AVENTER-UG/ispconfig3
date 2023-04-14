@@ -1,0 +1,7 @@
+<?php
+$wb['rulename_txt'] = '名称';
+$wb['add_new_record_txt'] = '添加新过滤器';
+$wb['page_txt'] = '页';
+$wb['page_of_txt'] = '的';
+$wb['delete_confirmation'] = '您确定要删除邮件过滤器吗？';
+?>

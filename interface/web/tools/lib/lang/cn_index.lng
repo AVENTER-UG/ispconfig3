@@ -1,0 +1,4 @@
+<?php
+$wb['page_head_txt'] = 'ISPConfig 工具';
+$wb['page_desc_txt'] = '更改用户设置';
+?>

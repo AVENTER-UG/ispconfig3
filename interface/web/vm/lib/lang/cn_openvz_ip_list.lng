@@ -1,0 +1,7 @@
+<?php
+$wb['list_head_txt'] = 'OpenVZ IP地址';
+$wb['server_id_txt'] = '服务器';
+$wb['vm_id_txt'] = '虚拟机';
+$wb['ip_address_txt'] = 'IP地址';
+$wb['reserved_txt'] = '保留';
+?>

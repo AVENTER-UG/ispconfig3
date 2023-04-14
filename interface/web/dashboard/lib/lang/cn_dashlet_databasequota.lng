@@ -1,0 +1,7 @@
+<?php
+$wb['databasequota_txt'] = '数据库配额';
+$wb['database_txt'] = '数据库名称';
+$wb['used_txt'] = '已使用空间';
+$wb['quota_txt'] = '配额';
+$wb['no_database_accounts_txt'] = '未找到数据库。';
+?>

@@ -1,0 +1,7 @@
+<?php
+$wb['list_head_txt'] = '数据日志历史记录条目';
+$wb['success_txt'] = '撤销成功';
+$wb['error_txt'] = '撤销期间出错：记录不再存在';
+$wb['error_undelete_txt'] = '撤销期间出错：具有主键的记录已存在。';
+$wb['btn_cancel_txt'] = '返回';
+?>

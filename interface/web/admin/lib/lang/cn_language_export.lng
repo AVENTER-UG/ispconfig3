@@ -1,0 +1,6 @@
+<?php
+$wb['list_head_txt'] = '导出语言文件';
+$wb['language_select_txt'] = '选择语言';
+$wb['btn_save_txt'] = '导出所选语言文件集';
+$wb['btn_cancel_txt'] = '返回';
+?>

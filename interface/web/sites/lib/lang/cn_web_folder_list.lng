@@ -1,0 +1,8 @@
+<?php
+$wb['list_head_txt'] = '文件夹';
+$wb['active_txt'] = '启用';
+$wb['server_id_txt'] = '服务器';
+$wb['parent_domain_id_txt'] = '网站';
+$wb['path_txt'] = '路径';
+$wb['add_new_record_txt'] = '添加新文件夹';
+?>

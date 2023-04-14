@@ -1,0 +1,10 @@
+<?php
+$wb['list_head_txt'] = '次要 DNS 区域';
+$wb['active_txt'] = '激活';
+$wb['server_id_txt'] = '服务器';
+$wb['origin_txt'] = '区域';
+$wb['ns_txt'] = 'NS';
+$wb['add_new_record_txt'] = '添加新的次要 DNS 区域';
+$wb['eg_domain_tld'] = '例如：domain.tld。';
+$wb['sys_groupid_txt'] = '客户';
+?>

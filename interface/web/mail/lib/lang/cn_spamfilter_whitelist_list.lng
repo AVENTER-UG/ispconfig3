@@ -1,0 +1,9 @@
+<?php
+$wb['list_head_txt'] = '垃圾邮件过滤白名单';
+$wb['active_txt'] = '激活';
+$wb['server_id_txt'] = '服务器';
+$wb['priority_txt'] = '优先级';
+$wb['rid_txt'] = '用户';
+$wb['email_txt'] = '加入白名单的邮件';
+$wb['add_new_record_txt'] = '添加白名单记录';
+?>

@@ -1,0 +1,8 @@
+<?php
+$wb['list_head_txt'] = '防火墙';
+$wb['active_txt'] = '启用';
+$wb['server_id_txt'] = '服务器';
+$wb['tcp_port_txt'] = '开放TCP端口';
+$wb['udp_port_txt'] = '开放UDP端口';
+$wb['add_new_record_txt'] = '添加防火墙记录';
+?>

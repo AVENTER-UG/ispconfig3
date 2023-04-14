@@ -1,0 +1,23 @@
+<?php
+
+$wb['DNS'] = 'DNS';
+$wb['Zones'] = '区域';
+$wb['DNS A'] = 'DNS A';
+$wb['DNS ALIAS'] = 'DNS ALIAS';
+$wb['DNS CNAME'] = 'DNS CNAME';
+$wb['DNS hinfo'] = 'DNS HINFO';
+$wb['DNS mx'] = 'DNS MX';
+$wb['DNS ns'] = 'DNS NS';
+$wb['DNS ptr'] = 'DNS PTR';
+$wb['DNS RP'] = 'DNS RP';
+$wb['DNS Zone'] = 'DNS区域';
+$wb['Records'] = '记录';
+$wb['DNS SRV'] = 'DNS SRV';
+$wb['DNS TXT Record'] = 'DNS TXT记录';
+$wb['DNS TXT'] = 'DNS TXT';
+$wb['DNS Wizard'] = 'DNS向导';
+$wb['Add DNS Zone'] = '添加DNS区域';
+$wb['Templates'] = '模板';
+$wb['Secondary Zones'] = '辅助DNS区域';
+$wb['Import Zone File'] = '导入区域文件';
+?>

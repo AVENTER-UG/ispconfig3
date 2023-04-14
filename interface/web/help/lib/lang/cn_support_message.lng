@@ -1,0 +1,16 @@
+<?php
+$wb['recipient_id_txt'] = '收件人ID';
+$wb['sender_id_txt'] = '发件人ID';
+$wb['subject_txt'] = '主题';
+$wb['message_txt'] = '消息';
+$wb['tstamp_txt'] = '时间戳';
+$wb['reply_txt'] = '回复';
+$wb['date_txt'] = '日期';
+$wb['support_request_subject_txt'] = '支持请求';
+$wb['support_request_txt'] = '您收到了一个支持请求。请不要回复此邮件，而是在ISPConfig内处理支持请求。';
+$wb['answer_to_support_request_txt'] = '您收到了对您的支持请求的回复。请不要回复此邮件，而是在ISPConfig内处理消息。';
+$wb['answer_to_support_request_sent_txt'] = '您的对支持请求的回复已发送。请不要回复此邮件。';
+$wb['support_request_sent_txt'] = '您的支持请求已发送。请不要回复此邮件。';
+$wb['recipient_or_sender_email_address_not_valid_txt'] = '由于收件人和/或发件人的电子邮件地址无效，因此无法发送消息。';
+$wb['subject_is_empty'] = '主题不能为空。';
+?>

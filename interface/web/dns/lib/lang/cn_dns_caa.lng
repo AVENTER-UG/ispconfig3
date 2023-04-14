@@ -1,0 +1,18 @@
+<?php
+$wb['ca_list_txt'] = '认证机构';
+$wb['ca_domain_txt'] = '域名';
+$wb['ca_hostname_txt'] = '额外主机名';
+$wb['ca_hostname_note_txt'] = '（以逗号分隔的列表-留空以使用所有主机名）';
+$wb['ca_options_txt'] = '附加选项';
+$wb['ca_options_note_txt'] = '认证机构要求的选项（以逗号分隔的列表）';
+$wb['ca_wildcard_txt'] = '使用通配符 SSL';
+$wb['ttl_txt'] = 'TTL';
+$wb['active_txt'] = '生效';
+$wb['select_txt'] = '选择认证机构';
+$wb['no_zone_perm'] = '您无权向此 DNS 区域添加记录。';
+$wb['limit_dns_record_txt'] = '您的账户已达到 DNS 记录的最大数量。';
+$wb['ca_error_txt'] = '未选择认证机构';
+$wb['caa_exists_error'] = 'CAA 记录已存在';
+$wb['ca_option_error'] = '附加选项的格式无效；选项=值';
+$wb['ttl_range_error'] = '最小 TTL 时间为 60 秒。';
+?>

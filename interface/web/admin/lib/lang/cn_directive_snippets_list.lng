@@ -1,0 +1,8 @@
+<?php
+$wb['list_head_txt'] = '指令片段';
+$wb['active_txt'] = '激活';
+$wb['name_txt'] = '片段名称';
+$wb['type_txt'] = '类型';
+$wb['add_new_record_txt'] = '添加指令片段';
+$wb['customer_viewable_txt'] = '客户可见';
+?>

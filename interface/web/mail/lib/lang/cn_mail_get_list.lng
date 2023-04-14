@@ -1,0 +1,9 @@
+<?php
+$wb['list_head_txt'] = '从外部POP3/IMAP服务器获取电子邮件';
+$wb['active_txt'] = '激活';
+$wb['server_id_txt'] = '服务器';
+$wb['source_server_txt'] = '外部服务器';
+$wb['source_username_txt'] = '用户名';
+$wb['destination_txt'] = '目的地';
+$wb['add_new_record_txt'] = '添加新帐户';
+?>

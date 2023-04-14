@@ -1,0 +1,8 @@
+<?php
+$wb['list_head_txt'] = 'OpenVZ操作系统模板';
+$wb['active_txt'] = '状态';
+$wb['template_name_txt'] = '模板名称';
+$wb['server_id_txt'] = '服务器';
+$wb['allservers_txt'] = '全部服务器';
+$wb['ostemplate_id_txt'] = 'ID';
+?>

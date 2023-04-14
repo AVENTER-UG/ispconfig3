@@ -1,0 +1,20 @@
+<?php
+$wb['page_head_txt'] = '向客户和经销商发送电子邮件';
+$wb['btn_send_txt'] = '发送电子邮件';
+$wb['btn_cancel_txt'] = '取消';
+$wb['sender_txt'] = '发件人电子邮件地址';
+$wb['subject_txt'] = '主题';
+$wb['message_txt'] = '信息';
+$wb['form_legend_client_txt'] = '向客户发送电子邮件。';
+$wb['form_legend_admin_txt'] = '向客户和经销商发送电子邮件。';
+$wb['sender_invalid_error'] = '发件人电子邮件无效。';
+$wb['subject_invalid_error'] = '主题为空。';
+$wb['message_invalid_error'] = '信息为空。';
+$wb['email_sent_to_txt'] = '电子邮件发送至：';
+$wb['recipient_txt'] = '收件人';
+$wb['all_clients_resellers_txt'] = '所有客户和经销商';
+$wb['all_clients_txt'] = '所有客户';
+$wb['variables_txt'] = '变量：';
+$wb['gender_m_txt'] = '先生';
+$wb['gender_f_txt'] = '女士';
+?>

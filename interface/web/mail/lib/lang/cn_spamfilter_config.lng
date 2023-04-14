@@ -1,0 +1,20 @@
+<?php
+$wb['getmail_config_dir_txt'] = 'Getmail配置路径';
+$wb['ip_address_txt'] = 'IP地址';
+$wb['netmask_txt'] = '子网掩码';
+$wb['gateway_txt'] = '网关';
+$wb['hostname_txt'] = '主机名';
+$wb['nameservers_txt'] = '名称服务器';
+$wb['module_txt'] = '服务器模块';
+$wb['maildir_path_txt'] = 'Maildir路径';
+$wb['homedir_path_txt'] = 'Home目录路径';
+$wb['mailuser_uid_txt'] = 'Mailuser UID';
+$wb['mailuser_gid_txt'] = 'Mailuser GID';
+$wb['mailuser_name_txt'] = 'Mailuser名称';
+$wb['mailuser_group_txt'] = 'Mailuser组';
+$wb['relayhost_txt'] = 'Relayhost';
+$wb['relayhost_user_txt'] = 'Relayhost用户';
+$wb['relayhost_password_txt'] = 'Relayhost密码';
+$wb['mailbox_size_limit_txt'] = '邮箱大小限制';
+$wb['message_size_limit_txt'] = '邮件大小限制';
+?>

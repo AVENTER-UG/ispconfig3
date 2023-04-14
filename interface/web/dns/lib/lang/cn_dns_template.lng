@@ -1,0 +1,7 @@
+<?php
+$wb['name_txt'] = '名称';
+$wb['fields_txt'] = '字段';
+$wb['template_txt'] = '模板';
+$wb['visible_txt'] = '可见';
+$wb['placeholder_txt'] = '占位符';
+?>

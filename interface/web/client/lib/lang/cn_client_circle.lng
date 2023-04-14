@@ -1,0 +1,9 @@
+<?php
+$wb['Client Circle'] = '客户循环';
+$wb['Circle'] = '循环';
+$wb['circle_txt'] = '循环';
+$wb['circle_name_txt'] = '循环名称';
+$wb['client_ids_txt'] = '客户/代理商';
+$wb['description_txt'] = '描述';
+$wb['active_txt'] = '激活';
+?>

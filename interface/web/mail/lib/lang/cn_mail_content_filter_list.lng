@@ -1,0 +1,8 @@
+<?php
+$wb['list_head_txt'] = 'Postfix 头和正文检查';
+$wb['active_txt'] = '启用';
+$wb['server_id_txt'] = '服务器';
+$wb['pattern_txt'] = '模式';
+$wb['action_txt'] = '动作';
+$wb['add_new_record_txt'] = '添加新内容过滤器';
+?>

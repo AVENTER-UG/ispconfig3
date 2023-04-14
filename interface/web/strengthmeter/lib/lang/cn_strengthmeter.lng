@@ -1,0 +1,8 @@
+<?php
+$wb['password_strength_0_txt'] = '太短';
+$wb['password_strength_1_txt'] = '弱';
+$wb['password_strength_2_txt'] = '一般';
+$wb['password_strength_3_txt'] = '好';
+$wb['password_strength_4_txt'] = '强';
+$wb['password_strength_5_txt'] = '非常强';
+?>
