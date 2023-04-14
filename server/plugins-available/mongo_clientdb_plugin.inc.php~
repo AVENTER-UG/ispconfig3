@@ -516,7 +516,7 @@ class mongo_clientdb_plugin {
 
 			if ((bool) $db_user) {
 				if ($user == 'root') {
-					$app->log("User root not allowed for client databases", LOGLEVEL_WARNING);
+					$app->log("User root not allowed for client databases", LOGLEVEL_WARN);
 				} else {
 					if (!$this->addUser($db, array(
 								'username' => $user,
@@ -526,14 +526,14 @@ class mongo_clientdb_plugin {
 									"dbAdmin"
 								)
 							))) {
-						$app->log("Error while adding user: ".$user." to DB: ".$db, LOGLEVEL_WARNING);
+						$app->log("Error while adding user: ".$user." to DB: ".$db, LOGLEVEL_WARN);
 					}
 				}
 			}
 
 			if ($db_ro_user && $data['new']['database_user_id'] != $data['new']['database_ro_user_id']) {
 				if ($user == 'root') {
-					$app->log("User root not allowed for client databases", LOGLEVEL_WARNING);
+					$app->log("User root not allowed for client databases", LOGLEVEL_WARN);
 				} else {
 					if (!$this->addUser($db, array(
 								'username' => $ro_user,
@@ -542,7 +542,7 @@ class mongo_clientdb_plugin {
 									"read"
 								)
 							))) {
-						$app->log("Error while adding read-only user: ".$user." to DB: ".$db, LOGLEVEL_WARNING);
+						$app->log("Error while adding read-only user: ".$user." to DB: ".$db, LOGLEVEL_WARN);
 					}
 				}
 			}
@@ -607,7 +607,7 @@ class mongo_clientdb_plugin {
 
 					if ((bool) $old_db_user) {
 						if ($old_db_user['database_user'] == 'root') {
-							$app->log("User root not allowed for client databases", LOGLEVEL_WARNING);
+							$app->log("User root not allowed for client databases", LOGLEVEL_WARN);
 						} else {
 							$this->dropUser($old_db_user['database_user'], $db);
 						}
@@ -620,7 +620,7 @@ class mongo_clientdb_plugin {
 
 					if ((bool) $old_db_user) {
 						if ($old_db_user['database_user'] == 'root') {
-							$app->log("User root not allowed for client databases", LOGLEVEL_WARNING);
+							$app->log("User root not allowed for client databases", LOGLEVEL_WARN);
 						} else {
 							$this->dropUser($old_db_user['database_user'], $db);
 						}
@@ -631,7 +631,7 @@ class mongo_clientdb_plugin {
 				if ($data['new']['database_user_id'] != $data['old']['database_user_id']) {
 					if ((bool) $db_user) {
 						if ($user == 'root') {
-							$app->log("User root not allowed for client databases", LOGLEVEL_WARNING);
+							$app->log("User root not allowed for client databases", LOGLEVEL_WARN);
 						} else {
 							$this->addUser($db, array(
 									'username' => $user,
@@ -649,7 +649,7 @@ class mongo_clientdb_plugin {
 				if ($data['new']['database_ro_user_id'] != $data['old']['database_ro_user_iduser_id']) {
 					if ((bool) $db_ro_user && $data['new']['database_user_id'] != $data['new']['database_ro_user_id']) {
 						if ($ro_user == 'root') {
-							$app->log("User root not allowed for client databases", LOGLEVEL_WARNING);
+							$app->log("User root not allowed for client databases", LOGLEVEL_WARN);
 						} else {
 							$this->addUser($db, array(
 									'username' => $ro_user,
@@ -671,7 +671,7 @@ class mongo_clientdb_plugin {
 					if ($this->renameDB($oldName, $newName)) {
 						$app->log("Renamed MongoDB database: ".$old_name." -> ".$new_name, LOGLEVEL_DEBUG);
 					} else {
-						$app->log("Renaming MongoDB database failed: ".$old_name." -> ".$new_name, LOGLEVEL_WARNING);
+						$app->log("Renaming MongoDB database failed: ".$old_name." -> ".$new_name, LOGLEVEL_WARN);
 					}
 				}
 				*/
@@ -710,7 +710,7 @@ class mongo_clientdb_plugin {
 			if ($this->dropDB($db_to_drop)) {
 				$app->log("Dropping MongoDB database: ".$db_to_drop, LOGLEVEL_DEBUG);
 			} else {
-				$app->log("Error while dropping MongoDB database: ".$db_to_drop, LOGLEVEL_WARNING);
+				$app->log("Error while dropping MongoDB database: ".$db_to_drop, LOGLEVEL_WARN);
 			}
 
 			$this->disconnect();
@@ -770,13 +770,13 @@ class mongo_clientdb_plugin {
 										))) {
 									$app->log("Created user: ".$data['new']['database_user']." in DB: ".$db, LOGLEVEL_DEBUG);
 								} else {
-									$app->log("Couldn't create user: ".$data['new']['database_user']." in DB: ".$db, LOGLEVEL_WARNING);
+									$app->log("Couldn't create user: ".$data['new']['database_user']." in DB: ".$db, LOGLEVEL_WARN);
 								}
 							} else {
-								$app->log("Couldn't drop user: ".$data['old']['database_user']." in DB: ".$db, LOGLEVEL_WARNING);
+								$app->log("Couldn't drop user: ".$data['old']['database_user']." in DB: ".$db, LOGLEVEL_WARN);
 							}
 						} else {
-							$app->log("User: ".$data['new']['database_user']." already exists in DB: ".$db, LOGLEVEL_WARNING);
+							$app->log("User: ".$data['new']['database_user']." already exists in DB: ".$db, LOGLEVEL_WARN);
 						}
 					}
 				}
@@ -794,7 +794,7 @@ class mongo_clientdb_plugin {
 						if ($this->changePassword($db, $data['new']['database_user'], md5($data['new']['database_password_mongo']))) {
 							$app->log("Changed user's: ".$data['new']['database_user']." password in DB: ".$db, LOGLEVEL_DEBUG);
 						} else {
-							$app->log("Couldn't change user's: ".$data['new']['database_user']." password in DB: ".$db, LOGLEVEL_WARNING);
+							$app->log("Couldn't change user's: ".$data['new']['database_user']." password in DB: ".$db, LOGLEVEL_WARN);
 						}
 					}
 				}
@@ -825,7 +825,7 @@ class mongo_clientdb_plugin {
 		if ($this->dropUser($data['old']['database_user']) === true) {
 			$app->log("Dropped MongoDB user: ".$data['old']['database_user'], LOGLEVEL_DEBUG);
 		} else {
-			$app->log("Error while dropping MongoDB user: ".$data['old']['database_user'], LOGLEVEL_WARNING);
+			$app->log("Error while dropping MongoDB user: ".$data['old']['database_user'], LOGLEVEL_WARN);
 		}
 
 		$this->disconnect();
