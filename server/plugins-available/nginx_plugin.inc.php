@@ -2923,7 +2923,7 @@ class nginx_plugin {
 		$tpl->setVar('fpm_user', $data['new']['system_user']);
 
 		// RH workaround here
-		if($app->system->is_redhat_os() == 1) {
+		if($app->system->is_redhat_os() == true) {
 			$tpl->setVar('fpm_group', $data['new']['system_group']);
 			$tpl->setVar('fpm_listen_group', $data['new']['system_group']);
 		} else {
