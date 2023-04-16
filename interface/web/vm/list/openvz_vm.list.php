@@ -66,9 +66,9 @@ $liste["item"][] = array( 'field'  => "veid",
 	'value'  => "");
 
 $liste["item"][] = array( 'field'  => "server_id",
-	'datatype' => "VARCHAR",
+	'datatype' => "INTEGER",
 	'formtype' => "SELECT",
-	'op'  => "like",
+	'op'  => "=",
 	'prefix' => "",
 	'suffix' => "",
 	'datasource' => array (  'type' => 'SQL',

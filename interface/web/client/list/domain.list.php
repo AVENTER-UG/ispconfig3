@@ -86,7 +86,7 @@ $liste["item"][] = array( 'field'  => "domain",
 	'value'  => "");
 
 $liste["item"][] = array( 'field'  => "sys_groupid",
-	'datatype' => "VARCHAR",
+	'datatype' => "INTEGER",
 	'formtype' => "SELECT",
 	'op'  => "=",
 	'prefix' => "",

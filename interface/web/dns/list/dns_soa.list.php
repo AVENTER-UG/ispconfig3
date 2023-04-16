@@ -73,11 +73,11 @@ $liste["item"][] = array( 'field'  => "dnssec_initialized",
 
 
 $liste["item"][] = array( 'field'  => "server_id",
-	'datatype' => "VARCHAR",
+	'datatype' => "INTEGER",
 	'formtype' => "SELECT",
-	'op'  => "like",
-	'prefix' => "%",
-	'suffix' => "%",
+	'op'  => "=",
+	'prefix' => "",
+	'suffix' => "",
 	'datasource' => array (  'type' => 'CUSTOM',
 		'class'=> 'custom_datasource',
 		'function'=> 'dns_servers'

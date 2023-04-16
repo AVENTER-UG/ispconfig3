@@ -115,7 +115,7 @@ $liste["item"][] = array( 'field'  => "server_id",
 	'value'  => "");
 
 $liste["item"][] = array( 'field'  => "parent_domain_id",
-	'datatype' => "VARCHAR",
+	'datatype' => "INTEGER",
 	'filters'   => array( 0 => array( 'event' => 'SHOW',
 			'type' => 'IDNTOUTF8')
 	),
