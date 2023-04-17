@@ -470,7 +470,7 @@ class functions {
 		// generate the SSH key pair for the client
 		$app->system->exec_safe('mktemp -dt id_rsa.XXXXXXXX');
 		$tmpdir = $app->system->last_exec_out();
-		$id_rsa_file = $tmpdir[0] '/' . uniqid('',true);
+		$id_rsa_file = $tmpdir[0] . '/' . uniqid('',true);
 		$id_rsa_pub_file = $id_rsa_file.'.pub';
 		if(file_exists($id_rsa_file)) unset($id_rsa_file);
 		if(file_exists($id_rsa_pub_file)) unset($id_rsa_pub_file);
