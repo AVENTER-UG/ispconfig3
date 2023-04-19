@@ -1,0 +1,4 @@
+<?php
+$wb['list_head_txt'] = '服务器配置';
+$wb['server_name_txt'] = '服务器名称';
+?>

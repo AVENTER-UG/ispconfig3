@@ -1,0 +1,9 @@
+<?php
+$wb['server_id_txt'] = '服务器';
+$wb['type_txt'] = '过滤器';
+$wb['pattern_txt'] = '正则表达式模式';
+$wb['data_txt'] = '数据';
+$wb['action_txt'] = '操作';
+$wb['active_txt'] = '启用';
+$wb['pattern_error_empty'] = '模式为空。';
+?>

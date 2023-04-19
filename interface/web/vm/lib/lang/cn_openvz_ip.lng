@@ -1,0 +1,9 @@
+<?php
+$wb['server_id_txt'] = '主机服务器';
+$wb['ip_address_txt'] = 'IP地址';
+$wb['vm_id_txt'] = '虚拟服务器';
+$wb['reserved_txt'] = '保留';
+$wb['ip_error_wrong'] = '请填写一个有效的IPv4地址。';
+$wb['ip_error_unique'] = '该IP地址已存在。';
+$wb['IP address'] = 'IP地址';
+?>

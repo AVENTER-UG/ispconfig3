@@ -1,0 +1,14 @@
+<?php
+$wb['list_head_txt'] = '服务器';
+$wb['server_name_txt'] = '名称';
+$wb['mail_server_txt'] = '邮件';
+$wb['web_server_txt'] = '网页';
+$wb['dns_server_txt'] = 'DNS';
+$wb['file_server_txt'] = '文件';
+$wb['db_server_txt'] = '数据库';
+$wb['vserver_server_txt'] = '虚拟服务器';
+$wb['proxy_server_txt'] = '代理服务器';
+$wb['firewall_server_txt'] = '防火墙';
+$wb['add_new_record_txt'] = '添加新服务器';
+$wb['xmpp_server_txt'] = 'XMPP';
+?>

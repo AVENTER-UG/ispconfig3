@@ -1,0 +1,9 @@
+<?php
+$wb['faq_question_txt'] = '问题';
+$wb['faq_section_name_txt'] = '部分';
+$wb['faq_delete_txt'] = '删除';
+$wb['faq_edit_txt'] = '编辑';
+$wb['faq_sections_txt'] = '部分';
+$wb['faq_faq_questions_txt'] = '常见问题';
+$wb['faq_new_question_txt'] = '添加新的问题和答案对';
+?>

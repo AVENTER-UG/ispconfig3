@@ -48,9 +48,9 @@ $liste["auth"]    = "yes";
 *****************************************************/
 
 $liste["item"][] = array( 'field'  => "server_id",
-	'datatype' => "VARCHAR",
+	'datatype' => "INTEGER",
 	'formtype' => "SELECT",
-	'op'  => "like",
+	'op'  => "=",
 	'prefix' => "",
 	'suffix' => "",
 	'datasource' => array (  'type' => 'SQL',
@@ -62,9 +62,9 @@ $liste["item"][] = array( 'field'  => "server_id",
 	'value'  => "");
 
 $liste["item"][] = array( 'field'  => "vm_id",
-	'datatype' => "VARCHAR",
+	'datatype' => "INTEGER",
 	'formtype' => "SELECT",
-	'op'  => "like",
+	'op'  => "=",
 	'prefix' => "",
 	'suffix' => "",
 	'datasource' => array (  'type' => 'SQL',

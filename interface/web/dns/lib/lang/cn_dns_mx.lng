@@ -1,0 +1,18 @@
+<?php
+$wb['server_id_txt'] = '服务器';
+$wb['zone_txt'] = '区域';
+$wb['name_txt'] = '主机名';
+$wb['type_txt'] = '类型';
+$wb['data_txt'] = '邮件服务器主机名';
+$wb['aux_txt'] = '优先级';
+$wb['ttl_txt'] = 'TTL';
+$wb['active_txt'] = '启用';
+$wb['limit_dns_record_txt'] = '您的帐户的DNS记录数量已达到上限。';
+$wb['no_zone_perm'] = '您没有向此DNS区域添加记录的权限。';
+$wb['name_error_empty'] = '主机名为空。';
+$wb['name_error_regex'] = '主机名格式不正确。';
+$wb['data_error_empty'] = '邮件服务器主机名为空。';
+$wb['data_error_regex'] = '邮件服务器主机名格式不正确。';
+$wb['duplicate_mx_record_txt'] = '重复的MX记录。';
+$wb['ttl_range_error'] = '最小TTL时间为60秒。';
+?>

@@ -157,13 +157,25 @@ if($_SESSION['otp']['type'] == 'email') {
 				$app->ispcmail->setOptions($mail_config);
 			}
 
-			$clientuser = $app->db->queryOneRecord('SELECT email FROM sys_user u LEFT JOIN client c ON (u.client_id=c.client_id) WHERE u.userid = ?', $_SESSION['s_pending']['user']['userid']);
-			if (!empty($clientuser['email'])) {
-				$email_to = $clientuser['email'];
+			$sys_user = $app->db->queryOneRecord('SELECT otp_data FROM sys_user WHERE userid = ?', $_SESSION['s_pending']['user']['userid']);
+			$data = json_decode($sys_user['otp_data'], TRUE);
+
+			if (!empty($data['otp_email_override'] )) {
+				// Handle otp_email_override.
+				$email_to = $data['otp_email_override'];
 			}
 			else {
-				// Admin users are not related to a client, thus use the globally configured email address.
-				$email_to = $mail_config['admin_mail'];
+				$clientuser = $app->db->queryOneRecord('SELECT email FROM sys_user u LEFT JOIN client c ON (u.client_id=c.client_id) WHERE u.userid = ?', $_SESSION['s_pending']['user']['userid']);
+				if (!empty($clientuser['email'])) {
+					$email_to = $clientuser['email'];
+				}
+				elseif(!empty($mail_config['admin_mail'])) {
+					// Admin users are not related to a client, thus use the globally configured email address.
+					$email_to = $mail_config['admin_mail'];
+				}
+				else {
+					$app->error('No mail address available to sent an OTP code to.', 'index.php');
+				}
 			}
 
 			$app->ispcmail->setSender($mail_config['admin_mail'], $mail_config['admin_name']);

@@ -1,0 +1,15 @@
+<?php
+$wb['Directive Snippets'] = '指令片段';
+$wb['name_txt'] = '片段名称';
+$wb['type_txt'] = '类型';
+$wb['snippet_txt'] = '指令片段';
+$wb['active_txt'] = '激活';
+$wb['directive_snippets_name_empty'] = '请为指令片段指定一个名称。';
+$wb['directive_snippets_name_error_unique'] = '已经存在一个同名的指令片段。';
+$wb['variables_txt'] = '变量';
+$wb['customer_viewable_txt'] = '客户可见';
+$wb['required_php_snippets_txt'] = '所需 PHP 片段';
+$wb['update_sites_txt'] = '使用此指令片段更新网站';
+$wb['error_hide_snippet_active_sites'] = '无法从客户端隐藏此指令片段，因为它当前正在被现有网站使用。';
+$wb['error_disable_snippet_active_sites'] = '由于当前有网站正在使用此指令片段，因此无法禁用它。';
+$wb['error_delete_snippet_active_sites'] = '由于当前有网站正在使用此指令片段，因此无法删除它。';

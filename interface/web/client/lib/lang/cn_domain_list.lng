@@ -1,0 +1,6 @@
+<?php
+$wb['list_head_txt'] = '域名列表';
+$wb['add_new_record_txt'] = '添加新域名';
+$wb['domain_txt'] = '域名';
+$wb['user_txt'] = '客户';
+?>

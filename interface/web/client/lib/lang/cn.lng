@@ -1,0 +1,31 @@
+<?php
+$wb['Client'] = '客户';
+$wb['Address'] = '地址';
+$wb['Limits'] = '限制';
+$wb['Add Client'] = '添加客户';
+$wb['Edit Client'] = '编辑客户';
+$wb['Clients'] = '客户';
+$wb['Templates'] = '模板';
+$wb['Limit-Templates'] = '限制模板';
+$wb['Add Reseller'] = '添加经销商';
+$wb['Edit Reseller'] = '编辑经销商';
+$wb['Resellers'] = '经销商';
+$wb['error_has_clients'] = '该经销商有客户。请先删除经销商的客户。';
+$wb['add_additional_template_txt'] = '添加附加模板';
+$wb['delete_additional_template_txt'] = '删除附加模板';
+$wb['Messaging'] = '消息';
+$wb['Send email'] = '发送电子邮件';
+$wb['Edit Client Circle'] = '编辑客户圈';
+$wb['Domains'] = '域名';
+$wb['Add Domain'] = '添加域名';
+$wb['domain_txt'] = '域名';
+$wb['client_txt'] = '客户';
+$wb['error_domain_in dnsuse'] = '该域名不能被删除，因为它正在用作DNS区域。';
+$wb['error_domain_in dnsslaveuse'] = '该域名不能被删除，因为它正在用作次要DNS区域。';
+$wb['error_domain_in mailuse'] = '该域名不能被删除，因为它正在用作邮件域名。';
+$wb['error_domain_in webuse'] = '该域名不能被删除，因为它正在用作网站域名。';
+$wb['error_client_can_not_add_domain'] = '您无法添加新域名。';
+$wb['domain_txt'] = '域名';
+$wb['error_client_group_id_empty'] = '您必须选择一个客户。';
+$wb['Email-Templates'] = '电子邮件模板';
+?>

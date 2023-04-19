@@ -1,0 +1,15 @@
+<?php
+$wb['Support Message'] = '支持信息';
+$wb['Message'] = '信息';
+$wb['Send message'] = '发送消息';
+$wb['View messages'] = '查看消息';
+$wb['Support'] = '支持';
+$wb['About ISPConfig'] = '关于ISPConfig';
+$wb['Version'] = '版本';
+$wb['Frequently Asked Questions'] = '常见问题';
+$wb['FAQ Sections'] = 'FAQ部分';
+$wb['Manage Sections'] = '管理部分';
+$wb['Add a Question & Answer Pair'] = '添加问题和答案对';
+$wb['Manage Questions'] = '管理问题';
+
+?>

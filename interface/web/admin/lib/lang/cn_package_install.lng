@@ -1,0 +1,7 @@
+<?php
+$wb['repo_name_txt'] = '仓库名称';
+$wb['repo_url_txt'] = 'URL';
+$wb['repo_username_txt'] = '用户名（可选）';
+$wb['repo_password_txt'] = '密码（可选）';
+$wb['active_txt'] = '启用';
+?>

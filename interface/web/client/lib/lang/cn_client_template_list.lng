@@ -1,0 +1,7 @@
+<?php
+$wb['list_head_txt'] = '客户和分销商模板';
+$wb['template_type_txt'] = '类型';
+$wb['template_name_txt'] = '模板名称';
+$wb['template_id_txt'] = '模板ID';
+$wb['sys_groupid_txt'] = '分销商';
+?>

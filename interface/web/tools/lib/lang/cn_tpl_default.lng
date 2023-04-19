@@ -1,0 +1,7 @@
+<?php
+$wb['list_head_txt'] = '默认主题设置';
+$wb['list_desc_txt'] = '修改默认主题相关选项';
+$wb['no_settings_txt'] = '没有默认主题的设置。';
+$wb['btn_start_txt'] = '保存';
+$wb['btn_cancel_txt'] = '返回';
+?>

@@ -61,7 +61,7 @@ $liste["item"][] = array( 'field'  => "active",
 
 
 $liste["item"][] = array( 'field'  => "web_folder_id",
-	'datatype' => "VARCHAR",
+	'datatype' => "INTEGER",
 	'filters'   => array( 0 => array( 'event' => 'SHOW',
 			'type' => 'IDNTOUTF8')
 	),

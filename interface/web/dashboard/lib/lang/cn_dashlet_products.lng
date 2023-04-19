@@ -1,0 +1,9 @@
+<?php
+$wb['products_txt'] = '我的产品';
+$wb['name_txt'] = '名称';
+$wb['price_txt'] = '价格';
+$wb['next_payment_date_txt'] = '下一个账单日期';
+$wb['no_products_txt'] = '没有找到产品。';
+$wb['edit_txt'] = '编辑';
+$wb['cancellation_date_txt'] = '由谁取消';
+?>

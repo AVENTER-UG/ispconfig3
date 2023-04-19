@@ -1,0 +1,13 @@
+<?php
+$wb['list_head_txt'] = '邮箱';
+$wb['email_txt'] = '邮箱';
+$wb['autoresponder_txt'] = '自动回复';
+$wb['add_new_record_txt'] = '添加新邮箱';
+$wb['name_txt'] = '真实姓名';
+$wb['login_txt'] = '登录名';
+$wb['postfix_txt'] = '接收';
+$wb['disablesmtp_txt'] = 'SMTP（发送）';
+$wb['disabledeliver_txt'] = 'INBOX';
+$wb['disableimap_txt'] = 'IMAP';
+$wb['disablepop3_txt'] = 'POP3';
+?>

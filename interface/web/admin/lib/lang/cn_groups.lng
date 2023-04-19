@@ -1,0 +1,5 @@
+<?php
+$wb['description_txt'] = '描述';
+$wb['name_txt'] = '组名';
+$wb['name_err'] = '组名必须是1到30个字符。';
+?>

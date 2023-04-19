@@ -1,0 +1,9 @@
+<?php
+$wb['list_head_txt'] = '中转收件人';
+$wb['active_txt'] = '启用';
+$wb['server_id_txt'] = '服务器';
+$wb['source_txt'] = '收件人地址';
+$wb['recipient_txt'] = '转发到';
+$wb['add_new_record_txt'] = '添加新的中转收件人';
+$wb['access_txt'] = '访问';
+?>

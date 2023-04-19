@@ -1,0 +1,9 @@
+<?php
+$wb['server_id_txt'] = '服务器';
+$wb['source_txt'] = '中继接收者';
+$wb['recipient_txt'] = '收件人';
+$wb['active_txt'] = '激活';
+$wb['source_error_notempty'] = '地址不能为空。';
+$wb['type_txt'] = '类型';
+$wb['limit_mailfilter_txt'] = '已达到您的账户的电子邮件过滤器的最大数量。';
+?>

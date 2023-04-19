@@ -1,0 +1,8 @@
+<?php
+$wb['list_head_txt'] = '邮件转发';
+$wb['active_txt'] = '激活';
+$wb['source_txt'] = '源';
+$wb['destination_txt'] = '目的地';
+$wb['email_txt'] = '电子邮件';
+$wb['add_new_record_txt'] = '添加新的电子邮件转发';
+?>

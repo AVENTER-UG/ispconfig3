@@ -1305,13 +1305,13 @@ class backup
         foreach ($domains as $rec) {
             $domain_id = $rec['domain_id'];
             $domain_backup_dir = $backup_dir . '/web' . $domain_id;
+            $web_path = $rec['document_root'];
+            $backup_download_dir = $web_path . '/backup';
 
             // Remove backupdir symlink and create as directory instead
             if (is_link($backup_download_dir) || !is_dir($backup_download_dir)) {
-                $web_path = $rec['document_root'];
                 $app->system->web_folder_protection($web_path, false);
 
-                $backup_download_dir = $web_path . '/backup';
                 if (is_link($backup_download_dir)) {
                     unlink($backup_download_dir);
                 }

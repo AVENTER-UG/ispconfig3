@@ -1,0 +1,16 @@
+<?php
+$wb['list_head_txt'] = '现有备份';
+$wb['date_txt'] = '日期';
+$wb['backup_type_txt'] = '类型';
+$wb['filename_txt'] = '备份文件';
+$wb['restore_backup_txt'] = '恢复';
+$wb['restore_info_txt'] = '已开始还原备份。此操作需要几分钟才能完成。';
+$wb['restore_confirm_txt'] = '还原可能会覆盖您邮箱中的现有文件。您确定要还原此备份吗？';
+$wb['download_pending_txt'] = '已有一个待处理的备份下载作业。';
+$wb['restore_pending_txt'] = '已有一个待处理的备份还原作业。';
+$wb['delete_backup_txt'] = '删除备份';
+$wb['delete_info_txt'] = '已开始删除备份。此操作需要几分钟才能完成。';
+$wb['delete_confirm_txt'] = '确定要删除此备份吗？';
+$wb['delete_pending_txt'] = '已有一个待处理的备份删除作业。';
+$wb['filesize_txt'] = '文件大小';
+?>

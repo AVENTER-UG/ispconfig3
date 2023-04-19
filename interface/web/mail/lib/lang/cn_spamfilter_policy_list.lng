@@ -1,0 +1,9 @@
+<?php
+$wb['list_head_txt'] = '垃圾邮件过滤策略';
+$wb['policy_name_txt'] = '名称';
+$wb['virus_lover_txt'] = '病毒爱好者';
+$wb['spam_lover_txt'] = '垃圾邮件爱好者';
+$wb['banned_files_lover_txt'] = '违禁文件爱好者';
+$wb['bad_header_lover_txt'] = '不良标题爱好者';
+$wb['add_new_record_txt'] = '添加策略记录';
+?>

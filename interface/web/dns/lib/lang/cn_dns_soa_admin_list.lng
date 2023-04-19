@@ -1,0 +1,12 @@
+<?php
+$wb['list_head_txt'] = 'DNS区域';
+$wb['active_txt'] = '启用';
+$wb['server_id_txt'] = '服务器';
+$wb['origin_txt'] = '区域';
+$wb['ns_txt'] = 'NS';
+$wb['mbox_txt'] = '邮箱';
+$wb['add_new_record_wizard_txt'] = '使用向导添加新的DNS区域';
+$wb['add_new_record_txt'] = '手动添加新的DNS区域';
+$wb['import_zone_file_txt'] = '导入区域文件';
+$wb['sys_groupid_txt'] = '客户';
+?>

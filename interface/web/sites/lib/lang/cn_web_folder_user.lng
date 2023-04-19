@@ -1,0 +1,14 @@
+<?php
+$wb['web_folder_id_txt'] = '文件夹';
+$wb['username_txt'] = '用户名';
+$wb['password_txt'] = '密码';
+$wb['active_txt'] = '激活';
+$wb['folder_error_empty'] = '没有选择Web文件夹。';
+$wb['password_strength_txt'] = '密码强度';
+$wb['generate_password_txt'] = '生成密码';
+$wb['repeat_password_txt'] = '重复密码';
+$wb['password_mismatch_txt'] = '两次输入的密码不一致。';
+$wb['password_match_txt'] = '两次输入的密码一致。';
+$wb['no_folder_perm'] = '您没有此文件夹的权限。';
+$wb['error_user_exists_already_txt'] = '此用户的记录已经存在。';
+?>

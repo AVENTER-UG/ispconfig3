@@ -125,7 +125,7 @@ class page_action extends tform_actions {
 	function onShowEnd() {
 		global $app;
 		
-		$tmp = $app->db->queryOneRecord("SELECT server_name FROM server WHERE server_id = ? AND ((SELECT COUNT(*) FROM server) > 1)", $this->id);
+		$tmp = $app->db->queryOneRecord("SELECT server_name FROM server WHERE server_id = ? AND ((SELECT COUNT(*) FROM server) >= 1)", $this->id);
 		$app->tpl->setVar('server_name', $app->functions->htmlentities($tmp['server_name']));
 		unset($tmp);
 

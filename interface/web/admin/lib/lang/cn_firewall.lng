@@ -1,0 +1,11 @@
+<?php
+$wb['server_id_txt'] = '服务器';
+$wb['tcp_port_txt'] = '开放 TCP 端口';
+$wb['udp_port_txt'] = '开放 UDP 端口';
+$wb['tcp_port_help_txt'] = '用逗号分隔';
+$wb['udp_port_help_txt'] = '用逗号分隔';
+$wb['active_txt'] = '激活';
+$wb['firewall_error_unique'] = '该服务器已存在防火墙记录。';
+$wb['tcp_ports_error_regex'] = 'TCP 端口定义中不允许出现该字符。允许的字符有数字、冒号（:）和逗号。';
+$wb['udp_ports_error_regex'] = 'UDP 端口定义中不允许出现该字符。允许的字符有数字、冒号（:）和逗号。';
+?>

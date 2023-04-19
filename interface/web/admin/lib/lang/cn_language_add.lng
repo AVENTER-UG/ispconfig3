@@ -1,0 +1,8 @@
+<?php
+$wb['list_head_txt'] = '添加新语言';
+$wb['language_select_txt'] = '选择语言基础';
+$wb['language_new_txt'] = '新语言';
+$wb['language_new_hint_txt'] = '2 个字符的 ISO 639-1 语言代码（参见 https://en.wikipedia.org/wiki/List_of_ISO_639-1_codes）';
+$wb['btn_save_txt'] = '创建新语言文件集';
+$wb['btn_cancel_txt'] = '返回';
+?>

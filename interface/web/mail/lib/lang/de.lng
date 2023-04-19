@@ -47,4 +47,5 @@ $wb['Relay Recipients'] = 'Relay Empfänger';
 $wb['Mailbox quota'] = 'E-Mail Konto Speichernutzung';
 $wb['add_header_txt'] = 'Header (adds \"X-Spam: Yes\")';
 $wb['rewrite_subject_txt'] = 'Subject (adds \"***SPAM***\" at the beginning)';
+$wb['inactive'] = 'inactive';
 ?>

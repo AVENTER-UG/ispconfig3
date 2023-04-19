@@ -1,0 +1,15 @@
+<?php
+$wb['list_head_txt'] = 'A记录';
+$wb['active_txt'] = '启用';
+$wb['server_id_txt'] = '服务器';
+$wb['zone_txt'] = '区域';
+$wb['name_txt'] = '名称';
+$wb['data_txt'] = '数据';
+$wb['aux_txt'] = '优先级';
+$wb['ttl_txt'] = 'TTL';
+$wb['type_txt'] = '类型';
+$wb['add_new_record_txt'] = '添加新的 DNS A 记录';
+$wb['page_txt'] = '页';
+$wb['page_of_txt'] = '共';
+$wb['delete_confirmation'] = '您确定要删除此记录吗？';
+?>

@@ -1342,6 +1342,7 @@ class apache2_plugin {
 
 		$tpl->setVar($vhost_data);
 		$tpl->setVar('apache_version', $app->system->getapacheversion());
+		$tpl->setVar('apache_full_version', $app->system->getapacheversion(true));
 
 		// Rewrite rules
 		$rewrite_rules = array();

@@ -1,0 +1,5 @@
+<?php
+$wb['list_head_txt'] = 'Email 模板';
+$wb['template_type_txt'] = '消息类型';
+$wb['template_name_txt'] = '模板类型';
+?>

@@ -1,0 +1,9 @@
+<?php
+$wb['list_head_txt'] = '额外的 PHP 版本';
+$wb['server_id_txt'] = '服务器';
+$wb['add_new_record_txt'] = '添加新的 PHP 版本';
+$wb['client_id_txt'] = '客户';
+$wb['name_txt'] = 'PHP 名称';
+$wb['active_txt'] = '启用';
+$wb['usage_txt'] = '使用次数';
+?>

@@ -1,0 +1,19 @@
+<?php
+$wb['server_id_txt'] = '服务器';
+$wb['type_txt'] = '类型';
+$wb['source_server_txt'] = 'Pop3/Imap服务器';
+$wb['source_username_txt'] = '用户名';
+$wb['source_password_txt'] = '密码';
+$wb['source_delete_txt'] = '检索后删除邮件';
+$wb['source_delete_note_txt'] = '在启用此选项之前，请先检查电子邮件检索是否有效。';
+$wb['source_read_all_txt'] = '检索所有邮件（包括已读邮件）';
+$wb['destination_txt'] = '目的地';
+$wb['active_txt'] = '启用';
+$wb['limit_fetchmail_txt'] = '您的帐户的最大Fetchmail记录数已达到。';
+$wb['source_server_error_isempty'] = '服务器为空。';
+$wb['source_username_error_isempty'] = '用户名为空。';
+$wb['source_password_error_isempty'] = '密码为空。';
+$wb['destination_error_isemail'] = '未选择目的地。';
+$wb['source_server_error_regex'] = 'Pop3/Imap服务器不是有效的域名。';
+$wb['error_delete_read_all_combination'] = '选项组合不合法。您不能同时使用“检索后删除邮件”= no和“检索所有邮件”= yes';
+?>

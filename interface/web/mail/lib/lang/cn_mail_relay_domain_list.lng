@@ -1,0 +1,7 @@
+<?php
+$wb['list_head_txt'] = '中转域';
+$wb['active_txt'] = '启用';
+$wb['server_id_txt'] = '服务器';
+$wb['domain_txt'] = '域名';
+$wb['add_new_record_txt'] = '添加新的中转域';
+$wb['access_txt'] = '访问';

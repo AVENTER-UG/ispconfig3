@@ -103,9 +103,9 @@ if($_SESSION['s']['user']['typ'] == 'admin') {
 $liste["item"][] = array( 'field'  => "server_id",
 	'datatype' => "INTEGER",
 	'formtype' => "SELECT",
-	'op'  => "like",
-	'prefix' => "%",
-	'suffix' => "%",
+	'op'  => "=",
+	'prefix' => "",
+	'suffix' => "",
 	'datasource' => array (  'type' => 'SQL',
 		'querystring' => 'SELECT a.server_id, a.server_name FROM server a, web_database b WHERE (a.server_id = b.server_id) AND ({AUTHSQL-B}) ORDER BY a.server_name',
 		'keyfield'=> 'server_id',
@@ -115,7 +115,7 @@ $liste["item"][] = array( 'field'  => "server_id",
 	'value'  => "");
 
 $liste["item"][] = array( 'field'  => "parent_domain_id",
-	'datatype' => "VARCHAR",
+	'datatype' => "INTEGER",
 	'filters'   => array( 0 => array( 'event' => 'SHOW',
 			'type' => 'IDNTOUTF8')
 	),

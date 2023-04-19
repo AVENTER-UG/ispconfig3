@@ -1,0 +1,10 @@
+<?php
+$wb['list_head_txt'] = 'ISPConfig日志';
+$wb['tstamp_txt'] = '日期';
+$wb['server_id_txt'] = '服务器';
+$wb['loglevel_txt'] = '日志级别';
+$wb['message_txt'] = '消息';
+$wb['batch_delete_warnings_txt'] = '删除所有警告';
+$wb['batch_delete_errors_txt'] = '删除所有错误';
+$wb['batch_delete_confirmation'] = '您确定要确认所有日志条目吗？';
+?>

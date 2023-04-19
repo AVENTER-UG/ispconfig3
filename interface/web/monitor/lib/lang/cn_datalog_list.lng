@@ -1,0 +1,8 @@
+<?php
+$wb['list_head_txt'] = '任务队列';
+$wb['tstamp_txt'] = '日期';
+$wb['server_id_txt'] = '服务器';
+$wb['dbtable_txt'] = '数据库表';
+$wb['action_txt'] = '操作';
+$wb['status_txt'] = '状态';
+?>

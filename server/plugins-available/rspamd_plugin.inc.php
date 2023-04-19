@@ -281,7 +281,7 @@ class rspamd_plugin {
 				$app->system->mkdirpath($this->users_config_dir);
 			}
 
-			if((!$this->isValidEmail($app->functions->idn_encode($email_address))) || intval($data['new']['policy_id']) == 0) {
+			if((!$this->isValidEmail($app->functions->idn_encode($email_address))) || intval($data['new']['policy_id']) == 0 && $type == 'spamfilter_user') {
 				if(is_file($settings_file)) {
 					unlink($settings_file);
 				}
@@ -508,7 +508,7 @@ class rspamd_plugin {
 		$mail_config = $app->getconf->get_server_config($conf['server_id'], 'mail');
 
 		$local_addrs = array();
-		$ips = $app->db->queryAllRecords('SELECT `ip_address`, `ip_type` FROM ?? WHERE `server_id` = ?', $conf['mysql']['database'].'.server_ip', $conf['server_id']);
+		$ips = $app->db->queryAllRecords('SELECT `ip_address`, `ip_type` FROM ?? WHERE `server_id` = ?', $conf['db_database'].'.server_ip', $conf['server_id']);
 		if(is_array($ips) && !empty($ips)){
 			foreach($ips as $ip){
 				$local_addrs[] = array(

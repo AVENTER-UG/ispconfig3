@@ -35,7 +35,7 @@ $liste['auth'] = 'yes';
 
 $liste['item'][] = array(
 	'field'      => 'remote_userid',
-	'datatype'   => 'VARCHAR',
+	'datatype'   => 'INTEGER',
 	'formtype'   => 'SELECT',
 	'op'         => '=',
 	'prefix'     => '',
