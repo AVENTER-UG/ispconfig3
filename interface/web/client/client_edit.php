@@ -70,6 +70,10 @@ class page_action extends tform_actions {
 			}
 		}
 
+		// Hide the info tab when creating a new client.
+		unset($app->tform->formDef["tabs"]['info']);
+		$app->tform->formDef["tab_default"] = "address";
+
 		parent::onShowNew();
 	}
 
