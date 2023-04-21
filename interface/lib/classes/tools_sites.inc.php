@@ -148,6 +148,10 @@ class tools_sites {
 	function getDomainModuleDomains($not_used_in_table = null, $selected_domain = '') {
 		global $app;
 
+		// Fix a null value passed in by the create new forms, which lack an id.
+		if ($selected_domain == null) {
+			$selected_domain = '';
+		}
 		$sql = "SELECT domain_id, domain FROM domain WHERE";
 		if ($not_used_in_table) {
 			if (strpos($not_used_in_table, 'dns') !== false) {
