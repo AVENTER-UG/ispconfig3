@@ -336,13 +336,12 @@ class shelluser_base_plugin {
 			// Get the UID of the user
 			$userid = intval($app->system->getuid($data['old']['username']));
 			if($userid > $this->min_uid) {
-				$web = $app->db->queryOneRecord("SELECT * FROM web_domain WHERE domain_id = ".intval($data['old']['parent_domain_id']));
+				$web = $app->db->queryOneRecord("SELECT * FROM web_domain WHERE domain_id = ?", $data['old']['parent_domain_id']);
 
 				// check if we have to delete the dir
 				$check = $app->db->queryOneRecord('SELECT shell_user_id FROM `shell_user` WHERE `dir` = ?', $data['old']['dir']);
 				if(!$check && is_dir($data['old']['dir'])) {
 
-					$web = $app->db->queryOneRecord("SELECT * FROM web_domain WHERE domain_id = ?", $data['old']['parent_domain_id']);
 					$app->system->web_folder_protection($web['document_root'], false);
 
 					// delete dir
