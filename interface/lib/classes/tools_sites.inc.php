@@ -145,7 +145,7 @@ class tools_sites {
 	}
 
 	/* TODO: rewrite SQL */
-	function getDomainModuleDomains($not_used_in_table = null, $selected_domain = null) {
+	function getDomainModuleDomains($not_used_in_table = null, $selected_domain = '') {
 		global $app;
 
 		$sql = "SELECT domain_id, domain FROM domain WHERE";
