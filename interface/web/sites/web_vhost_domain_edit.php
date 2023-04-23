@@ -694,7 +694,8 @@ class page_action extends tform_actions {
 			/*
 			 * The domain-module is in use.
 			*/
-			$domains = $app->tools_sites->getDomainModuleDomains($this->_vhostdomain_type == 'subdomain' ? null : "web_domain");
+			$domains = $app->tools_sites->getDomainModuleDomains($this->_vhostdomain_type == 'subdomain' ? null : "web_domain", $this->dataRecord['domain']);
+
 			$domain_select = "<option value=''></option>";
 			$selected_domain = '';
 			if(is_array($domains) && sizeof($domains) > 0) {
