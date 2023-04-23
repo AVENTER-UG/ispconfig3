@@ -422,6 +422,7 @@ $form["tabs"]['address'] = array (
 			'cols'  => '',
 			'searchable' => 2
 		),
+		// Deprecated
 		'icq' => array (
 			'datatype' => 'VARCHAR',
 			'formtype' => 'TEXT',
