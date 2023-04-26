@@ -456,7 +456,9 @@
             //var options = '<option value="">Default</option>';
 			var options = '';
             var serverphpidselected = '';
-            $.each(data, function(key, val) {
+            $.each(data.phpversion, function(akey,aval) {
+                key=Object.getOwnPropertyNames(aval)[0];
+                val=aval[key];
 				<tmpl_if name="id">
                 if($('#server_php_id').val() == key){
                     serverphpidselected = ' selected="selected"';

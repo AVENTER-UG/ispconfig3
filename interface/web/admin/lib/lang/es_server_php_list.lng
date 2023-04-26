@@ -6,4 +6,5 @@ $wb['name_txt'] = 'Versión de PHP';
 $wb['server_id_txt'] = 'Servidor';
 $wb['active_txt'] = 'Active';
 $wb['usage_txt'] = 'Usage count';
+$wb['sortprio_txt'] = 'Priority';
 ?>
