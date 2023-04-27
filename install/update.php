@@ -366,12 +366,12 @@ $inst->find_installed_apps();
 //** Check for current service config state and compare to our results
 if ($conf['mysql']['master_slave_setup'] == 'y') $current_svc_config = $inst->dbmaster->queryOneRecord("SELECT mail_server,web_server,dns_server,xmpp_server,firewall_server,vserver_server,db_server FROM ?? WHERE server_id=?", $conf['mysql']['master_database'] . '.server', $conf['server_id']);
 else $current_svc_config = $inst->db->queryOneRecord("SELECT mail_server,web_server,dns_server,xmpp_server,firewall_server,vserver_server,db_server FROM ?? WHERE server_id=?", $conf["mysql"]["database"] . '.server', $conf['server_id']);
-$conf['services']['mail'] = check_service_config_state('mail_server', $conf['postfix']['installed']);
-$conf['services']['dns'] = check_service_config_state('dns_server', ($conf['powerdns']['installed'] || $conf['bind']['installed'] || $conf['mydns']['installed']));
-$conf['services']['web'] = check_service_config_state('web_server', ($conf['apache']['installed'] || $conf['nginx']['installed']));
-$conf['services']['xmpp'] = check_service_config_state('xmpp_server', $conf['xmpp']['installed']);
-$conf['services']['firewall'] = check_service_config_state('firewall_server', ($conf['ufw']['installed'] || $conf['firewall']['installed']));
-$conf['services']['vserver'] = check_service_config_state('vserver_server', $conf['services']['vserver']);
+$conf['services']['mail'] = check_service_config_state('mail_server', isset($conf['postfix']['installed']));
+$conf['services']['dns'] = check_service_config_state('dns_server', (isset($conf['powerdns']['installed']) || isset($conf['bind']['installed']) || isset($conf['mydns']['installed'])));
+$conf['services']['web'] = check_service_config_state('web_server', (isset($conf['apache']['installed']) || isset($conf['nginx']['installed'])));
+$conf['services']['xmpp'] = check_service_config_state('xmpp_server', isset($conf['xmpp']['installed']));
+$conf['services']['firewall'] = check_service_config_state('firewall_server', (isset($conf['ufw']['installed']) || isset($conf['firewall']['installed'])));
+$conf['services']['vserver'] = check_service_config_state('vserver_server', isset($conf['services']['vserver']));
 $conf['services']['db'] = check_service_config_state('db_server', true); /* Will always offer as MySQL is of course installed on this host as it's a requirement for ISPC to work... */
 unset($current_svc_config);
 
