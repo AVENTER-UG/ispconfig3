@@ -1101,6 +1101,7 @@ CREATE TABLE `mail_user` (
   `last_quota_notification` date NULL default NULL,
   `backup_interval` VARCHAR( 255 ) NOT NULL default 'none',
   `backup_copies` INT NOT NULL DEFAULT '1',
+  `imap_prefix` varchar(255) NULL default NULL,
   PRIMARY KEY  (`mailuser_id`),
   KEY `server_id` (`server_id`,`email`),
   KEY `email_access` (`email`,`access`)

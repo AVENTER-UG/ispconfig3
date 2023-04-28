@@ -1,0 +1,32 @@
+#!/bin/bash
+
+# Adding a new translation string to the files for all languages.
+# If you already added the string to your current language, be sure to deduplicate.
+
+new=$(cat << 'EOD'
+$wb['foo_txt'] = 'Some translation';
+EOD
+)
+
+if [ -z "$1" ]; then
+  echo "Usage: $0 <files>"
+  exit 1
+fi
+
+for f in $*; do
+	# Preserve a php close tag as the last line.
+	close='?>'
+	if [ "$(tail -n 1 $f)" == "$close" ]; then
+		(	
+			head -n -1 $f;
+			echo "$new";
+			echo "?>";
+		) > ${f}.new
+
+		mv ${f}.new $f
+			
+			
+	else
+		echo "$new" >> $f
+	fi
+done

@@ -69,6 +69,12 @@
                 <label for="sender_name" class="col-sm-3 control-label">{tmpl_var name='sender_cc_txt'}</label>
                 <div class="col-sm-6"><input type="text" name="sender_cc" id="sender_cc" value="{tmpl_var name='sender_cc'}" class="form-control" /></div><div class="col-sm-3 input-sm"> &nbsp; {tmpl_var name='name_optional_txt'} {tmpl_var name='sender_cc_note_txt'}
             </div></div>
+            <tmpl_if name="is_admin"><div class="form-group">
+                <label for="imap_prefix" class="col-sm-3 control-label">{tmpl_var name='imap_prefix_txt'}</label>
+                <div class="col-sm-6">
+                    <input type="text" name="imap_prefix" id="imap_prefix" value="{tmpl_var name='imap_prefix'}" data-toggle="tooltip" title="{tmpl_var name='tooltip_imap_prefix_txt'}" class="form-control" />
+                </div><div class="col-sm-3 input-sm"> &nbsp; {tmpl_var name='name_optional_txt'}</div>
+            </div></tmpl_if>
             <div class="form-group">
                 <label for="policy" class="col-sm-3 control-label">{tmpl_var name='policy_txt'}</label>
                 <div class="col-sm-9"><select name="policy" id="policy" class="form-control">
