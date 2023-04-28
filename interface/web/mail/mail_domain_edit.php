@@ -256,6 +256,13 @@ class page_action extends tform_actions {
 		$app->tpl->setVar('dkim_public', $rec['dkim_public'], true);
 		if (!empty($rec['dkim_public'])) $app->tpl->setVar('dns_record', $dns_record, true);
 
+		$csrf_token = $app->auth->csrf_token_get('mail_domain_del');
+		$app->tpl->setVar('_csrf_id', $csrf_token['csrf_id']);
+		$app->tpl->setVar('_csrf_key', $csrf_token['csrf_key']);
+
+		$global_config = $app->getconf->get_global_config();
+		$app->tpl->setVar('show_delete_on_forms', $global_config['misc']['show_delete_on_forms']);
+
 		parent::onShowEnd();
 	 }
 

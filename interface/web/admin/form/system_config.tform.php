@@ -661,6 +661,12 @@ $form["tabs"]['misc'] = array (
 			'default' => 'y',
 			'value'  => array(0 => 'n', 1 => 'y')
 		),
+		'show_delete_on_forms' => array (
+			'datatype' => 'VARCHAR',
+			'formtype' => 'CHECKBOX',
+			'default' => 'n',
+			'value'  => array(0 => 'n', 1 => 'y')
+		),
 		'maintenance_mode' => array (
 			'datatype' => 'VARCHAR',
 			'formtype' => 'CHECKBOX',
