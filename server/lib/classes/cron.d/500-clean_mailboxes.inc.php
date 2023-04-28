@@ -53,27 +53,37 @@ class cronjob_clean_mailboxes extends cronjob {
 	public function onRunJob() {
 		global $app, $conf;
 
-		$trash_names=array('Trash', 'Papierkorb', 'Deleted Items', 'Deleted Messages', 'INBOX.Trash', 'INBOX.Papierkorb', 'INBOX.Deleted Messages', 'Corbeille');
-		$junk_names=array('Junk', 'Junk Email', 'SPAM', 'INBOX.SPAM');
+		$trash_names=array('Trash', 'Papierkorb', 'Deleted Items', 'Deleted Messages', 'Corbeille');
+		$junk_names=array('Junk', 'Junk Email', 'SPAM');
 
 		$expunge_cmd = 'doveadm expunge -u ? mailbox ? sentbefore ';
 		$purge_cmd = 'doveadm purge -u ?';
 		$recalc_cmd = 'doveadm quota recalc -u ?';
 
 		$server_id = intval($conf['server_id']);
-		$records = $app->db->queryAllRecords("SELECT email, maildir, purge_trash_days, purge_junk_days FROM mail_user WHERE maildir_format = 'maildir' AND disableimap = 'n' AND server_id = ? AND (purge_trash_days > 0 OR purge_junk_days > 0)", $server_id);
+		$records = $app->db->queryAllRecords("SELECT email, maildir, purge_trash_days, purge_junk_days, imap_prefix FROM mail_user WHERE maildir_format = 'maildir' AND disableimap = 'n' AND server_id = ? AND (purge_trash_days > 0 OR purge_junk_days > 0)", $server_id);
 		
 		if(is_array($records) && !empty($records)) {
 			foreach($records as $email) {
+
+				// Mapping function to add a prefix to all folder names.
+				$prefix_folders = function($folder) use($email) {
+					return $email['imap_prefix'] . $folder;
+				};
+
+				// Add a prefix to all folder names.
+				$prefixed_trash_names = array_map($prefix_folders, $trash_names);
+				$prefixed_junk_names = array_map($prefix_folders, $junk_names);
+
 				if($email['purge_trash_days'] > 0) {
-					foreach($trash_names as $trash) {
+					foreach($prefixed_trash_names as $trash) {
 						if(is_dir($email['maildir'].'/Maildir/.'.$trash)) {
 							$app->system->exec_safe($expunge_cmd.intval($email['purge_trash_days']).'d', $email['email'], $trash);
 						}
 					}
 				}
 				if($email['purge_junk_days'] > 0) {
-					foreach($junk_names as $junk) {
+					foreach($prefixed_junk_names as $junk) {
 						if(is_dir($email['maildir'].'/Maildir/.'.$junk)) {
 							$app->system->exec_safe($expunge_cmd.intval($email['purge_junk_days']).'d', $email['email'], $junk);
 						}
