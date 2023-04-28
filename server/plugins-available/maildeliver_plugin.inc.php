@@ -139,6 +139,7 @@ class maildeliver_plugin {
 
 				// Move junk
 				$tpl->setVar('move_junk', $data["new"]["move_junk"]);
+				$tpl->setVar('imap_prefix', $data["new"]["imap_prefix"]);
 
 				// Set autoresponder start date
 				$data["new"]["autoresponder_start_date"] = str_replace(" ", "T", $data["new"]["autoresponder_start_date"]);

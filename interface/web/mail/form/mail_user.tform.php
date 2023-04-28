@@ -216,6 +216,29 @@ $form["tabs"]['mailuser'] = array(
 			'maxlength' => '255',
 			'searchable' => 2
 		),
+	)
+);
+
+if($app->auth->is_admin()) {
+	$form["tabs"]['mailuser']['fields'] += array(
+			'imap_prefix' => array (
+				'datatype' => 'VARCHAR',
+				'formtype' => 'TEXT',
+				'filters'   => array(
+						0 => array( 'event' => 'SAVE',
+						'type' => 'STRIPTAGS'),
+						1 => array( 'event' => 'SAVE',
+						'type' => 'STRIPNL')
+				),
+				'default' => '',
+				'value'  => '',
+				'width'  => '30',
+				'maxlength' => '255',
+			),
+	);
+}
+
+$form["tabs"]['mailuser']['fields'] += array(
 		'maildir' => array (
 			'datatype' => 'VARCHAR',
 			'formtype' => 'TEXT',
@@ -321,7 +344,6 @@ $form["tabs"]['mailuser'] = array(
 		//#################################
 		// END Datatable fields
 		//#################################
-	)
 );
 
 if($global_config['mail']['mail_password_onlyascii'] == 'y') {
