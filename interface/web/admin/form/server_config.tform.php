@@ -1666,6 +1666,30 @@ $form["tabs"]['dns'] = array(
 			'width' => '40',
 			'maxlength' => '255'
 		),
+		'bind_zonefiles_masterprefix' => array(
+			'datatype' => 'VARCHAR',
+			'formtype' => 'TEXT',
+			'default' => '',
+			'validators' => array( 0 => array ( 	'type' => 'REGEX',
+										'regex' => '/^[a-zA-Z0-9\.\-\_\/]{0,128}$/',
+										'errmsg'=> 'bind_zonefiles_masterprefix_error_regex'),
+			),
+			'value' => '',
+			'width' => '40',
+			'maxlength' => '255'
+		),
+		'bind_zonefiles_slaveprefix' => array(
+			'datatype' => 'VARCHAR',
+			'formtype' => 'TEXT',
+			'default' => '',
+			'validators' => array( 0 => array ( 	'type' => 'REGEX',
+										'regex' => '/^[a-zA-Z0-9\.\-\_\/]{0,128}$/',
+										'errmsg'=> 'bind_zonefiles_slaveprefix_error_regex'),
+			),
+			'value' => '',
+			'width' => '40',
+			'maxlength' => '255'
+		),
 		'named_conf_path' => array(
 			'datatype' => 'VARCHAR',
 			'formtype' => 'TEXT',

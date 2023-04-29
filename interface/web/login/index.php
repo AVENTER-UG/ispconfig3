@@ -177,7 +177,7 @@ function process_login_request(app $app, &$error, $conf, $module)
 		if ($app->db->errorMessage != '') $error .= '<br />'.$app->db->errorMessage != '';
 
 		$app->plugin->raiseEvent('login_failed', $username);
-		$app->auth_log('Failed login for user \''. $username .'\ from '. $_SERVER['REMOTE_ADDR'] .' at '. date('Y-m-d H:i:s'));
+		$app->auth_log('Failed login for user \''. $username .'\' from '. $_SERVER['REMOTE_ADDR'] .' at '. date('Y-m-d H:i:s'));
 	}
 }
 
