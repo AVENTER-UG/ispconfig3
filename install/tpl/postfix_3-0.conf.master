@@ -14,3 +14,6 @@
 # validate DANE
 smtp_dns_support_level = dnssec
 smtp_tls_security_level = dane
+
+# Disable SMTPUTF8 (until Dovecot supports it: https://git.ispconfig.org/ispconfig/ispconfig3/-/issues/6428)
+smtputf8_enable = no
