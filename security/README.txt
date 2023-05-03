@@ -65,10 +65,6 @@ Setting:     password_reset_allowed
 Options:     yes/no
 Description: Disables the password reset function.
 
-Setting:     ids_enabled
-Options:     yes/no
-Description: Enables the Intrusion Detection System
-
 Setting:     ids_log_level
 Options:     1 (number, default = 1)
 Description: IDS score that triggers the log in /usr/local/ispconfig/interface/temp/ids.log
