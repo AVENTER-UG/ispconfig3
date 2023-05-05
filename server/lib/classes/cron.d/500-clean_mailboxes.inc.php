@@ -53,15 +53,29 @@ class cronjob_clean_mailboxes extends cronjob {
 	public function onRunJob() {
 		global $app, $conf;
 
-		$trash_names=array('Trash', 'Papierkorb', 'Deleted Items', 'Deleted Messages', 'Corbeille');
-		$junk_names=array('Junk', 'Junk Email', 'SPAM');
+		$this->purge_junk_thrash();
+		$this->purge_soft_deleted_maildir();
+
+		parent::onRunJob();
+	}
+
+	private function purge_junk_thrash() {
+		global $app, $conf;
+
+		$trash_names = array('Trash', 'Papierkorb', 'Deleted Items', 'Deleted Messages', 'Corbeille');
+		$junk_names = array('Junk', 'Junk Email', 'SPAM');
 
 		$expunge_cmd = 'doveadm expunge -u ? mailbox ? sentbefore ';
 		$purge_cmd = 'doveadm purge -u ?';
 		$recalc_cmd = 'doveadm quota recalc -u ?';
 
 		$server_id = intval($conf['server_id']);
-		$records = $app->db->queryAllRecords("SELECT email, maildir, purge_trash_days, purge_junk_days, imap_prefix FROM mail_user WHERE maildir_format = 'maildir' AND disableimap = 'n' AND server_id = ? AND (purge_trash_days > 0 OR purge_junk_days > 0)", $server_id);
+		$records = $app->db->queryAllRecords("
+						SELECT email, maildir, purge_trash_days, purge_junk_days, imap_prefix
+						FROM mail_user
+						WHERE maildir_format = 'maildir' AND disableimap = 'n' AND server_id = ?
+							AND (purge_trash_days > 0 OR purge_junk_days > 0)",
+						$server_id);
 		
 		if(is_array($records) && !empty($records)) {
 			foreach($records as $email) {
@@ -93,8 +107,34 @@ class cronjob_clean_mailboxes extends cronjob {
 				$app->system->exec_safe($recalc_cmd, $email['email']);
 			}
 		}
+	}
 
-		parent::onRunJob();
+	// Purge soft deleted mailboxes.
+	private function purge_soft_deleted_maildir() {
+		global $app, $conf;
+		$mail_config = $app->getconf->get_server_config($conf["server_id"], 'mail');
+
+		if ($mail_config['mailbox_soft_delete'] == 'y') {
+			// Backward compatibility for dev installs between 3.2.9 and 3.2.10.
+			$mail_config['mailbox_soft_delete'] = 7;
+		}
+		if ($mail_config['mailbox_soft_delete'] > 0) {
+			$matched_dirs = glob($mail_config['homedir_path'] . "/*/[a-z0-9.-]*-deleted-[0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9]");
+
+			if (!empty($matched_dirs)) {
+				$delay_days = $mail_config['mailbox_soft_delete'];
+				foreach($matched_dirs as $dir) {
+					if (is_dir($dir)) {
+						$mtime = filemtime($dir);
+						echo "$mtime < " . strtotime("-$delay_days days") ;
+						if ($mtime < strtotime("-$delay_days days")) {
+							// do remove
+							$app->system->exec_safe('rm -rf ?', $dir);
+						}
+					}
+				}
+			}
+		}
 	}
 
 	/* this function is optional if it contains no custom code */
