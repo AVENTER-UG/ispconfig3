@@ -55,6 +55,7 @@ class cronjob_clean_mailboxes extends cronjob {
 
 		$this->purge_junk_thrash();
 		$this->purge_soft_deleted_maildir();
+		$this->purge_mdbox_removed();
 
 		parent::onRunJob();
 	}
@@ -132,6 +133,20 @@ class cronjob_clean_mailboxes extends cronjob {
 						}
 					}
 				}
+			}
+		}
+	}
+
+	// Remove messages with refcount=0 from mdbox files.
+	private function purge_mdbox_removed() {
+		global $app, $conf;
+
+		$sql = "SELECT email FROM mail_user WHERE maildir_format = 'mdbox' AND server_id = ?";
+		$records = $app->db->queryAllRecords($sql, $server_id);
+
+		if(is_array($records)) {
+			foreach($records as $rec) {
+				$app->system->exec_safe("su -c ?", 'doveadm purge -u "' . $rec["email"] . '"');
 			}
 		}
 	}
