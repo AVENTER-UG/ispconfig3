@@ -115,10 +115,6 @@ class cronjob_clean_mailboxes extends cronjob {
 		global $app, $conf;
 		$mail_config = $app->getconf->get_server_config($conf["server_id"], 'mail');
 
-		if ($mail_config['mailbox_soft_delete'] == 'y') {
-			// Backward compatibility for dev installs between 3.2.9 and 3.2.10.
-			$mail_config['mailbox_soft_delete'] = 7;
-		}
 		if ($mail_config['mailbox_soft_delete'] > 0) {
 			$matched_dirs = glob($mail_config['homedir_path'] . "/*/[a-z0-9.-]*-deleted-[0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9]");
 
