@@ -126,7 +126,6 @@ class cronjob_clean_mailboxes extends cronjob {
 				foreach($matched_dirs as $dir) {
 					if (is_dir($dir)) {
 						$mtime = filemtime($dir);
-						echo "$mtime < " . strtotime("-$delay_days days") ;
 						if ($mtime < strtotime("-$delay_days days")) {
 							// do remove
 							$app->system->exec_safe('rm -rf ?', $dir);
