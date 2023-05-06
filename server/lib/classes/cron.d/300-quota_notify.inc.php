@@ -75,7 +75,7 @@ class cronjob_quota_notify extends cronjob {
 		// enforce traffic quota (run only on the "master-server")
 		//######################################################################################################
 
-		if ($app->dbmaster == $app->db) {
+		if ($app->running_on_master()) {
 
 			$global_config = $app->getconf->get_global_config('mail');
 
@@ -159,7 +159,7 @@ class cronjob_quota_notify extends cronjob {
 		// send website quota warnings by email
 		//######################################################################################################
 
-		if ($app->dbmaster == $app->db) {
+		if ($app->running_on_master()) {
 
 			$global_config = $app->getconf->get_global_config('mail');
 
@@ -315,7 +315,7 @@ class cronjob_quota_notify extends cronjob {
 		// send mail quota warnings by email
 		//######################################################################################################
 
-		if ($app->dbmaster == $app->db) {
+		if ($app->running_on_master()) {
 
 			$global_config = $app->getconf->get_global_config('mail');
 			$mail_config = $app->getconf->get_server_config($conf['server_id'], 'mail');
@@ -453,7 +453,7 @@ class cronjob_quota_notify extends cronjob {
 		// send database quota warnings by email
 		//######################################################################################################
 
-		if ($app->dbmaster == $app->db) {
+		if ($app->running_on_master()) {
 
 			$global_config = $app->getconf->get_global_config('mail');
 

@@ -354,6 +354,16 @@ class app {
 		$this->log($msg, 3);	// isn't this supposed to be error code 2? (gwyneth 20220315)
 		die($msg);
 	}
+
+	/**
+	 * Determin if the current process is running on the master or a slave server.
+	 *
+	 * @return boolean
+	 */
+	function running_on_master() {
+
+		return $this->dbmaster == $this->db;
+	}
 }
 
 /**

@@ -546,7 +546,7 @@ class powerdns_plugin {
 		$dnssec_info = array_merge($this->format_dnssec_pubkeys($pubkeys), array('', '== Raw log ============================'), $log);
 		$dnssec_info = implode("\r\n", $dnssec_info);
 
-		if ($app->dbmaster !== $app->db) {
+		if (!$app->running_on_master()) {
 			$app->dbmaster->query('UPDATE dns_soa SET dnssec_info=?, dnssec_initialized=? WHERE id=?', $dnssec_info, 'Y', intval($data['new']['id']));
 		}
 		$app->db->query('UPDATE dns_soa SET dnssec_info=?, dnssec_initialized=? WHERE id=?', $dnssec_info, 'Y', intval($data['new']['id']));
