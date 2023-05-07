@@ -2398,7 +2398,7 @@ class nginx_plugin {
 						//* cleanup database
 						$sql = "DELETE FROM web_backup WHERE server_id = ? AND parent_domain_id = ? AND filename LIKE ?";
 						$app->db->query($sql, $conf['server_id'], $data_old['domain_id'], "web".$data_old['domain_id']."_%");
-						if($app->db->dbHost != $app->dbmaster->dbHost) $app->dbmaster->query($sql, $conf['server_id'], $data_old['domain_id'], "web".$data_old['domain_id']."_%");
+						if($app->running_on_slaveserver()) $app->dbmaster->query($sql, $conf['server_id'], $data_old['domain_id'], "web".$data_old['domain_id']."_%");
 
 						$app->log('Deleted the web backup files', LOGLEVEL_DEBUG);
 					}

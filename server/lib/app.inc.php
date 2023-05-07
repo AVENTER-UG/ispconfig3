@@ -364,6 +364,16 @@ class app {
 
 		return $this->dbmaster == $this->db;
 	}
+
+	/**
+	 * Determin if the current process is running on the master or a slave server.
+	 *
+	 * @return boolean
+	 */
+	function running_on_slaveserver() {
+
+		return $this->dbmaster != $this->db;
+	}
 }
 
 /**
