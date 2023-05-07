@@ -54,7 +54,7 @@ class cronjob_openvz extends cronjob {
 		// deactivate virtual servers (run only on the "master-server")
 		//######################################################################################################
 
-		if ($app->running_on_master()) {
+		if ($app->running_on_masterserver()) {
 			//* Check which virtual machines have to be deactivated
 			$sql = "SELECT * FROM openvz_vm WHERE active = 'y' AND active_until_date IS NOT NULL AND active_until_date < CURDATE()";
 			$records = $app->db->queryAllRecords($sql);

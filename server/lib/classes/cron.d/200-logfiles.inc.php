@@ -226,7 +226,7 @@ class cronjob_logfiles extends cronjob {
 		// Cleanup logs in master database (only the "master-server")
 		//######################################################################################################
 
-		if ($app->running_on_master()) {
+		if ($app->running_on_masterserver()) {
 			/** 7 days */
 
 

@@ -360,7 +360,7 @@ class app {
 	 *
 	 * @return boolean
 	 */
-	function running_on_master() {
+	function running_on_masterserver() {
 
 		return $this->dbmaster == $this->db;
 	}
