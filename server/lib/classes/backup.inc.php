@@ -1149,7 +1149,7 @@ class backup
                 @unlink($full_filename);
             }
         } elseif (self::backupModeIsRepos($backup_mode)) {
-            $repos_archives = self::getAllArchives($backup_dir, $backup_mode, $password);
+            $repos_archives = self::getAllArchives($backup_dir, $backup_mode, $password, $prefix_list);
             usort($repos_archives, function ($a, $b)  {
                 return ($a['created_at'] > $b['created_at']) ? -1 : 1;
             });
@@ -1168,8 +1168,11 @@ class backup
         return true;
     }
 
-    protected static function getAllArchives($backup_dir, $backup_mode, $password)
-    {
+    protected static function getAllArchives($backup_dir, $backup_mode, $password, $prefix_list = null) {
+        if (is_null($prefix_list)) {
+            global $app;
+            $app->log("prefix_list is null - [backupdir = $backup_dir, backupmode = $backup_mode ]", LOGLEVEL_WARN);
+        }
         $d = dir($backup_dir);
         $archives = [];
         /**
@@ -1189,11 +1192,23 @@ class backup
                     if (is_dir($repos_path) && strncmp('borg_', $entry, 5) === 0) {
                         $archivesJson = json_decode(implode("", self::getReposArchives($backup_mode, $repos_path, $password, 'json')), TRUE);
                         foreach ($archivesJson['archives'] as $archive) {
-                            $archives[] = [
-                                'repos'      => $entry,
-                                'archive'    => $archive['name'],
-                                'created_at' => strtotime($archive['time']),
-                            ];
+                            if (is_null($prefix_list)) { //fallback if no prefix_list
+                                $archives[] = [
+                                    'repos' => $entry,
+                                    'archive' => $archive['name'],
+                                    'created_at' => strtotime($archive['time']),
+                                ];
+                            } else {
+                                foreach ($prefix_list as $prefix) {
+                                    if (substr($archive['name'], 0, strlen($prefix)) == $prefix) { //filter backup list of all if no prefix_list
+                                        $archives[] = [
+                                            'repos' => $entry,
+                                            'archive' => $archive['name'],
+                                            'created_at' => strtotime($archive['time']),
+                                        ];
+                                    }
+                                }
+                            }
                         }
                     }
                     break;
