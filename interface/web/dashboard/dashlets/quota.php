@@ -38,6 +38,7 @@ class dashlet_quota {
 			foreach($sites as &$site) {
 				$site['domain'] = $app->functions->idn_decode($site['domain']);
 				$site['progressbar'] = $site['hd_quota'];
+				$total_used += $site['used_raw'] * 1000;
 			}
 			unset($site);
 
@@ -46,6 +47,7 @@ class dashlet_quota {
 			$has_quota = isset($sites[0]['used']);
 		}
 		$tpl->setVar('has_quota', $has_quota);
+		$tpl->setVar('total_used', $app->functions->formatBytes($total_used, 0));
 
 		return $tpl->grab();
 
