@@ -1136,7 +1136,7 @@ class installer_base {
 
 		//* If there are RBL's defined, format the list and add them to smtp_recipient_restrictions to prevent removal after an update
 		$rbl_list = '';
-		if (@isset($server_ini_array['mail']['realtime_blackhole_list']) && $server_ini_array['mail']['realtime_blackhole_list'] != '') {
+		if(@isset($server_ini_array['mail']['realtime_blackhole_list']) && $server_ini_array['mail']['realtime_blackhole_list'] != '') {
 			$rbl_hosts = explode(",", str_replace(" ", "", $server_ini_array['mail']['realtime_blackhole_list']));
 			foreach ($rbl_hosts as $key => $value) {
 				$rbl_list .= ", reject_rbl_client ". $value;
@@ -1146,13 +1146,13 @@ class installer_base {
 
 		//* If Postgrey is installed, configure it
 		$greylisting = '';
-		if($conf['postgrey']['installed'] == true) {
+		if(isset($conf['postgrey']['installed']) && ($conf['postgrey']['installed'] == true)) {
 			$greylisting = ', check_recipient_access mysql:/etc/postfix/mysql-virtual_policy_greylist.cf';
 		}
 
 		$reject_sender_login_mismatch = '';
 		$reject_authenticated_sender_login_mismatch = '';
-		if (isset($server_ini_array['mail']['reject_sender_login_mismatch']) && ($server_ini_array['mail']['reject_sender_login_mismatch'] == 'y')) {
+		if(isset($server_ini_array['mail']['reject_sender_login_mismatch']) && ($server_ini_array['mail']['reject_sender_login_mismatch'] == 'y')) {
 			$reject_sender_login_mismatch = ',reject_sender_login_mismatch,';
 			$reject_authenticated_sender_login_mismatch = 'reject_authenticated_sender_login_mismatch, ';
 		}
@@ -1162,11 +1162,11 @@ class installer_base {
 		$stress_adaptive = (isset($server_ini_array['mail']['stress_adaptive']) && ($server_ini_array['mail']['stress_adaptive'] == 'y')) ? '' : $stress_adaptive_placeholder;
 
 		$reject_unknown_client_hostname='';
-		if (isset($server_ini_array['mail']['reject_unknown']) && ($server_ini_array['mail']['reject_unknown'] == 'client' || $server_ini_array['mail']['reject_unknown'] == 'client_helo')) {
+		if(isset($server_ini_array['mail']['reject_unknown']) && ($server_ini_array['mail']['reject_unknown'] == 'client' || $server_ini_array['mail']['reject_unknown'] == 'client_helo')) {
 			$reject_unknown_client_hostname=',reject_unknown_client_hostname';
 		}
 		$reject_unknown_helo_hostname='';
-		if ((!isset($server_ini_array['mail']['reject_unknown'])) || $server_ini_array['mail']['reject_unknown'] == 'helo' || $server_ini_array['mail']['reject_unknown'] == 'client_helo') {
+		if((!isset($server_ini_array['mail']['reject_unknown'])) || $server_ini_array['mail']['reject_unknown'] == 'helo' || $server_ini_array['mail']['reject_unknown'] == 'client_helo') {
 			$reject_unknown_helo_hostname=',reject_unknown_helo_hostname';
 		}
 
