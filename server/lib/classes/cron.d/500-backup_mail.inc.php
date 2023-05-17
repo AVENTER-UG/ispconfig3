@@ -184,7 +184,7 @@ class cronjob_backup_mail extends cronjob {
 							$filesize = filesize($mail_backup_dir.'/'.$mail_backup_file);
 							$sql = "INSERT INTO mail_backup (server_id, parent_domain_id, mailuser_id, backup_mode, tstamp, filename, filesize) VALUES (?, ?, ?, ?, ?, ?, ?)";
 							$app->db->query($sql, $conf['server_id'], $domain_rec['domain_id'], $rec['mailuser_id'], $backup_mode, time(), $mail_backup_file, $filesize);	
-							if($app->db->dbHost != $app->dbmaster->dbHost) $app->dbmaster->query($sql, $conf['server_id'], $domain_rec['domain_id'], $rec['mailuser_id'], $backup_mode, time(), $mail_backup_file, $filesize);
+							if($app->running_on_slaveserver()) $app->dbmaster->query($sql, $conf['server_id'], $domain_rec['domain_id'], $rec['mailuser_id'], $backup_mode, time(), $mail_backup_file, $filesize);
 							unset($filesize);
 						} else {
 							/* Backup failed - remove archive */
@@ -213,7 +213,7 @@ class cronjob_backup_mail extends cronjob {
 								unlink($mail_backup_dir.'/'.$files[$n]);
 								$sql = "DELETE FROM mail_backup WHERE server_id = ? AND parent_domain_id = ? AND filename = ?";
 								$app->db->query($sql, $conf['server_id'], $domain_rec['domain_id'], $files[$n]);
-								if($app->db->dbHost != $app->dbmaster->dbHost) $app->dbmaster->query($sql, $conf['server_id'], $domain_rec['domain_id'], $files[$n]);
+								if($app->running_on_slaveserver()) $app->dbmaster->query($sql, $conf['server_id'], $domain_rec['domain_id'], $files[$n]);
 							}
 						}
 						unset($files);
@@ -241,7 +241,7 @@ class cronjob_backup_mail extends cronjob {
 						/* remove backups from db */
 						$sql = "DELETE FROM mail_backup WHERE server_id = ? AND parent_domain_id = ? AND mailuser_id = ?";
 						$app->db->query($sql, $conf['server_id'], $domain_rec['domain_id'], $rec['mailuser_id']);
-						if($app->db->dbHost != $app->dbmaster->dbHost) $app->dbmaster->query($sql, $conf['server_id'], $domain_rec['domain_id'], $rec['mailuser_id']);
+						if($app->running_on_slaveserver()) $app->dbmaster->query($sql, $conf['server_id'], $domain_rec['domain_id'], $rec['mailuser_id']);
 
 					}
 				}
@@ -254,7 +254,7 @@ class cronjob_backup_mail extends cronjob {
 						if(!is_file($mail_backup_dir.'/'.$backup['filename'])){
 							$sql = "DELETE FROM mail_backup WHERE server_id = ? AND parent_domain_id = ? AND filename = ?";
 							$app->db->query($sql, $conf['server_id'], $backup['parent_domain_id'], $backup['filename']);
-							if($app->db->dbHost != $app->dbmaster->dbHost) $app->dbmaster->query($sql, $conf['server_id'], $backup['parent_domain_id'], $backup['filename']);
+							if($app->running_on_slaveserver()) $app->dbmaster->query($sql, $conf['server_id'], $backup['parent_domain_id'], $backup['filename']);
 						}
 					}
 				}

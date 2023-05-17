@@ -504,7 +504,7 @@ class backup
         if ($success) {
             $sql = "DELETE FROM web_backup WHERE server_id = ? AND parent_domain_id = ? AND filename = ?";
             $app->db->query($sql, $server_id, $domain_id, $filename);
-            if($app->db->dbHost != $app->dbmaster->dbHost)
+            if($app->running_on_slaveserver())
                 $app->dbmaster->query($sql, $server_id, $domain_id, $filename);
             $app->log($sql . ' - ' . json_encode([$server_id, $domain_id, $filename]), LOGLEVEL_DEBUG);
         }
@@ -1126,7 +1126,7 @@ class backup
         $password = NULL;
 
         $db_list = array($app->db);
-        if ($app->db->dbHost != $app->dbmaster->dbHost)
+        if ($app->running_on_slaveserver())
             array_push($db_list, $app->dbmaster);
 
         if ($backup_mode == "userzip" || $backup_mode == "rootgz") {
@@ -1256,7 +1256,7 @@ class backup
         }
 
         $db_list = array($app->db);
-        if ($app->db->dbHost != $app->dbmaster->dbHost)
+        if ($app->running_on_slaveserver())
             array_push($db_list, $app->dbmaster);
 
         // Cleanup web_backup entries for non-existent backup files
@@ -1776,7 +1776,7 @@ class backup
                             //* password is for `Encrypted` column informative purposes, on download password is obtained from web_domain settings
                             $password = $repos_password ? '*secret*' : '';
                             $app->db->query($sql, $server_id, $domain_id, 'mysql', $backup_mode, $backup_format_db, time(), $db_backup_archive, $archive_size, $password);
-                            if ($app->db->dbHost != $app->dbmaster->dbHost)
+                            if ($app->running_on_slaveserver())
                                 $app->dbmaster->query($sql, $server_id, $domain_id, 'mysql', $backup_mode, $backup_format_db, time(), $db_backup_archive, $archive_size, $password);
                             $success = true;
                         } else {
@@ -1832,7 +1832,7 @@ class backup
                             //Making compatible with previous versions of ISPConfig:
                             $sql_mode = ($backup_format_db == 'gzip') ? 'sqlgz' : ('sql' . $backup_format_db);
                             $app->db->query($sql, $server_id, $domain_id, 'mysql', $sql_mode, $backup_format_db, time(), $db_compressed_file, $file_size, $password);
-                            if ($app->db->dbHost != $app->dbmaster->dbHost)
+                            if ($app->running_on_slaveserver())
                                 $app->dbmaster->query($sql, $server_id, $domain_id, 'mysql', $sql_mode, $backup_format_db, time(), $db_compressed_file, $file_size, $password);
                             $success = true;
                         }
@@ -1982,7 +1982,7 @@ class backup
                 $sql = "INSERT INTO web_backup (server_id, parent_domain_id, backup_type, backup_mode, backup_format, tstamp, filename, filesize, backup_password) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
                 $backup_time = time();
                 $app->db->query($sql, $server_id, $web_id, 'web', $backup_mode, $backup_format_web, $backup_time, $web_backup_archive, $archive_size, $password);
-                if ($app->db->dbHost != $app->dbmaster->dbHost)
+                if ($app->running_on_slaveserver())
                     $app->dbmaster->query($sql, $server_id, $web_id, 'web', $backup_mode, $backup_format_web, $backup_time, $web_backup_archive, $archive_size, $password);
                 unset($archive_size);
                 $app->log('Backup of web files for domain ' . $web_domain['domain'] . ' completed successfully to archive ' . $full_archive_path, LOGLEVEL_DEBUG);
@@ -2004,7 +2004,7 @@ class backup
                     $file_size = filesize($full_filename);
                     $sql = "INSERT INTO web_backup (server_id, parent_domain_id, backup_type, backup_mode, backup_format, tstamp, filename, filesize, backup_password) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
                     $app->db->query($sql, $server_id, $web_id, 'web', $backup_mode, $backup_format_web, time(), $web_backup_file, $file_size, $password);
-                    if ($app->db->dbHost != $app->dbmaster->dbHost)
+                    if ($app->running_on_slaveserver())
                         $app->dbmaster->query($sql, $server_id, $web_id, 'web', $backup_mode, $backup_format_web, time(), $web_backup_file, $file_size, $password);
                     unset($file_size);
                     $app->log('Backup of web files for domain ' . $web_domain['domain'] . ' completed successfully to file ' . $full_filename, LOGLEVEL_DEBUG);
