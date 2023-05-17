@@ -29,6 +29,13 @@
 					</td>{tmpl_else}<td></td>{/tmpl_if}
 				</tr>
 			</tmpl_loop>
-		</tbody>
+			</tbody>
+			<tfoot>
+			<tr>
+				<th>{tmpl_var name='total_txt'}</th>
+				<th>{tmpl_var name='total_used'}</th>
+				<th colspan="3"></th>
+			</tr>
+		</tfoot>
 	</table>
 </div>
