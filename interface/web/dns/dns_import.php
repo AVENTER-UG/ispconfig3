@@ -58,7 +58,11 @@ if($_SESSION["s"]["user"]["typ"] == 'user') {
 
 // import variables
 $template_id = (isset($_POST['template_id']))?$app->functions->intval($_POST['template_id']):0;
-$sys_groupid = (isset($_POST['client_group_id']))?$app->functions->intval($_POST['client_group_id']):0;
+if (isset($_POST['client_group_id'])) {
+	$sys_groupid = $app->functions->intval($_POST['client_group_id']);
+} else {
+	$sys_groupid = $_SESSION["s"]["user"]["default_group"];
+}
 $domain = (isset($_POST['domain'])&&!empty($_POST['domain']))?$_POST['domain']:NULL;
 
 // get the correct server_id
