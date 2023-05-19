@@ -262,6 +262,29 @@ class installer_base {
 		if($msg != '') die($msg);
 	}
 
+	//** Check MySQL version
+	public function check_mysql_version() {
+		global $conf;
+
+		$min_mariadb_version = '10.0.5';
+		$min_mysql_version = '8.0.0';
+
+		$rec = $this->db->queryOneRecord('SELECT VERSION() as mysql_version;');
+		$version = if(is_array($rec))? $rec['mysql_version']: '0';
+
+		if(strpos($version,'MariaDB')) {
+			// We have MariaDB
+			$parts = explode('-',$version);
+			$version = $parts[0];
+			if(version_compare($version, $min_mariadb_version, '<')) die("Minimum required MariaDB version is ".$min_mariadb_version."\n");
+		} else {
+			// we have MySQL
+			if(version_compare($version, $min_mysql_version, '<')) die("Minimum required MySQL version is ".$min_mysql_version."\n");
+		}
+
+
+	}
+
     public function force_configure_app($service, $enable_force=true) {
 		$force = false;
 		if(AUTOINSTALL == true) return false;
