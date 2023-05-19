@@ -1,0 +1,11 @@
+            <div class="form-group">
+                <label for="name" class="col-sm-3 control-label">{tmpl_var name='sortprio_txt'}</label>
+                <div class="col-sm-9"><input type="number" name="sortprio" id="sortprio" data-html="true" data-toggle="tooltip" data-placement="top"  title="{tmpl_var name='sortprio_long_txt'}" value="{tmpl_var name='sortprio'}" class="form-control" /></div>
+            </div>
+            
+        <input type="hidden" name="id" value="{tmpl_var name='id'}">
+            
+        <div class="clear"><div class="right">
+            <button class="btn btn-default formbutton-success" type="button" value="{tmpl_var name='btn_save_txt'}" data-submit-form="pageForm" data-form-action="admin/server_php_edit.php">{tmpl_var name='btn_save_txt'}</button>
+            <button class="btn btn-default formbutton-default" type="button" value="{tmpl_var name='btn_cancel_txt'}" data-load-content="admin/server_php_list.php">{tmpl_var name='btn_cancel_txt'}</button>
+        </div></div>

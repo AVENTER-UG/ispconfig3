@@ -54,7 +54,13 @@ class page_action extends tform_actions {
 		parent::onSubmit();
 	}
 	function onBeforeUpdate() {
-		global $app;
+                
+                global $app;
+                
+                //check if Prio tab got update/save if yes disable datalog update - not needed
+                if(isset($this->dataRecord["sortprio"])) {
+                        $app->tform->formDef['db_history'] = 'no';
+                }
 
 		//* Check if the server has been changed
 		// We do this only for the admin or reseller users, as normal clients can not change the server ID anyway

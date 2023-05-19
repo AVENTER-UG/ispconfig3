@@ -248,4 +248,20 @@ $form["tabs"]['php_fpm'] = array(
 		//#################################
 	)
 );
+$form["tabs"]['php_sort'] = array (
+    	'title' => "PHP Sort Priority",
+	'width' => 80,
+	'template' => "templates/server_php_sort_edit.htm",
+	'fields' => array(
+                   'sortprio' => array (
+			'datatype' => 'INTEGER',
+			'formtype' => 'TEXT',
+			'default' => '100',
+			'value'  => '',
+			'separator' => '',
+			'width'  => '10',
+			'maxlength' => '20'
+		),
+	)
+);
 ?>
