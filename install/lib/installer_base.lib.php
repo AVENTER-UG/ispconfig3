@@ -267,10 +267,10 @@ class installer_base {
 		global $conf;
 
 		$min_mariadb_version = '10.0.5';
-		$min_mysql_version = '8.0.0';
+		$min_mysql_version = '8.0.4';
 
 		$rec = $this->db->queryOneRecord('SELECT VERSION() as mysql_version;');
-		$version = if(is_array($rec))? $rec['mysql_version']: '0';
+		$version = (is_array($rec))? $rec['mysql_version']: '0';
 
 		if(strpos($version,'MariaDB')) {
 			// We have MariaDB
