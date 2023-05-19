@@ -1774,6 +1774,13 @@ class apache2_plugin {
 
 		//* create empty vhost array
 		$vhosts = array();
+		$proxy_protocol_protocols = explode(',', $web_config['vhost_proxy_protocol_protocols']);
+		$proxy_protocol_ipv4 = in_array('ipv4', $proxy_protocol_protocols);
+		$proxy_protocol_ipv6 = in_array('ipv6', $proxy_protocol_protocols);
+		$proxy_protocol_site = $web_config['vhost_proxy_protocol_enabled'] == 'all';
+		$proxy_protocol_site |= $web_config['vhost_proxy_protocol_enabled'] == 'y' && $data['new']['proxy_protocol'] == 'y';
+		$proxy_protocol_http_port = isset($web_config['vhost_proxy_protocol_http_port']) ? (int)$web_config['vhost_proxy_protocol_http_port'] : 0;
+		$proxy_protocol_https_port = isset($web_config['vhost_proxy_protocol_https_port']) ? (int)$web_config['vhost_proxy_protocol_https_port'] : 0;
 
 		//* Add vhost for ipv4 IP
 
@@ -1790,13 +1797,11 @@ class apache2_plugin {
 		if(count($alias_seo_redirects) > 0) $tmp_vhost_arr = $tmp_vhost_arr + array('alias_seo_redirects' => $alias_seo_redirects);
 		$vhosts[] = $tmp_vhost_arr;
 
-		//if proxy protocol is enabled we need to add a new port to lsiten to
-		if($web_config['vhost_proxy_protocol_enabled'] == 'y' && $data['new']['proxy_protocol'] == 'y'){
-			if(isset($web_config['vhost_proxy_protocol_http_port']) && (int)$web_config['vhost_proxy_protocol_http_port'] > 0) {
-				$tmp_vhost_arr['port']           = (int)$web_config['vhost_proxy_protocol_http_port'];
-				$tmp_vhost_arr['use_proxy_protocol'] = $data['new']['proxy_protocol'];
-				$vhosts[]                        = $tmp_vhost_arr;
-			}
+		//if proxy protocol is enabled we need to add a new port to listen to
+		if ($proxy_protocol_site && $proxy_protocol_ipv4 && $proxy_protocol_http_port > 0) {
+			$tmp_vhost_arr['port'] = $proxy_protocol_http_port;
+			$tmp_vhost_arr['use_proxy_protocol'] = 'y';
+			$vhosts[] = $tmp_vhost_arr;
 		}
 
 		unset($tmp_vhost_arr);
@@ -1814,13 +1819,11 @@ class apache2_plugin {
 			if(count($ipv4_ssl_alias_seo_redirects) > 0) $tmp_vhost_arr = $tmp_vhost_arr + array('alias_seo_redirects' => $ipv4_ssl_alias_seo_redirects);
 			$vhosts[] = $tmp_vhost_arr;
 
-			//if proxy protocol is enabled we need to add a new port to lsiten to
-			if($web_config['vhost_proxy_protocol_enabled'] == 'y' && $data['new']['proxy_protocol'] == 'y'){
-				if((int)$web_config['vhost_proxy_protocol_https_port'] > 0) {
-					$tmp_vhost_arr['port']           = (int)$web_config['vhost_proxy_protocol_https_port'];
-					$tmp_vhost_arr['use_proxy_protocol'] = $data['new']['proxy_protocol'];
-					$vhosts[]                        = $tmp_vhost_arr;
-				}
+			//if proxy protocol is enabled we need to add a new port to listen to
+			if ($proxy_protocol_site && $proxy_protocol_ipv4 && $proxy_protocol_https_port > 0) {
+				$tmp_vhost_arr['port'] = $proxy_protocol_https_port;
+				$tmp_vhost_arr['use_proxy_protocol'] = 'y';
+				$vhosts[] = $tmp_vhost_arr;
 			}
 
 			unset($tmp_vhost_arr, $ipv4_ssl_alias_seo_redirects);
@@ -1846,6 +1849,13 @@ class apache2_plugin {
 			if(count($rewrite_rules) > 0)  $tmp_vhost_arr = $tmp_vhost_arr + array('redirects' => $rewrite_rules);
 			if(count($alias_seo_redirects) > 0) $tmp_vhost_arr = $tmp_vhost_arr + array('alias_seo_redirects' => $alias_seo_redirects);
 			$vhosts[] = $tmp_vhost_arr;
+
+			//if proxy protocol is enabled we need to add a new port to listen to
+			if ($proxy_protocol_site && $proxy_protocol_ipv6 && $proxy_protocol_http_port > 0) {
+				$tmp_vhost_arr['port'] = $proxy_protocol_http_port;
+				$tmp_vhost_arr['use_proxy_protocol'] = 'y';
+				$vhosts[] = $tmp_vhost_arr;
+			}
 			unset($tmp_vhost_arr);
 
 			//* Add vhost for ipv6 IP with SSL
@@ -1860,6 +1870,14 @@ class apache2_plugin {
 				}
 				if(count($ipv6_ssl_alias_seo_redirects) > 0) $tmp_vhost_arr = $tmp_vhost_arr + array('alias_seo_redirects' => $ipv6_ssl_alias_seo_redirects);
 				$vhosts[] = $tmp_vhost_arr;
+
+				//if proxy protocol is enabled we need to add a new port to listen to
+				if ($proxy_protocol_site && $proxy_protocol_ipv6 && $proxy_protocol_https_port > 0) {
+					$tmp_vhost_arr['port'] = $proxy_protocol_https_port;
+					$tmp_vhost_arr['use_proxy_protocol'] = 'y';
+					$vhosts[] = $tmp_vhost_arr;
+				}
+
 				unset($tmp_vhost_arr, $ipv6_ssl_alias_seo_redirects);
 				$app->log('Enable SSL for IPv6: '.$domain, LOGLEVEL_DEBUG);
 			}
