@@ -271,7 +271,7 @@ class installer_base {
 
 		$rec = $this->db->queryOneRecord('SELECT VERSION() as mysql_version');
 		if(is_array($rec)) {
-			$version = $rec['mysql_version']
+			$version = $rec['mysql_version'];
 		} else {
 			die("Unable to get MySQL version\n");
 		}
