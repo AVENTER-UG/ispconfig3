@@ -389,12 +389,14 @@ class page_action extends tform_actions {
 				}
 			}
 		} else {
-			// Add default remote_ips from Main Configuration.
-			$remote_ips = explode(",", $global_config['default_remote_dbserver']);
+			if(!empty($global_config['default_remote_dbserver'])) {
+				// Add default remote_ips from Main Configuration.
+				$remote_ips = explode(",", $global_config['default_remote_dbserver']);
 
-			if($this->dataRecord['remote_access'] != 'y'){
-				$this->dataRecord['remote_ips'] = implode(',', $remote_ips);
-				$this->dataRecord['remote_access'] = 'y';
+				if($this->dataRecord['remote_access'] != 'y'){
+					$this->dataRecord['remote_ips'] = implode(',', $remote_ips);
+					$this->dataRecord['remote_access'] = 'y';
+				}
 			}
 		}
 
@@ -487,12 +489,14 @@ class page_action extends tform_actions {
 				}
 			}
 		} else {
-			// Add default remote_ips from Main Configuration.
-			$remote_ips = explode(",", $global_config['default_remote_dbserver']);
+			if(!empty($global_config['default_remote_dbserver'])) {
+				// Add default remote_ips from Main Configuration.
+				$remote_ips = explode(",", $global_config['default_remote_dbserver']);
 
-			if($this->dataRecord['remote_access'] != 'y'){
-				$this->dataRecord['remote_ips'] = implode(',', $remote_ips);
-				$this->dataRecord['remote_access'] = 'y';
+				if($this->dataRecord['remote_access'] != 'y'){
+					$this->dataRecord['remote_ips'] = implode(',', $remote_ips);
+					$this->dataRecord['remote_access'] = 'y';
+				}
 			}
 		}
 
