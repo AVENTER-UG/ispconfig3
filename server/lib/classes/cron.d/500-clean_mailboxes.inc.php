@@ -129,7 +129,7 @@ class cronjob_clean_mailboxes extends cronjob {
 					$delay_days = $mail_config['mailbox_soft_delete'];
 					foreach($matched_dirs as $dir) {
 						$owner = posix_getpwuid(fileowner($dir))
-						if (is_dir($dir) && is_array($owner) && $owner['name'] = 'vmail') {
+						if (is_dir($dir) && is_array($owner) && $owner['name'] == 'vmail') {
 							$mtime = filemtime($dir);
 							if ($mtime < strtotime("-$delay_days days")) {
 								// do remove
