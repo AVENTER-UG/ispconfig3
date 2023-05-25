@@ -281,9 +281,11 @@ class installer_base {
 			// We have MariaDB
 			$parts = explode('-',$version);
 			$version = $parts[0];
+			swriteln("MariaDB version ".$version);
 			if(version_compare($version, $min_mariadb_version, '<')) die("Minimum required MariaDB version is ".$min_mariadb_version."\n");
 		} else {
 			// we have MySQL
+			swriteln("MySQL version ".$version);
 			if(version_compare($version, $min_mysql_version, '<')) die("Minimum required MySQL version is ".$min_mysql_version."\n");
 		}
 
