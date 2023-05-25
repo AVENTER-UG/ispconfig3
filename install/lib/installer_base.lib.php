@@ -267,7 +267,8 @@ class installer_base {
 		global $conf;
 
 		$min_mariadb_version = '10.0.5';
-		$min_mysql_version = '8.0.4';
+		// Set MySQL version to 8.0.4 after CentOS 7 support ended to allow preg_* functions in SQL queries
+		$min_mysql_version = '5.5';
 
 		$rec = $this->db->queryOneRecord('SELECT VERSION() as mysql_version');
 		if(is_array($rec)) {
