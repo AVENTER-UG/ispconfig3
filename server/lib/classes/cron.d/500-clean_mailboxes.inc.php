@@ -115,6 +115,12 @@ class cronjob_clean_mailboxes extends cronjob {
 		global $app, $conf;
 		$mail_config = $app->getconf->get_server_config($conf["server_id"], 'mail');
 
+		// Convert olf values in mailbox_soft_delete field
+		if(isset($mail_config['mailbox_soft_delete']) && $mail_config['mailbox_soft_delete'] == 'n') $mail_config['mailbox_soft_delete'] = 0;
+		if(isset($mail_config['mailbox_soft_delete']) && $mail_config['mailbox_soft_delete'] == 'y') $mail_config['mailbox_soft_delete'] = 7;
+		$mail_config['mailbox_soft_delete'] = intval($mail_config['mailbox_soft_delete']);
+
+
 		if ($mail_config['mailbox_soft_delete'] > 0) {
 			$matched_dirs = glob($mail_config['homedir_path'] . "/*/[a-z0-9.-]*-deleted-[0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9]");
 
