@@ -8,5 +8,5 @@ UPDATE `dns_ssl_ca` SET `ca_name` = 'Sectigo (formerly Comodo CA)' WHERE `ca_iss
 -- not updating the dns_rr table to change all CAA records that have comodo.com / comodoca.com - we should not touch users records imo - TP
 
 -- #6445 Update the mailbox_soft_delete config option to it's new structure.
-UPDATE server SET config=REGEXP_REPLACE(config, 'mailbox_soft_delete=n', 'mailbox_soft_delete=0') WHERE config LIKE '%mailbox_soft_delete=n%'
-UPDATE server SET config=REGEXP_REPLACE(config, 'mailbox_soft_delete=y', 'mailbox_soft_delete=7') WHERE config LIKE '%mailbox_soft_delete=y%'
+-- UPDATE server SET config=REGEXP_REPLACE(config, 'mailbox_soft_delete=n', 'mailbox_soft_delete=0') WHERE config LIKE '%mailbox_soft_delete=n%'
+-- UPDATE server SET config=REGEXP_REPLACE(config, 'mailbox_soft_delete=y', 'mailbox_soft_delete=7') WHERE config LIKE '%mailbox_soft_delete=y%'
