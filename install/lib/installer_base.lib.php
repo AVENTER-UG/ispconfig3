@@ -262,6 +262,36 @@ class installer_base {
 		if($msg != '') die($msg);
 	}
 
+	//** Check MySQL version
+	public function check_mysql_version() {
+		global $conf;
+
+		$min_mariadb_version = '10.0.5';
+		// Set MySQL version to 8.0.4 after CentOS 7 support ended to allow preg_* functions in SQL queries
+		$min_mysql_version = '5.5';
+
+		$rec = $this->db->queryOneRecord('SELECT VERSION() as mysql_version');
+		if(is_array($rec)) {
+			$version = $rec['mysql_version'];
+		} else {
+			die("Unable to get MySQL version\n");
+		}
+
+		if(strpos($version,'MariaDB')) {
+			// We have MariaDB
+			$parts = explode('-',$version);
+			$version = $parts[0];
+			swriteln("MariaDB version ".$version);
+			if(version_compare($version, $min_mariadb_version, '<')) die("Minimum required MariaDB version is ".$min_mariadb_version."\n");
+		} else {
+			// we have MySQL
+			swriteln("MySQL version ".$version);
+			if(version_compare($version, $min_mysql_version, '<')) die("Minimum required MySQL version is ".$min_mysql_version."\n");
+		}
+
+
+	}
+
     public function force_configure_app($service, $enable_force=true) {
 		$force = false;
 		if(AUTOINSTALL == true) return false;
