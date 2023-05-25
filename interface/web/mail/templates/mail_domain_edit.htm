@@ -157,7 +157,8 @@
 			type : "create_dkim"
 		}, function(data) {
                         var dkim_txt = 'v=DKIM1; t=s; p=' + data['dns_record'].replace(/(\r\n|\n|\r)/gm, "");
-			var dns=data['dkim_selector'] + '._domainkey.' + data['domain'] + '. 3600   IN	TXT	' + dkim_txt.match(new RegExp('.{1,' + '200' + '}', 'g')).map(chunk =>  '"' + chunk + '"').join('');
+			//var dns=data['dkim_selector'] + '._domainkey.' + data['domain'] + '. 3600   IN	TXT	' + dkim_txt.match(new RegExp('.{1,' + '200' + '}', 'g')).map(chunk =>  '"' + chunk + '"').join('');
+            var dns=data['dkim_selector'] + '._domainkey.' + data['domain'] + '. 3600   IN	TXT	"' + dkim_txt + '"';
 
 			$("#dkim_selector").val(data.dkim_selector);
 			$("#dkim_public").val(data.dkim_public);

@@ -245,9 +245,12 @@ class page_action extends tform_actions {
 		$rec = $app->db->queryOneRecord($sql, $app->functions->intval($_GET['id']));
 		$dns_key = str_replace(array('-----BEGIN PUBLIC KEY-----','-----END PUBLIC KEY-----',"\r","\n"),'',$rec['dkim_public']);
 
-                $keyparts = str_split('v=DKIM1; t=s; p=' . $dns_key, 200);
-                array_walk($keyparts, function(&$value, $key) { $value = '"'.$value.'"'; } );
-                $dkim_txt = implode('', $keyparts);
+        /* we do not show split DKIM key anymore
+		$keyparts = str_split('v=DKIM1; t=s; p=' . $dns_key, 200);
+        array_walk($keyparts, function(&$value, $key) { $value = '"'.$value.'"'; } );
+        $dkim_txt = implode('', $keyparts);
+		*/
+		$dkim_txt = '"v=DKIM1; t=s; p=' . $dns_key . '"';
 
 		$dns_record = $rec['dkim_selector'] . '._domainkey.' . $rec['domain'] . '. 3600  IN  TXT   '.$dkim_txt;
 
