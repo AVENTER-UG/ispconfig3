@@ -31,8 +31,8 @@ EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 class cronjob_clean_mailboxes extends cronjob {
 
 	// should run before quota notify and backup
-	// quota notify and backup is both '0 0 * * *'
-
+	// quota notify and backup is both '0 0 * * *' 
+	
 	// job schedule
 	protected $_schedule = '00 22 * * *';
 
@@ -77,7 +77,7 @@ class cronjob_clean_mailboxes extends cronjob {
 						WHERE maildir_format = 'maildir' AND disableimap = 'n' AND server_id = ?
 							AND (purge_trash_days > 0 OR purge_junk_days > 0)",
 						$server_id);
-
+		
 		if(is_array($records) && !empty($records)) {
 			foreach($records as $email) {
 
@@ -115,22 +115,25 @@ class cronjob_clean_mailboxes extends cronjob {
 		global $app, $conf;
 		$mail_config = $app->getconf->get_server_config($conf["server_id"], 'mail');
 
-		// Convert old values in mailbox_soft_delete field.
+		// Convert old values in mailbox_soft_delete field
 		if(isset($mail_config['mailbox_soft_delete']) && $mail_config['mailbox_soft_delete'] == 'n') $mail_config['mailbox_soft_delete'] = 0;
 		if(isset($mail_config['mailbox_soft_delete']) && $mail_config['mailbox_soft_delete'] == 'y') $mail_config['mailbox_soft_delete'] = 7;
 		$mail_config['mailbox_soft_delete'] = intval($mail_config['mailbox_soft_delete']);
 
-		if ($mail_config['mailbox_soft_delete'] > 0) {
-			$matched_dirs = glob($mail_config['homedir_path'] . "/*/[a-z0-9.-]*-deleted-[0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9]");
 
-			if (!empty($matched_dirs)) {
-				$delay_days = $mail_config['mailbox_soft_delete'];
-				foreach($matched_dirs as $dir) {
-					if (is_dir($dir)) {
-						$mtime = filemtime($dir);
-						if ($mtime < strtotime("-$delay_days days")) {
-							// do remove
-							$app->system->exec_safe('rm -rf ?', $dir);
+		if ($mail_config['mailbox_soft_delete'] > 0) {
+			if(isset($mail_config['homedir_path']) || strlen($mail_config['homedir_path']) > 4) {
+				$matched_dirs = glob($mail_config['homedir_path'] . "/*/[a-z0-9.-]*-deleted-[0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9]");
+
+				if (!empty($matched_dirs)) {
+					$delay_days = $mail_config['mailbox_soft_delete'];
+					foreach($matched_dirs as $dir) {
+						if (is_dir($dir)) {
+							$mtime = filemtime($dir);
+							if ($mtime < strtotime("-$delay_days days")) {
+								// do remove
+								$app->system->exec_safe('sudo -u vmail rm -rf ?', $dir);
+							}
 						}
 					}
 				}
