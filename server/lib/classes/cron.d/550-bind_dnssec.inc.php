@@ -78,7 +78,7 @@ class cronjob_bind_dnssec extends cronjob {
 		global $app, $conf;
 		
 		//* job should only run on ispc master
-		if($app->db->dbHost != $app->dbmaster->dbHost) return;
+		if($app->running_on_slaveserver()) return;
 
 		//* Load libraries
 		$app->uses("getconf,tpl");

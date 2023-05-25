@@ -934,10 +934,24 @@ $form["tabs"]['web'] = array(
 		),
 		'vhost_proxy_protocol_enabled' => array (
 			'datatype' => 'VARCHAR',
-			'formtype' => 'CHECKBOX',
+			'formtype' => 'SELECT',
 			'default' => 'n',
-			'value' => array(0 => 'n',1 => 'y')
+			'value' => array(
+                'n' => 'Disabled',
+                'y' => 'Enabled (per site)',
+                'all' => 'Enabled (all sites)'
+            )
 		),
+        'vhost_proxy_protocol_protocols' => array(
+            'datatype' => 'VARCHAR',
+            'formtype' => 'SELECT',
+            'value' => array(
+                'ipv4' => 'IPv4',
+                'ipv6' => 'IPv6',
+                'ipv4,ipv6' => 'IPv4 + IPv6'
+            ),
+            'default' => 'ipv4'
+        ),
 		'vhost_proxy_protocol_http_port' => array(
 			'datatype' => 'VARCHAR',
 			'formtype' => 'TEXT',

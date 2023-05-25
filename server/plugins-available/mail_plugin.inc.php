@@ -466,7 +466,7 @@ class mail_plugin {
 					//* cleanup database
 					$sql = "DELETE FROM mail_backup WHERE server_id = ? AND parent_domain_id = ? AND mailuser_id = ?";
 					$app->db->query($sql, $conf['server_id'], $domain_rec['domain_id'], $data['old']['mailuser_id']);
-					if($app->db->dbHost != $app->dbmaster->dbHost) $app->dbmaster->query($sql, $conf['server_id'], $domain_rec['domain_id'], $data['old']['mailuser_id']);
+					if($app->running_on_slaveserver()) $app->dbmaster->query($sql, $conf['server_id'], $domain_rec['domain_id'], $data['old']['mailuser_id']);
 
 					$app->log('Deleted the mail backups for: '.$data['old']['email'], LOGLEVEL_DEBUG);
 				}
@@ -524,7 +524,7 @@ class mail_plugin {
 				//* cleanup database
 				$sql = "DELETE FROM mail_backup WHERE server_id = ? AND parent_domain_id = ?";
 				$app->db->query($sql, $conf['server_id'], $data['old']['domain_id']);
-				if($app->db->dbHost != $app->dbmaster->dbHost) $app->dbmaster->query($sql, $conf['server_id'], $domain_rec['domain_id']);
+				if($app->running_on_slaveserver()) $app->dbmaster->query($sql, $conf['server_id'], $domain_rec['domain_id']);
 
 				$app->log('Deleted the mail backup directory: '.$mail_backup_dir, LOGLEVEL_DEBUG);
 			}

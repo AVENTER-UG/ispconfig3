@@ -252,6 +252,9 @@ unset($tmp);
 include_once 'lib/mysql.lib.php';
 $inst->db = new db();
 
+//* Check MySQL version
+$inst->check_mysql_version();
+
 //** Begin with standard or expert installation
 
 $conf['services']['mail'] = false;

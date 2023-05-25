@@ -7,6 +7,11 @@ server {
 </tmpl_if>
 <tmpl_if name='ipv6_enabled'>
         listen [<tmpl_var name='ipv6_address'>]:<tmpl_var name='http_port'>;
+<tmpl_if name='use_proxy_protocol_ipv6' op='==' value='y'>
+<tmpl_if name='proxy_protocol_http' op='>' value='0'>
+        listen [<tmpl_var name='ipv6_address'>]:<tmpl_var name='proxy_protocol_http'> proxy_protocol;
+</tmpl_if>
+</tmpl_if>
 </tmpl_if>
 <tmpl_if name='ipv6_wildcard'>
         listen [::]:<tmpl_var name='http_port'>;
@@ -28,6 +33,11 @@ server {
 		# ssl_prefer_server_ciphers on;
 <tmpl_if name='ipv6_enabled'>
         listen [<tmpl_var name='ipv6_address'>]:<tmpl_var name='https_port'> ssl http2;
+<tmpl_if name='use_proxy_protocol_ipv6' op='==' value='y'>
+<tmpl_if name='proxy_protocol_https' op='>' value='0'>
+        listen [<tmpl_var name='ipv6_address'>]:<tmpl_var name='proxy_protocol_https'> ssl http2 proxy_protocol;
+</tmpl_if>
+</tmpl_if>
 </tmpl_if>
 <tmpl_if name='ipv6_wildcard'>
         listen [::]:<tmpl_var name='https_port'> ssl http2;

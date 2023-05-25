@@ -6,4 +6,5 @@ $wb['client_id_txt'] = 'Müşteri';
 $wb['name_txt'] = 'PHP Adı';
 $wb['active_txt'] = 'Etkin';
 $wb['usage_txt'] = 'Usage count';
+$wb['sortprio_txt'] = 'Priority';
 ?>

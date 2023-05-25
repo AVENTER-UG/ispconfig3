@@ -100,7 +100,7 @@ class modules {
 		global $app, $conf;
 
 		//* If its a multiserver setup
-		if($app->db->dbHost != $app->dbmaster->dbHost || ($app->db->dbHost == $app->dbmaster->dbHost && $app->db->dbName != $app->dbmaster->dbName)) {
+		if($app->running_on_slaveserver() || ($app->running_on_masterserver() && $app->db->dbName != $app->dbmaster->dbName)) {
 			if($conf['mirror_server_id'] > 0) {
 				$sql = "SELECT * FROM sys_datalog WHERE datalog_id > ? AND (server_id = ? OR server_id = ? OR server_id = 0) ORDER BY datalog_id LIMIT 0,1000";
 			} else {

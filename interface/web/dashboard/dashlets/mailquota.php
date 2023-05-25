@@ -26,9 +26,11 @@ class dashlet_mailquota {
 		//print_r($emails);
 
 		$has_mailquota = false;
+		$total_used = 0;
 		if(is_array($emails) && !empty($emails)){
 			foreach($emails as &$email) {
 				$email['email'] = $app->functions->idn_decode($email['email']);
+				$total_used += $email['used_raw'];
 			}
 			unset($email);
 			// email username is quoted in quota.lib already, so no htmlentities here to prevent double encoding
@@ -37,6 +39,7 @@ class dashlet_mailquota {
 			$has_mailquota = isset($emails[0]['used']);
 		}
 		$tpl->setVar('has_mailquota', $has_mailquota);
+		$tpl->setVar('total_used', $app->functions->formatBytes($total_used, 0));
 
 		return $tpl->grab();
 	}

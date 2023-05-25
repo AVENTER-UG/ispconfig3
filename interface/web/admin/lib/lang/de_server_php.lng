@@ -17,4 +17,7 @@ $wb['php_fpm_socket_dir_txt'] = 'PHP-FPM socket directory';
 $wb['active_txt'] = 'Aktiv';
 $wb['php_in_use_error'] = 'Diese PHP-Version wird noch benutzt.';
 $wb['php_name_in_use_error'] = 'Der Name kann nicht geändert werden.';
+$wb['PHP Sort Priority'] = 'Priorität';
+$wb['sortprio_txt'] = 'Sorting Priority';
+$wb['sortprio_long_txt'] = 'Priority of PHP Version in the PHP version select box<br>Default PHP has prio 0 if enabled<br>Lower value is higher priority';
 ?>

@@ -105,7 +105,6 @@ $wb['show_support_messages_txt'] = 'Mostra la funzione messaggio nel modulo Help
 $wb['show_aps_menu_txt'] = 'Mostra menu APS';
 $wb['show_aps_menu_note_txt'] = 'APS saranno rimosse dal pannello in un prossimo futuro.';
 $wb['show_aps_menu_note_url_txt'] = 'Clicca qui per maggiori informazioni.';
-$wb['show_aps_menu_note_url_txt'] = 'Click here for more information.';
 $wb['dns_show_zoneexport_txt'] = 'Show zone export.';
 $wb['le_caa_autocreate_options_txt'] = 'Enable automatic creation of CAA record on issuing LE';
 $wb['show_delete_on_forms_txt'] = 'Show delete button on edit forms';
