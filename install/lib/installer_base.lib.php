@@ -3922,10 +3922,6 @@ class installer_base {
 			$root_cron_jobs[] = "0 0 * * * ".$install_dir."/server/scripts/create_daily_nginx_access_logs.sh &> /dev/null";
 		}
 
-		if ($conf['services']['mail'] == 1) {
-			$root_cron_jobs[] = "30 23 * * * ".$install_dir."/server/scripts/handle_mailbox_soft_deleted.sh &> /dev/null";
-		}
-
 		foreach($root_cron_jobs as $cron_job) {
 			if(!in_array($cron_job."\n", $existing_root_cron_jobs)) {
 				$existing_root_cron_jobs[] = $cron_job."\n";

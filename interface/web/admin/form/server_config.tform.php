@@ -736,9 +736,17 @@ $form["tabs"]['mail'] = array(
 		),
 		'mailbox_soft_delete' => array (
 			'datatype' => 'VARCHAR',
-			'formtype' => 'CHECKBOX',
+			'formtype' => 'SELECT',
 			'default' => 'n',
-			'value' => array(0 => 'n', 1 => 'y')
+			'value' => array(
+				0 => 'soft_delete_directly_txt',
+				-1 => 'soft_delete_keep_indefinitely_txt',
+				1 => 'soft_delete_keep_1_txt',
+				7 => 'soft_delete_keep_7_txt',
+				30 => 'soft_delete_keep_30_txt',
+				90 => 'soft_delete_keep_90_txt',
+				365 => 'soft_delete_keep_365_txt',
+			)
 		),
 		'mailbox_quota_stats' => array (
 			'datatype' => 'VARCHAR',
