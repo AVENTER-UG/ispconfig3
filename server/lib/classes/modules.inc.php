@@ -160,7 +160,7 @@ class modules {
 						}
 						$params = array_merge($f_params, $params);
 						unset($f_params);
-						
+
 						$tmp_sql1 = substr($tmp_sql1, 0, -1);
 						$tmp_sql2 = substr($tmp_sql2, 0, -1);
 						//$tmp_sql1 .= "$idx[0]";
@@ -171,14 +171,14 @@ class modules {
 						$app->db->query($sql, true, $params);
 						if($app->db->errorNumber > 0) {
 							$replication_error = true;
-							$app->log("Replication failed. Error: (" . $d['dbtable'] . ") in MySQL server: (".$app->db->dbHost.") " . $app->db->errorMessage . " # SQL: " . $sql, LOGLEVEL_ERROR);
+							$app->log("Replication for datalog_id: " . $d['datalog_id'] . " failed. Error: (" . $d['dbtable'] . ") in MySQL server: (".$app->db->dbHost.") " . $app->db->errorMessage . " # SQL: " . $sql, LOGLEVEL_ERROR);
 						}
 						$log = $app->db->_build_query_string($sql, true, $params);
 						$app->log('Replicated from master: '.$log, LOGLEVEL_DEBUG);
 						unset($params);
 						unset($log);
 					}
-					
+
 					if($d['action'] == 'd') {
 						$idx = explode(':', $d['dbidx']);
 						$sql = "DELETE FROM ?? ";
