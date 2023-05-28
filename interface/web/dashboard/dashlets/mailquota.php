@@ -37,11 +37,12 @@ class dashlet_mailquota {
 			//$emails = $app->functions->htmlentities($emails);
 			$tpl->setloop('mailquota', $emails);
 			$has_mailquota = isset($emails[0]['used']);
-		}
-		$tpl->setVar('has_mailquota', $has_mailquota);
-		$tpl->setVar('total_used', $app->functions->formatBytes($total_used, 0));
 
-		return $tpl->grab();
+			$tpl->setVar('has_mailquota', $has_mailquota);
+			$tpl->setVar('total_used', $app->functions->formatBytes($total_used, 0));
+
+			return $tpl->grab();
+		}
 	}
 
 }
