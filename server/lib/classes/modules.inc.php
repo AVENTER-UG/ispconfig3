@@ -171,7 +171,7 @@ class modules {
 						$app->db->query($sql, true, $params);
 						if($app->db->errorNumber > 0) {
 							$replication_error = true;
-							$app->log("Replication for datalog_id: " . $d['datalog_id'] . " failed. Error: (" . $d['dbtable'] . ") in MySQL server: (".$app->db->dbHost.") " . $app->db->errorMessage . " # SQL: " . $sql, LOGLEVEL_ERROR);
+							$app->log("Replication of datalog_id: " . $d['datalog_id'] . " failed. Error: (" . $d['dbtable'] . ") in MySQL server: (".$app->db->dbHost.") " . $app->db->errorMessage . " # SQL: " . $sql, LOGLEVEL_ERROR);
 						}
 						$log = $app->db->_build_query_string($sql, true, $params);
 						$app->log('Replicated from master: '.$log, LOGLEVEL_DEBUG);
