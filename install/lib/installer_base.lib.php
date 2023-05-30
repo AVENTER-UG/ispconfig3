@@ -281,12 +281,18 @@ class installer_base {
 			// We have MariaDB
 			$parts = explode('-',$version);
 			$version = $parts[0];
-			swriteln("Checking MariaDB version " . $version . " .. OK");
-			if(version_compare($version, $min_mariadb_version, '<')) die("Minimum required MariaDB version is " . $min_mariadb_version . "\n");
+			if(version_compare($version, $min_mariadb_version, '<')) {
+				die("Minimum required MariaDB version is " . $min_mariadb_version . " ,found " . $version ." \n");
+			} else {
+				swriteln("Checking MariaDB version " . $version . " .. OK");
+			}
 		} else {
 			// We have MySQL or Percona
-			swriteln("Checking MySQL or compatible version " . $version . " .. OK");
-			if(version_compare($version, $min_mysql_version, '<')) die("Minimum required MySQL or compatible version is " . $min_mysql_version . "\n");
+			if(version_compare($version, $min_mysql_version, '<')) {
+				die("Minimum required MySQL or compatible version is " . $min_mysql_version . " ,found " . $version ." \n");
+			} else {
+				swriteln("Checking MySQL or compatible version " . $version . " .. OK");
+			}
 		}
 	}
 
