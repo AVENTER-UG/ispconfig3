@@ -45,13 +45,12 @@ class dashlet_quota {
 			$sites = $app->functions->htmlentities($sites);
 			$tpl->setloop('quota', $sites);
 			$has_quota = isset($sites[0]['used']);
+
+			$tpl->setVar('has_quota', $has_quota);
+			$tpl->setVar('total_used', $app->functions->formatBytes($total_used, 0));
+
+			return $tpl->grab();
 		}
-		$tpl->setVar('has_quota', $has_quota);
-		$tpl->setVar('total_used', $app->functions->formatBytes($total_used, 0));
-
-		return $tpl->grab();
-
-
 	}
 
 }
