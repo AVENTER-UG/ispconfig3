@@ -247,7 +247,7 @@ class installer_base {
 	//** Check prerequisites
 	public function check_prerequisites() {
 		global $conf;
-		
+
 		$msg = '';
 
 		if ($conf['default_php'] != '') {
@@ -266,30 +266,34 @@ class installer_base {
 	public function check_mysql_version() {
 		global $conf;
 
-		$min_mariadb_version = '10.0.5';
-		// Set MySQL version to 8.0.4 after CentOS 7 support ended to allow preg_* functions in SQL queries
+		// Set MariaDB version to 10.0.5 and MySQL version to 8.0.4 after CentOS 7 support ended to allow preg_* functions in SQL queries
+		$min_mariadb_version = '5.5';
 		$min_mysql_version = '5.5';
 
 		$rec = $this->db->queryOneRecord('SELECT VERSION() as mysql_version');
 		if(is_array($rec)) {
 			$version = $rec['mysql_version'];
 		} else {
-			die("Unable to get MySQL version\n");
+			die("Unable to get MySQL or compatible version\n");
 		}
 
 		if(strpos($version,'MariaDB')) {
 			// We have MariaDB
 			$parts = explode('-',$version);
 			$version = $parts[0];
-			swriteln("MariaDB version ".$version);
-			if(version_compare($version, $min_mariadb_version, '<')) die("Minimum required MariaDB version is ".$min_mariadb_version."\n");
+			if(version_compare($version, $min_mariadb_version, '<')) {
+				die("Minimum required MariaDB version is " . $min_mariadb_version . ",found " . $version . "\n");
+			} else {
+				swriteln("Checking MariaDB version " . $version . " .. OK");
+			}
 		} else {
-			// we have MySQL
-			swriteln("MySQL version ".$version);
-			if(version_compare($version, $min_mysql_version, '<')) die("Minimum required MySQL version is ".$min_mysql_version."\n");
+			// We have MySQL or Percona
+			if(version_compare($version, $min_mysql_version, '<')) {
+				die("Minimum required MySQL or compatible version is " . $min_mysql_version . ",found " . $version . "\n");
+			} else {
+				swriteln("Checking MySQL or compatible version " . $version . " .. OK");
+			}
 		}
-
-
 	}
 
     public function force_configure_app($service, $enable_force=true) {
