@@ -461,7 +461,8 @@ class bind_plugin {
 
 		//* Ensure that the named slave directory is writable by the named user
 		if(!empty($dns_config['bind_zonefiles_slaveprefix'])) {
-			$slave_record_dir = dirname($dns_config['bind_zonefiles_dir'].'/'.$dns_config['bind_zonefiles_slaveprefix']);
+			$slave_record_dir = $dns_config['bind_zonefiles_dir'].'/'.$dns_config['bind_zonefiles_slaveprefix'];
+			if(substr($slave_record_dir,-1) != '/') $slave_record_dir = dirname($slave_record_dir);
 		} else {
 			$slave_record_dir = $dns_config['bind_zonefiles_dir'];
 		}
