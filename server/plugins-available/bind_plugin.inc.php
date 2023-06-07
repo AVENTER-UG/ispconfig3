@@ -460,7 +460,12 @@ class bind_plugin {
 		}
 
 		//* Ensure that the named slave directory is writable by the named user
-		$slave_record_dir = $dns_config['bind_zonefiles_dir'].'/'.$this->slave_zone_file_prefix();
+		if(!empty($dns_config['bind_zonefiles_slaveprefix'])) {
+			$slave_record_dir = $dns_config['bind_zonefiles_dir'].'/'.$dns_config['bind_zonefiles_slaveprefix'];
+			if(substr($slave_record_dir,-1) != '/') $slave_record_dir = dirname($slave_record_dir);
+		} else {
+			$slave_record_dir = $dns_config['bind_zonefiles_dir'];
+		}
 		if(!@is_dir($slave_record_dir)) mkdir($slave_record_dir, 0770, true);
 		chown($slave_record_dir, $dns_config['bind_user']);
 		chgrp($slave_record_dir, $dns_config['bind_group']);
