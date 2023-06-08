@@ -201,11 +201,11 @@ if ($domains_settings['use_domain_module'] == 'y') {
 	if(is_array($domains) && sizeof($domains) > 0) {
 		/* We have domains in the list, so create the drop-down-list */
 		foreach( $domains as $domain) {
-			$domain_select .= "<option value=" . $domain['domain_id'] ;
+			$domain_select .= "<option value=" . $domain['domain'] ;
 			if ($domain['domain'] == $_POST['domain']) {
 				$domain_select .= " selected";
 			}
-			$domain_select .= ">" . $app->functions->idn_decode($domain['domain']) . ".</option>\r\n";
+			$domain_select .= ">" . $app->functions->idn_decode($domain['domain']) . "</option>\r\n";
 		}
 	}
 	else {
