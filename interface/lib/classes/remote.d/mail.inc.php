@@ -60,6 +60,10 @@ class remoting_mail extends remoting {
 			throw new SoapFault('permission_denied', 'You do not have the permissions to access this function.');
 			return false;
 		}
+
+		// set default value for dkim selector if not set in $params array
+		if(!isset($params['dkim_selector'])) $params['dkim_selector'] = 'default';
+
 		$primary_id = $this->insertQuery('../mail/form/mail_domain.tform.php', $client_id, $params, 'mail:mail_domain:on_after_insert');
 		return $primary_id;
 	}
@@ -332,7 +336,7 @@ class remoting_mail extends remoting {
 		return $affected_rows;
 	}
 
-	// Mail backup list function by Dominik Müller, info@profi-webdesign.net
+	// Mail backup list function by Dominik Mï¿½ller, info@profi-webdesign.net
 	public function mail_user_backup_list($session_id, $primary_id = null)
 	{
 		global $app;
@@ -355,7 +359,7 @@ class remoting_mail extends remoting {
 		return $result;
 	}
 
-	// Mail backup restore/download functions by Dominik Müller, info@profi-webdesign.net
+	// Mail backup restore/download functions by Dominik Mï¿½ller, info@profi-webdesign.net
 	public function mail_user_backup($session_id, $primary_id, $action_type)
 	{
 		global $app;
