@@ -47,12 +47,12 @@ class custom_datasource {
 		if($_SESSION["s"]["user"]["typ"] == 'user') {
 			// Get the limits of the client
 			$client_group_id = $app->functions->intval($_SESSION["s"]["user"]["default_group"]);
-			$client = $app->db->queryOneRecord("SELECT default_dnsserver FROM sys_group, client WHERE sys_group.client_id = client.client_id and sys_group.groupid = ?", $client_group_id);
-			$sql = "SELECT server_id,server_name FROM server WHERE server_id = ?";
+			$client = $app->db->queryOneRecord("SELECT dns_servers FROM sys_group, client WHERE sys_group.client_id = client.client_id and sys_group.groupid = ?", $client_group_id);
+			$sql = "SELECT server_id,server_name FROM server WHERE server_id in (?)";
 		} else {
 			$sql = "SELECT server_id,server_name FROM server WHERE dns_server = 1 ORDER BY server_name AND mirror_server_id = 0";
 		}
-		$records = $app->db->queryAllRecords($sql, $client['default_dnsserver']);
+		$records = $app->db->queryAllRecords($sql, $client['dns_servers']);
 		$records_new = array();
 		if(is_array($records)) {
 			foreach($records as $rec) {
