@@ -37,6 +37,11 @@ class dns_wizard
         global $app;
         $app->uses('getconf');
 
+        // get system settings
+        $settings = $app->getconf->get_global_config();
+
+        $error = '';
+
         // get the correct server_id
         if (isset($data['server_id'])) {
             $server_id = $app->functions->intval($data['server_id']);
@@ -45,12 +50,17 @@ class dns_wizard
             $server_id = $app->functions->intval($data['server_id_value']);
             $post_server_id = true;
         } else {
-            $settings = $app->getconf->get_global_config('dns');
-            $server_id = $app->functions->intval($settings['default_dnsserver']);
+            $server_id = $app->functions->intval($settings['dns']['default_dnsserver']);
+            if(empty($server_id)) {
+                $tmp = $app->db->queryOneRecord('SELECT server_id FROM server WHERE dns_server = 1 LIMIT 0,1');
+                if(!empty($tmp['server_id'])) {
+                    $server_id = $tmp['server_id'];
+                } else {
+                    $error .= $app->lng('error_no_server_id').'<br />';
+                }
+            }
             $post_server_id = false;
         }
-
-        $error = '';
 
         if ($post_server_id)
         {
@@ -74,12 +84,16 @@ class dns_wizard
         // apply filters
         if(isset($data['domain']) && $data['domain'] != ''){
             /* check if the domain module is used - and check if the selected domain can be used! */
-            if ($domains_settings['use_domain_module'] == 'y') {
+            if ($settings['domains']['use_domain_module'] == 'y') {
+                // get domain_id for domain
+                $tmp = $app->db->queryOneRecord('SELECT domain_id from domain where domain = ?', $data['domain']);
+                $domain_id = $app->functions->intval( $tmp['domain_id']);
+                
                 if ($_SESSION["s"]["user"]["typ"] == 'admin' || $app->auth->has_clients($_SESSION['s']['user']['userid'])) {
-                    $data['client_group_id'] = $app->tools_sites->getClientIdForDomain($data['domain']);
+                    $data['client_group_id'] = $app->tools_sites->getClientIdForDomain($domain_id);
                 }
-                $domain_check = $app->tools_sites->checkDomainModuleDomain($data['domain']);
-                if(!$domain_check) {
+                $domain_check = $app->tools_sites->checkDomainModuleDomain($domain_id);
+                if($domain_check === false) {
                     // invalid domain selected
                     $data['domain'] = '';
                 } else {
@@ -110,7 +124,7 @@ class dns_wizard
 
         if(isset($data['ip']) && $data['ip'] == '') $error .= $app->lng('error_ip_empty').'<br />';
 
-        if(isset($data['ipv6']) && $data['ipv6'] == '') $error .= $app->lng('error_ipv6_empty').'<br />';
+        //if(isset($data['ipv6']) && $data['ipv6'] == '') $error .= $app->lng('error_ipv6_empty').'<br />';
 
         # fixme: this regex is pretty poor for hostname validation
         if(isset($data['ns1']) && $data['ns1'] == '') $error .= $app->lng('error_ns1_empty').'<br />';
