@@ -287,11 +287,33 @@ class functions {
 	 * @return string - formated bytes
 	 */
 	public function formatBytes($size, $precision = 2) {
+		// 0 is a special as it would give NAN otehrwise.
+		if ($size == 0) {
+			return 0;
+		}
+
 		$base=log($size)/log(1024);
 		$suffixes=array('', ' kB', ' MB', ' GB', ' TB');
 		return round(pow(1024, $base-floor($base)), $precision).$suffixes[floor($base)];
 	}
 
+	/**
+	 * Function to change bytes to kB, MB, GB or TB or the translated string 'Unlimited' for -1
+	 * @param int $size - size in bytes
+	 * @param int precicion - after-comma-numbers (default: 2)
+	 * @return string - formated bytes
+	 */
+	public function formatBytesOrUnlimited($size, $precision = 2) {
+		global $app;
+
+		if ($size == -1) {
+			return $app->lng('unlimited_txt');
+		}
+		else {
+			return $this->formatBytes($size, $precision);
+		}
+
+	}
 
 	/**
 	 * Normalize a path and strip duplicate slashes from it

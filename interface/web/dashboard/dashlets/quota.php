@@ -24,13 +24,7 @@ class dashlet_quota {
 		if(is_file($lng_file)) include $lng_file;
 		$tpl->setVar($wb);
 
-		if ($_SESSION["s"]["user"]["typ"] != 'admin') {
-			$client_id = $_SESSION['s']['user']['client_id'];
-		} else {
-			$client_id = $limit_to_client_id;
-		}
-
-		$sites = $app->quota_lib->get_quota_data($client_id);
+		$sites = $app->quota_lib->get_quota_data($limit_to_client_id);
 		//print_r($sites);
 
 		$has_quota = false;
@@ -38,7 +32,10 @@ class dashlet_quota {
 			foreach($sites as &$site) {
 				$site['domain'] = $app->functions->idn_decode($site['domain']);
 				$site['progressbar'] = $site['hd_quota'];
-				$total_used += $site['used_raw'] * 1000;
+				$site['used'] = $app->functions->formatBytes($site['used_raw'], 0);
+				$site['hard'] = $app->functions->formatBytesOrUnlimited($site['hard_raw'], 0);
+				$site['soft'] = $app->functions->formatBytesOrUnlimited($site['soft_raw'], 0);
+				$total_used += $site['used_raw'];
 			}
 			unset($site);
 

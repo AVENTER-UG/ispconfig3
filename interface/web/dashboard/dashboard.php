@@ -219,7 +219,7 @@ if($app->auth->is_admin()) {
 $leftcol = array();
 foreach($leftcol_dashlets as $name) {
 	if(isset($dashlet_list[$name])) {
-		$leftcol[]['content'] = $dashlet_list[$name]->show();
+		$leftcol[]['content'] = $dashlet_list[$name]->show($_SESSION['s']['user']['client_id']);
 	}
 }
 $app->tpl->setloop('leftcol', $leftcol);

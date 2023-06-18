@@ -16,13 +16,8 @@ class dashlet_mailquota {
 		if(is_file($lng_file)) include $lng_file;
 		$tpl->setVar($wb);
 
-		if ($_SESSION["s"]["user"]["typ"] != 'admin') {
-			$client_id = $_SESSION['s']['user']['client_id'];
-		} else {
-			$client_id = $limit_to_client_id;
-		}
 
-		$emails = $app->quota_lib->get_mailquota_data($client_id);
+		$emails = $app->quota_lib->get_mailquota_data($limit_to_client_id);
 		//print_r($emails);
 
 		$has_mailquota = false;
@@ -30,6 +25,8 @@ class dashlet_mailquota {
 		if(is_array($emails) && !empty($emails)){
 			foreach($emails as &$email) {
 				$email['email'] = $app->functions->idn_decode($email['email']);
+				$email['used'] = $app->functions->formatBytes($email['used_raw'], 0);
+				$email['quota'] = $app->functions->formatBytesOrUnlimited($email['quota_raw'], 0);
 				$total_used += $email['used_raw'];
 			}
 			unset($email);
@@ -46,12 +43,3 @@ class dashlet_mailquota {
 	}
 
 }
-
-
-
-
-
-
-
-
-?>

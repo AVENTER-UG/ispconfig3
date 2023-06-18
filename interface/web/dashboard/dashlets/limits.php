@@ -146,16 +146,13 @@ class dashlet_limits
             include $lng_file;
         }
         $tpl->setVar($wb);
-
-        if ($limit_to_client_id == 0) {
-          $client_id = $_SESSION['s']['user']['client_id'];
-          $user_is_admin = true;
-        } else {
+        if ($app->auth->is_admin()) {
           $client_id = $limit_to_client_id;
-          $user_is_admin = false;
+        } else {
+          $client_id = $_SESSION['s']['user']['client_id'];
         }
 
-        $client_group_id = $app->functions->intval($_SESSION["s"]["user"]["default_group"]);
+//        $client_group_id = $app->functions->intval($_SESSION["s"]["user"]["default_group"]);
         $client = $app->db->queryOneRecord("SELECT * FROM client WHERE client_id = ?", $client_id);
 
 
@@ -163,22 +160,23 @@ class dashlet_limits
         foreach ($limits as $limit) {
             $field = $limit['field'];
             $value = $client[$field];
-            if ($user_is_admin) {
-                $value = $wb['unlimited_txt'];
+            if ($app->auth->is_admin() && $limit_to_client_id == 0) {
+                $value = -1;
             } else {
                 $value = $client[$field];
             }
 
             if ($value != 0 || $value == $wb['unlimited_txt']) {
-                $value_formatted = ($value == '-1')?$wb['unlimited_txt']:$value;
+                $suffix = '';
                 if (isset($limit['q_type']) && $limit['q_type'] != '') {
-                    $usage = $this->_get_assigned_quota($limit, $client_id) . " MB";
-                    $value_formatted = ($value == '-1')?$wb['unlimited_txt']:$value . " MB";
+                    $usage = $this->_get_assigned_quota($limit, $client_id);
+                    $suffix = ' MB';
                 } else {
                     $usage = $this->_get_limit_usage($limit, $client_id);
                 }
                 $percentage = ($value == '-1' || intval($value) == 0 || trim($value) == '' ? -1 : round(100 * (int)$usage / (int)$value));
                 $progressbar = $percentage > 100 ? 100 : $percentage;
+                $value_formatted = ($value == '-1') ? $wb['unlimited_txt'] : ($value . $suffix);
                 $rows[] = array('field' => $field,
                     'field_txt' => $wb[$field.'_txt'],
                     'value' => $value_formatted,
@@ -223,7 +221,7 @@ class dashlet_limits
         }
         $sql .= $app->tform->getAuthSQL('r', '', $limit_to_client_id);
         $rec = $app->db->queryOneRecord($sql, $limit['q_type'], $limit['db_table']);
-        if ($limit['db_table']=='mail_user') {
+        if ($limit['db_table'] == 'mail_user') {
             $quotaMB = $rec['number'] / 1048576;
         } // Mail quota is in bytes, must be converted to MB
         else {
