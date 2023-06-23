@@ -112,7 +112,7 @@ var ISPConfig = {
 					else return escapeMarkup(o.text);
 				}
 			}).on('change', function(e) {
-				if ($("#pageForm .table #Filter").length > 0) {
+				if ($("#pageForm .table #Filter").length > 0 && ! $(this).hasClass("disableChangeEvent")) {
 					$("#pageForm .table #Filter").trigger('click');
 				}
 			});
@@ -599,7 +599,7 @@ var ISPConfig = {
 
 $(document).on("change", function(event) {
 	var elName = event.target.localName;
-	if ($("#pageForm .table #Filter").length > 0 && elName == 'select') {
+	if ($("#pageForm .table #Filter").length > 0 && elName == 'select' && ! $(event.target).hasClass("disableChangeEvent") ) {
 		event.preventDefault();
 		$("#pageForm .table #Filter").trigger('click');
 	}
