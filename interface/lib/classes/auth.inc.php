@@ -53,6 +53,13 @@ class auth {
 		}
 	}
 
+	public function is_reseller() {
+		if($this->has_clients($_SESSION['s']['user']['userid'])) {
+			return true;
+		} else {
+			return false;
+		}
+	}
 	public function has_clients($userid) {
 		global $app, $conf;
 
