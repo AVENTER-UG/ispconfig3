@@ -146,15 +146,13 @@ class dashlet_limits
             include $lng_file;
         }
         $tpl->setVar($wb);
-        if ($app->auth->is_admin()) {
-          $client_id = $limit_to_client_id;
-        } else {
-          $client_id = $_SESSION['s']['user']['client_id'];
+
+        if ($limit_to_client_id != null) {
+          $client = $app->db->queryOneRecord("SELECT * FROM client WHERE client_id = ?", $limit_to_client_id);
         }
-
-//        $client_group_id = $app->functions->intval($_SESSION["s"]["user"]["default_group"]);
-        $client = $app->db->queryOneRecord("SELECT * FROM client WHERE client_id = ?", $client_id);
-
+        elseif ($limit_to_client_id == null && $app->auth->is_reseller()) {
+          $client = $app->db->queryOneRecord("SELECT * FROM client WHERE client_id = ?", $_SESSION['s']['user']['client_id']);
+        }
 
         $rows = array();
         foreach ($limits as $limit) {
