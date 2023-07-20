@@ -222,7 +222,7 @@ class dashlet_limits
             $quotaMB = $rec['number'] / 1048576;
         } // Mail quota is in bytes, must be converted to MB
         else {
-            $quotaMB = $rec['number'];
+            $quotaMB = $app->functions->intval($rec['number']);
         }
         return $quotaMB;
     }
