@@ -2,7 +2,7 @@
 
 class dashlet_limits
 {
-    public function show($limit_to_client_id = 0)
+    public function show()
     {
         global $app, $conf;
 
@@ -147,35 +147,33 @@ class dashlet_limits
         }
         $tpl->setVar($wb);
 
-        if ($limit_to_client_id == 0) {
-          $client_id = $_SESSION['s']['user']['client_id'];
-          $user_is_admin = true;
+        if ($app->auth->is_admin()) {
+            $user_is_admin = true;
         } else {
-          $client_id = $limit_to_client_id;
-          $user_is_admin = false;
+            $user_is_admin = false;
         }
+        $tpl->setVar('is_admin', $user_is_admin);
 
-        $client_group_id = $app->functions->intval($_SESSION["s"]["user"]["default_group"]);
-        $client = $app->db->queryOneRecord("SELECT * FROM client WHERE client_id = ?", $client_id);
-
+        if ($user_is_admin == false) {
+            $client_group_id = $app->functions->intval($_SESSION["s"]["user"]["default_group"]);
+            $client = $app->db->queryOneRecord("SELECT * FROM sys_group, client WHERE sys_group.client_id = client.client_id and sys_group.groupid = ?", $client_group_id);
+        }
 
         $rows = array();
         foreach ($limits as $limit) {
             $field = $limit['field'];
-            $value = $client[$field];
             if ($user_is_admin) {
                 $value = $wb['unlimited_txt'];
             } else {
                 $value = $client[$field];
             }
-
             if ($value != 0 || $value == $wb['unlimited_txt']) {
                 $value_formatted = ($value == '-1')?$wb['unlimited_txt']:$value;
                 if (isset($limit['q_type']) && $limit['q_type'] != '') {
-                    $usage = $this->_get_assigned_quota($limit, $client_id) . " MB";
+                    $usage = $this->_get_assigned_quota($limit) . " MB";
                     $value_formatted = ($value == '-1')?$wb['unlimited_txt']:$value . " MB";
                 } else {
-                    $usage = $this->_get_limit_usage($limit, $client_id);
+                    $usage = $this->_get_limit_usage($limit);
                 }
                 $percentage = ($value == '-1' || intval($value) == 0 || trim($value) == '' ? -1 : round(100 * (int)$usage / (int)$value));
                 $progressbar = $percentage > 100 ? 100 : $percentage;
@@ -197,7 +195,7 @@ class dashlet_limits
         return $tpl->grab();
     }
 
-    public function _get_limit_usage($limit, $limit_to_client_id)
+    public function _get_limit_usage($limit)
     {
         global $app;
 
@@ -205,15 +203,12 @@ class dashlet_limits
         if ($limit['db_where'] != '') {
             $sql .= $limit['db_where']." AND ";
         }
-        $sql .= $app->tform->getAuthSQL('r', '', $limit_to_client_id);
-        // TEST to show reseller data.
-        //$sql .= $app->tform->getAuthSQL('r', '', 0, '3,28,39');
-        //echo $sql;
+        $sql .= $app->tform->getAuthSQL('r');
         $rec = $app->db->queryOneRecord($sql, $limit['db_table']);
         return $rec['number'];
     }
     
-    public function _get_assigned_quota($limit, $limit_to_client_id)
+    public function _get_assigned_quota($limit)
     {
         global $app;
 
@@ -221,7 +216,7 @@ class dashlet_limits
         if ($limit['db_where'] != '') {
             $sql .= $limit['db_where']." AND ";
         }
-        $sql .= $app->tform->getAuthSQL('r', '', $limit_to_client_id);
+        $sql .= $app->tform->getAuthSQL('r');
         $rec = $app->db->queryOneRecord($sql, $limit['q_type'], $limit['db_table']);
         if ($limit['db_table']=='mail_user') {
             $quotaMB = $rec['number'] / 1048576;
