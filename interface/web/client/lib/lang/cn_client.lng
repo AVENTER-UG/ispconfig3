@@ -208,3 +208,4 @@ $wb['email_error_empty'] = '电子邮件为空';
 $wb['limit_directive_snippets_txt'] = '显示 Web 服务器配置选择';
 $wb['Address'] = '地址';
 $wb['Limits'] = '限制';
+$wb['language_error_empty'] = 'Language is empty.';

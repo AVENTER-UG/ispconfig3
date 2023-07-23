@@ -206,3 +206,4 @@ $wb['email_error_empty'] = 'O email está vazio';
 $wb['limit_directive_snippets_txt'] = 'Exibir configurações de seleção do servidor Web';
 $wb['Address'] = 'Cliente';
 $wb['Limits'] = 'Limites';
+$wb['language_error_empty'] = 'Language is empty.';
