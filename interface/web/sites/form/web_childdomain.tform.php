@@ -43,6 +43,7 @@ if(isset($_SESSION['s']['var']['childdomain_type']) && $_SESSION['s']['var']['ch
 $form["title"]    = ($childdomain_type == 'subdomain' ? "Subdomain" : 'Web Aliasdomain');
 $form["description"]  = "";
 $form["name"]    = "web_childdomain";
+$form["record_name_field"] = "domain";
 $form["action"]   = "web_childdomain_edit.php";
 $form["db_table"]  = "web_domain";
 $form["db_table_idx"] = "domain_id";

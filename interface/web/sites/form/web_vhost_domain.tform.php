@@ -60,6 +60,7 @@ if(isset($_SESSION['s']['var']['vhostdomain_type'])) {
 $form["title"]    = $form_title;
 $form["description"]  = "";
 $form["name"]    = "web_vhost_domain";
+$form["record_name_field"] = "domain";
 $form["action"]   = "web_vhost_domain_edit.php";
 $form["db_table"]  = "web_domain";
 $form["db_table_idx"] = "domain_id";

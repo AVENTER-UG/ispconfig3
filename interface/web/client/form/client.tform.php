@@ -41,6 +41,7 @@
 $form["title"]   = "Client";
 $form["description"]    = "";
 $form["name"]   = "client";
+$form["record_name_field"] = "username";
 $form["action"]  = "client_edit.php";
 $form["db_table"] = "client";
 $form["db_table_idx"] = "client_id";

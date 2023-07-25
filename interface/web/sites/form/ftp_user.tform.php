@@ -41,6 +41,7 @@
 $form["title"]    = "FTP User";
 $form["description"]  = "";
 $form["name"]    = "ftp_user";
+$form["record_name_field"] = "username";
 $form["action"]   = "ftp_user_edit.php";
 $form["db_table"]  = "ftp_user";
 $form["db_table_idx"] = "ftp_user_id";

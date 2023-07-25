@@ -41,6 +41,7 @@
 $form["title"]    = "Mail Domain";
 $form["description"]  = "";
 $form["name"]    = "mail_domain";
+$form["record_name_field"] = "domain";
 $form["action"]   = "mail_domain_edit.php";
 $form["db_table"]  = "mail_domain";
 $form["db_table_idx"] = "domain_id";

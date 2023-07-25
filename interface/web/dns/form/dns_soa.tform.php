@@ -42,6 +42,7 @@ global $app;
 $form["title"]    = "DNS Zone";
 $form["description"]  = "";
 $form["name"]    = "dns_soa";
+$form["record_name_field"] = "origin";
 $form["action"]   = "dns_soa_edit.php";
 $form["db_table"]  = "dns_soa";
 $form["db_table_idx"] = "id";
