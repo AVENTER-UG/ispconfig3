@@ -202,7 +202,8 @@ class dashlet_limits
         if ($limit['db_where'] != '') {
             $sql .= $limit['db_where']." AND ";
         }
-        $sql .= $app->tform->getAuthSQL('r', '', $limit_to_client_id, array());
+        $group = $app->db->queryOneRecord("SELECT `groupid` FROM `sys_group` WHERE client_id=?", $limit_to_client_id);
+        $sql .= $app->tform->getAuthSQL('r', '', $limit_to_client_id, $group['groupid']);
         // TEST to show reseller data.
         //$sql .= $app->tform->getAuthSQL('r', '', 0, '3,28,39');
         //echo $sql;
