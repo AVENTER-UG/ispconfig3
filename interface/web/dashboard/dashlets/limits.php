@@ -148,11 +148,12 @@ class dashlet_limits
         $tpl->setVar($wb);
 
         if ($limit_to_client_id != null) {
-          $client = $app->db->queryOneRecord("SELECT * FROM client WHERE client_id = ?", $limit_to_client_id);
+          $client_id = $limit_to_client_id;
         }
         elseif ($limit_to_client_id == null && $app->auth->is_reseller()) {
-          $client = $app->db->queryOneRecord("SELECT * FROM client WHERE client_id = ?", $_SESSION['s']['user']['client_id']);
+          $client_id = $_SESSION['s']['user']['client_id'];
         }
+        $client = $app->db->queryOneRecord("SELECT * FROM client WHERE client_id = ?", $client_id);
 
         $rows = array();
         foreach ($limits as $limit) {
@@ -201,7 +202,7 @@ class dashlet_limits
         if ($limit['db_where'] != '') {
             $sql .= $limit['db_where']." AND ";
         }
-        $sql .= $app->tform->getAuthSQL('r', '', $limit_to_client_id);
+        $sql .= $app->tform->getAuthSQL('r', '', $limit_to_client_id, array());
         // TEST to show reseller data.
         //$sql .= $app->tform->getAuthSQL('r', '', 0, '3,28,39');
         //echo $sql;
