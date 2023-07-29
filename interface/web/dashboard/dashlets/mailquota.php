@@ -26,6 +26,11 @@ class dashlet_mailquota {
 			foreach($emails as &$email) {
 				$email['email'] = $app->functions->idn_decode($email['email']);
 				$email['used'] = $app->functions->formatBytes($email['used_raw'], 0);
+				// Mail is the exception with 0 == unlimited, instead of -1
+				if ($email['quota_raw'] == 0) {
+					$email['quota_raw'] = -1;
+				}
+
 				$email['quota'] = $app->functions->formatBytesOrUnlimited($email['quota_raw'], 0);
 				$total_used += $email['used_raw'];
 			}
