@@ -238,8 +238,6 @@ class dashlet_limits
       if ($client_id != null) {
         // Get the clients groupid, and incase it's a reseller the groupid's of it's clients.
         $group = $app->db->queryOneRecord("SELECT GROUP_CONCAT(groupid) AS groups FROM `sys_group` WHERE client_id IN (SELECT client_id FROM `client` WHERE client_id=? OR parent_client_id=?)", $client_id, $client_id);
-        dnl($group);
-        dnl($client_id);
         return $group['groups'];
       }
       return null;
