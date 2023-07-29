@@ -202,15 +202,12 @@ class dashlet_limits
         if ($limit['db_where'] != '') {
             $sql .= $limit['db_where']." AND ";
         }
-        $group = $app->db->queryOneRecord("SELECT `groupid` FROM `sys_group` WHERE client_id=?", $limit_to_client_id);
-        $sql .= $app->tform->getAuthSQL('r', '', $limit_to_client_id, $group['groupid']);
-        // TEST to show reseller data.
-        //$sql .= $app->tform->getAuthSQL('r', '', 0, '3,28,39');
-        //echo $sql;
+        $sql .= $app->tform->getAuthSQL('r', '', '', $this->clientid_to_groups_list($limit_to_client_id));
+
         $rec = $app->db->queryOneRecord($sql, $limit['db_table']);
         return $rec['number'];
     }
-    
+
     public function _get_assigned_quota($limit, $limit_to_client_id)
     {
         global $app;
@@ -219,14 +216,32 @@ class dashlet_limits
         if ($limit['db_where'] != '') {
             $sql .= $limit['db_where']." AND ";
         }
-        $sql .= $app->tform->getAuthSQL('r', '', $limit_to_client_id);
+        $sql .= $app->tform->getAuthSQL('r', '', '', $this->clientid_to_groups_list($limit_to_client_id));
         $rec = $app->db->queryOneRecord($sql, $limit['q_type'], $limit['db_table']);
         if ($limit['db_table'] == 'mail_user') {
             $quotaMB = $rec['number'] / 1048576;
         } // Mail quota is in bytes, must be converted to MB
         else {
             $quotaMB = $app->functions->intval($rec['number']);
-        }
-        return $quotaMB;
+      }
+      return $quotaMB;
+    }
+
+    /**
+     * Lookup a client's group + all groups he is reselling.
+     *
+     * @return string Comma separated list of groupid's
+     */
+    function clientid_to_groups_list($client_id) {
+      global $app;
+
+      if ($client_id != null) {
+        // Get the clients groupid, and incase it's a reseller the groupid's of it's clients.
+        $group = $app->db->queryOneRecord("SELECT GROUP_CONCAT(groupid) AS groups FROM `sys_group` WHERE client_id IN (SELECT client_id FROM `client` WHERE client_id=? OR parent_client_id=?)", $client_id, $client_id);
+        dnl($group);
+        dnl($client_id);
+        return $group['groups'];
+      }
+      return null;
     }
 }
