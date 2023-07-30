@@ -82,7 +82,7 @@ class page_action extends tform_actions {
 		chdir('../dashboard');
 
 		$dashlet_list = array();
-		$dashlets = array('databasequota.php', 'limits.php', 'mailquota.php', 'quota.php');
+		$dashlets = array('quota.php', 'databasequota.php', 'mailquota.php', 'limits.php');
 		$current_client_id = $this->id;
 
 		foreach ($dashlets as $file) {
