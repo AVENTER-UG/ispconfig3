@@ -202,7 +202,7 @@ class dashlet_limits
         if ($limit['db_where'] != '') {
             $sql .= $limit['db_where']." AND ";
         }
-        $sql .= $app->tform->getAuthSQL('r', '', '', $this->clientid_to_groups_list($limit_to_client_id));
+        $sql .= $app->tform->getAuthSQL('r', '', '', $app->functions->clientid_to_groups_list($limit_to_client_id));
 
         $rec = $app->db->queryOneRecord($sql, $limit['db_table']);
         return $rec['number'];
@@ -216,7 +216,7 @@ class dashlet_limits
         if ($limit['db_where'] != '') {
             $sql .= $limit['db_where']." AND ";
         }
-        $sql .= $app->tform->getAuthSQL('r', '', '', $this->clientid_to_groups_list($limit_to_client_id));
+        $sql .= $app->tform->getAuthSQL('r', '', '', $app->functions->clientid_to_groups_list($limit_to_client_id));
         $rec = $app->db->queryOneRecord($sql, $limit['q_type'], $limit['db_table']);
         if ($limit['db_table'] == 'mail_user') {
             $quotaMB = $rec['number'] / 1048576;
