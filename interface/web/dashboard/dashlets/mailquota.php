@@ -46,5 +46,4 @@ class dashlet_mailquota {
 			return $tpl->grab();
 		}
 	}
-
 }

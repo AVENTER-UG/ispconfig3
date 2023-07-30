@@ -42,14 +42,4 @@ class dashlet_databasequota {
 			return $tpl->grab();
 		}
 	}
-
 }
-
-
-
-
-
-
-
-
-?>

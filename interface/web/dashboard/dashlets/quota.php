@@ -25,7 +25,6 @@ class dashlet_quota {
 		$tpl->setVar($wb);
 
 		$sites = $app->quota_lib->get_quota_data($limit_to_client_id);
-		//print_r($sites);
 
 		$has_quota = false;
 		if(is_array($sites) && !empty($sites)){
@@ -49,14 +48,4 @@ class dashlet_quota {
 			return $tpl->grab();
 		}
 	}
-
 }
-
-
-
-
-
-
-
-
-?>
