@@ -27,7 +27,6 @@ class dashlet_databasequota {
 		$databases = $app->quota_lib->get_databasequota_data($limit_to_client_id);
 		//print_r($databases);
 
-		$has_databasequota = false;
 		$total_used = 0;
 		if(is_array($databases) && !empty($databases)){
 			foreach ($databases as &$db) {
@@ -38,9 +37,6 @@ class dashlet_databasequota {
 			}
 			$databases = $app->functions->htmlentities($databases);
 			$tpl->setloop('databasequota', $databases);
-			$has_databasequota = isset($databases[0]['used']);
-
-			$tpl->setVar('has_databasequota', $has_databasequota);
 			$tpl->setVar('total_used', $app->functions->formatBytes($total_used, 0));
 
 			return $tpl->grab();
