@@ -14,11 +14,9 @@ class quota_lib {
 		//print_r($monitor_data);
 
 		// select all websites or websites belonging to client
-		$q = " SELECT * FROM web_domain
-						WHERE active = 'y' AND type = 'vhost'"
-						. 'AND sys_groupid ' . (($clientid != null) ? "= (SELECT default_group FROM sys_user WHERE client_id=?)"
-							: " IN (" . $_SESSION["s"]["user"]["groups"] . ")")
-			. " ORDER BY domain";
+		$q = "SELECT * FROM web_domain WHERE type = 'vhost' AND ";
+		$q .= $app->tform->getAuthSQL('r', '', '', $app->functions->clientid_to_groups_list($clientid));
+		$q .= " ORDER BY domain";
 		$sites = $app->db->queryAllRecords($q, $clientid);
 
 		//print_r($sites);
@@ -214,10 +212,9 @@ class quota_lib {
 		//print_r($monitor_data);
 
 		// select all email accounts or email accounts belonging to client
-		$q = " SELECT * FROM mail_user"
-					. "	WHERE sys_groupid " . (($clientid != null) ? "= (SELECT default_group FROM sys_user WHERE client_id=?)"
-							: " IN (" . $_SESSION["s"]["user"]["groups"] . ")")
-						. " ORDER BY email";
+		$q = "SELECT * FROM mail_user WHERE";
+		$q .= $app->tform->getAuthSQL('r', '', '', $app->functions->clientid_to_groups_list($clientid));
+		$q .= " ORDER BY email";
 		$emails = $app->db->queryAllRecords($q, $clientid);
 
 		//print_r($emails);
@@ -274,11 +271,10 @@ class quota_lib {
 		//print_r($monitor_data);
 
 		// select all databases belonging to client
-		$q = "SELECT * FROM web_database"
-						. " WHERE sys_groupid " . (($clientid != null) ? "= (SELECT default_group FROM sys_user WHERE client_id=?)"
-										: " IN (" . $_SESSION["s"]["user"]["groups"] . ")")
-						. " ORDER BY database_name";
-		$databases = $app->db->queryAllRecords($q, $clientid);
+		$q = "SELECT * FROM web_database WHERE";
+		$q .= $app->tform->getAuthSQL('r', '', '', $app->functions->clientid_to_groups_list($clientid));
+		$q .= " ORDER BY database_name";
+		$databases = $app->db->queryAllRecords($q);
 
 		//print_r($databases);
 		if(is_array($databases) && !empty($databases)){
