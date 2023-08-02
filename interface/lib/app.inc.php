@@ -46,7 +46,7 @@ if(DEVSYSTEM !== true) {
 /*
     Application Class
 */
-class app {
+class app extends stdClass {
 
 	private $_language_inc = 0;
 	private $_wb;

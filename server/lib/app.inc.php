@@ -50,7 +50,7 @@ if(DEVSYSTEM !== true) {
  * @license bsd-3-clause
  * @link empty
  **/
-class app {
+class app extends stdClass {
 	/** @var array	List of modules that have been loaded. */
 	var $loaded_modules = [];
 	/** @var array	List of plugins that have been loaded. */
