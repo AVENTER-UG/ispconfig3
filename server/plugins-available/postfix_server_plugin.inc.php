@@ -340,7 +340,7 @@ class postfix_server_plugin {
 		foreach ($options as $key => $value) {
 			$value = trim($value);
 			if ($value == '') continue;
-			if (preg_match("|check_recipient_access\s+proxy:mysql:${quoted_postfix_config_dir}/mysql-verify_recipients.cf|", $value)) {
+			if (preg_match("|check_recipient_access\s+proxy:mysql:{$quoted_postfix_config_dir}/mysql-verify_recipients.cf|", $value)) {
 				continue;
 			}
 			$new_options[] = $value;
@@ -348,7 +348,7 @@ class postfix_server_plugin {
 		if (isset($configure_lmtp) && $configure_lmtp && $mail_config['content_filter'] == 'amavisd') {
 			for ($i = 0; isset($new_options[$i]); $i++) {
 				if ($new_options[$i] == 'reject_unlisted_recipient') {
-					array_splice($new_options, $i+1, 0, array("check_recipient_access proxy:mysql:${quoted_postfix_config_dir}/mysql-verify_recipients.cf"));
+					array_splice($new_options, $i+1, 0, array("check_recipient_access proxy:mysql:{$quoted_postfix_config_dir}/mysql-verify_recipients.cf"));
 
 					$app->system->exec_safe("postconf -e ?", 'address_verify_virtual_transport = smtp:[127.0.0.1]:10025');
 					$app->system->exec_safe("postconf -e ?", 'address_verify_transport_maps = static:smtp:[127.0.0.1]:10025');
@@ -378,7 +378,7 @@ class postfix_server_plugin {
 			exec("postconf -e 'milter_mail_macros = i {mail_addr} {client_addr} {client_name} {auth_authen}'");
 			exec("postconf -e 'milter_default_action = accept'");
 
-			exec("postconf -e 'smtpd_sender_restrictions = ${raslm} permit_mynetworks, check_sender_access proxy:mysql:/etc/postfix/mysql-virtual_sender.cf, ${rslm} permit_sasl_authenticated, reject_non_fqdn_sender, reject_unlisted_sender'");
+			exec("postconf -e 'smtpd_sender_restrictions = {$raslm} permit_mynetworks, check_sender_access proxy:mysql:/etc/postfix/mysql-virtual_sender.cf, {$rslm} permit_sasl_authenticated, reject_non_fqdn_sender, reject_unlisted_sender'");
 
 			$new_options = array();
 			$options = preg_split("/,\s*/", exec("postconf -h smtpd_recipient_restrictions"));
@@ -388,7 +388,7 @@ class postfix_server_plugin {
 				if (preg_match('/check_policy_service\s+inet:127.0.0.1:10023/', $value)) {
 					continue;
 				}
-				if (preg_match("|check_recipient_access\s+proxy:mysql:${quoted_postfix_config_dir}/mysql-verify_recipients.cf|", $value)) {
+				if (preg_match("|check_recipient_access\s+proxy:mysql:{$quoted_postfix_config_dir}/mysql-verify_recipients.cf|", $value)) {
 					continue;
 				}
 				$new_options[] = $value;
@@ -420,7 +420,7 @@ class postfix_server_plugin {
 			exec("postconf -e 'content_filter = " . ($configure_lmtp ? "lmtp" : "amavis" ) . ":[127.0.0.1]:10024'");
 
 			// fixme: should read this from conf templates
-			exec("postconf -e 'smtpd_sender_restrictions = ${raslm} check_sender_access regexp:/etc/postfix/tag_as_originating.re, permit_mynetworks, check_sender_access proxy:mysql:/etc/postfix/mysql-virtual_sender.cf, ${rslm} permit_sasl_authenticated, reject_non_fqdn_sender, reject_unlisted_sender, check_sender_access regexp:/etc/postfix/tag_as_foreign.re'");
+			exec("postconf -e 'smtpd_sender_restrictions = {$raslm} check_sender_access regexp:/etc/postfix/tag_as_originating.re, permit_mynetworks, check_sender_access proxy:mysql:/etc/postfix/mysql-virtual_sender.cf, {$rslm} permit_sasl_authenticated, reject_non_fqdn_sender, reject_unlisted_sender, check_sender_access regexp:/etc/postfix/tag_as_foreign.re'");
 		}
 
 		if($mail_config['content_filter'] == 'rspamd' && ($mail_config['rspamd_password'] != $old_ini_data['mail']['rspamd_password'] || $mail_config['content_filter'] != $old_ini_data['mail']['content_filter'])) {
