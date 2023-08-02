@@ -528,10 +528,10 @@ class rspamd_plugin {
 		);
 		foreach ($local_d as $f) {
 			$tpl = new tpl();
-			if (file_exists($conf['rootpath']."/conf-custom/install/rspamd_${f}.master")) {
-				$tpl->newTemplate($conf['rootpath']."/conf-custom/install/rspamd_${f}.master");
+			if (file_exists($conf['rootpath']."/conf-custom/install/rspamd_{$f}.master")) {
+				$tpl->newTemplate($conf['rootpath']."/conf-custom/install/rspamd_{$f}.master");
 			} else {
-				$tpl->newTemplate("rspamd_${f}.master");
+				$tpl->newTemplate("rspamd_{$f}.master");
 			}
 
 			$tpl->setVar('dkim_path', $mail_config['dkim_path']);
@@ -543,7 +543,7 @@ class rspamd_plugin {
 				$tpl->setLoop('local_addrs', $local_addrs);
 			}
 
-			$app->system->file_put_contents("/etc/rspamd/local.d/${f}", $tpl->grab());
+			$app->system->file_put_contents("/etc/rspamd/local.d/{$f}", $tpl->grab());
 
 			if($mail_config['content_filter'] == 'rspamd'){
 				$app->services->restartServiceDelayed('rspamd', 'reload');
