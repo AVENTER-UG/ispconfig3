@@ -224,6 +224,9 @@ $form["tabs"]['address'] = array (
 		'language' => array (
 			'datatype' => 'VARCHAR',
 			'formtype' => 'SELECT',
+			'validators' => array ( 0 => array ( 'type' => 'NOTEMPTY',
+					'errmsg'=> 'language_error_empty'),
+			),
 			'default' => $conf["language"],
 			'value'  => $language_list,
 			'separator' => '',
