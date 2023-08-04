@@ -41,6 +41,7 @@
 $form["title"]    = "Database User";
 $form["description"]  = "";
 $form["name"]    = "database_user";
+$form["record_name_field"] = "database_user";
 $form["action"]   = "database_user_edit.php";
 $form["db_table"]  = "web_database_user";
 $form["db_table_idx"] = "database_user_id";
