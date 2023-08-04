@@ -206,3 +206,4 @@ $wb['password_click_to_set_txt'] = 'Click to set';
 $wb['limit_dns_record_error_notint'] = 'The dns record limit must be a number.';
 $wb['Address'] = 'Address';
 $wb['Limits'] = 'Limits';
+$wb['language_error_empty'] = 'Language is empty.';
