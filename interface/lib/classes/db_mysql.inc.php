@@ -847,7 +847,7 @@ class db
 
 		$result = $this->queryAllRecords("SELECT COUNT( * ) AS cnt, sys_datalog.action, sys_datalog.dbtable
 				FROM sys_datalog, server
-				WHERE server.server_id = sys_datalog.server_id AND sys_datalog.user = ? AND sys_datalog.datalog_id > server.updated
+				WHERE (server.server_id = sys_datalog.server_id or sys_datalog.server_id = 0) AND sys_datalog.user = ? AND sys_datalog.datalog_id > server.updated
 				GROUP BY sys_datalog.dbtable, sys_datalog.action",
 			$login);
 		foreach($result as $row) {
