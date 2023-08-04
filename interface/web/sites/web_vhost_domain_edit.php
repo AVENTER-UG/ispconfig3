@@ -843,6 +843,8 @@ class page_action extends tform_actions {
 			$app->tpl->setVar('is_pagespeed_enabled', ($web_config['nginx_enable_pagespeed']));
 		}
 
+		$app->tpl->setVar('app_module', 'sites');
+
 		parent::onShowEnd();
 	}
 
