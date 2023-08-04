@@ -2189,7 +2189,7 @@ class apache2_plugin {
 		}
 
 		if($data['old']['type'] == 'vhost' || $data['old']['type'] == 'vhostsubdomain' || $data['old']['type'] == 'vhostalias'){
-			if(is_array($log_folders) && !empty($log_folders)){
+			if(isset($log_folders) && is_array($log_folders) && !empty($log_folders)){
 				foreach($log_folders as $log_folder){
 					$app->system->exec_safe('umount -l ? 2>/dev/null', $data['old']['document_root'].'/'.$log_folder);
 				}
@@ -2209,7 +2209,7 @@ class apache2_plugin {
 		}
 
 		//* remove mountpoint from fstab
-		if(is_array($log_folders) && !empty($log_folders)){
+		if(isset($log_folders) && is_array($log_folders) && !empty($log_folders)){
 			foreach($log_folders as $log_folder){
 				$fstab_line = '/var/log/ispconfig/httpd/'.$data['old']['domain'].' '.$data['old']['document_root'].'/'.$log_folder.'    none    bind';
 				$app->system->removeLine('/etc/fstab', $fstab_line);
@@ -2365,7 +2365,7 @@ class apache2_plugin {
 
 				// Delete the symlinks for the sites
 				$client = $app->db->queryOneRecord('SELECT client_id FROM sys_group WHERE sys_group.groupid = ?', $data['old']['sys_groupid']);
-				$client_id = intval($client['client_id']);
+				$client_id = (is_array($client) && isset($client['client_id']))?intval($client['client_id']):0;
 				unset($client);
 				$tmp_symlinks_array = explode(':', $web_config['website_symlinks']);
 				if(is_array($tmp_symlinks_array)) {
@@ -3391,7 +3391,7 @@ class apache2_plugin {
 
 		// Custom php.ini settings
 		$final_php_ini_settings = array();
-		$custom_php_ini_settings = trim($data['new']['custom_php_ini']);
+		$custom_php_ini_settings = (isset($data['new']['custom_php_ini']) && !is_null($data['new']['custom_php_ini']))?trim($data['new']['custom_php_ini']):'';
 
 		if(intval($data['new']['directive_snippets_id']) > 0){
 			$snippet = $app->db->queryOneRecord("SELECT * FROM directive_snippets WHERE directive_snippets_id = ? AND type = 'apache' AND active = 'y' AND customer_viewable = 'y'", intval($data['new']['directive_snippets_id']));

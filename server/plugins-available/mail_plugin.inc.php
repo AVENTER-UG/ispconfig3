@@ -222,8 +222,8 @@ class mail_plugin {
 		$placeholders = array(
 			'{domain}' => "$domain",
 			'{email}' => $data["new"]["email"],
-			'{admin_mail}' => ($global_mail_config['admin_mail'] != '' ? $global_mail_config['admin_mail'] : 'root'),
-			'{admin_name}' => ($global_mail_config['admin_name'] != '' ? $global_mail_config['admin_name'] : ''),
+			'{admin_mail}' => (isset($global_mail_config['admin_mail']) && $global_mail_config['admin_mail'] != '' ? $global_mail_config['admin_mail'] : 'root'),
+			'{admin_name}' => (isset($global_mail_config['admin_name']) && $global_mail_config['admin_name'] != '' ? $global_mail_config['admin_name'] : ''),
 		);
 
 		//* Get from address
