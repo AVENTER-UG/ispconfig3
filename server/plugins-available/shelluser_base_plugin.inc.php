@@ -33,6 +33,7 @@ class shelluser_base_plugin {
 	var $plugin_name = 'shelluser_base_plugin';
 	var $class_name = 'shelluser_base_plugin';
 	var $min_uid = 499;
+	var $data = array();
 
 	//* This function is called during ispconfig installation to determine
 	//  if a symlink shall be created for this plugin.
@@ -430,10 +431,10 @@ class shelluser_base_plugin {
 		// Get the client ID, username, and the key
 		$domain_data = $app->db->queryOneRecord('SELECT sys_groupid FROM web_domain WHERE web_domain.domain_id = ?', $this->data['new']['parent_domain_id']);
 		$sys_group_data = $app->db->queryOneRecord('SELECT * FROM sys_group WHERE sys_group.groupid = ?', $domain_data['sys_groupid']);
-		$id = intval($sys_group_data['client_id']);
-		$username= $sys_group_data['name'];
+		$id = (is_array($sys_group_data) && isset($sys_group_data['client_id']))?intval($sys_group_data['client_id']):0;
+		$username= (is_array($sys_group_data) && isset($sys_group_data['name']))?$sys_group_data['name']:'';
 		$client_data = $app->db->queryOneRecord('SELECT * FROM client WHERE client.client_id = ?', $id);
-		$userkey = $client_data['ssh_rsa'];
+		$userkey = (is_array($client_data) && isset($client_data['ssh_rsa']))?$client_data['ssh_rsa']:'';
 		unset($domain_data);
 		unset($client_data);
 

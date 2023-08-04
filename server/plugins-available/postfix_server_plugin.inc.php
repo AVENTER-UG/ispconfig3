@@ -152,7 +152,7 @@ class postfix_server_plugin {
 			$app->system->exec_safe("postconf -e ?", 'smtpd_client_restrictions = '.implode(", ", $new_options));
 		}
 
-		if ($mail_config['reject_sender_login_mismatch'] != $old_ini_data['mail']['reject_sender_login_mismatch']) {
+		if (isset($mail_config['reject_sender_login_mismatch']) && $mail_config['reject_sender_login_mismatch'] != $old_ini_data['mail']['reject_sender_login_mismatch']) {
 			$options = preg_split("/,\s*/", exec("postconf -h smtpd_sender_restrictions"));
 			$new_options = array();
 			foreach ($options as $key => $value) {
@@ -185,7 +185,7 @@ class postfix_server_plugin {
 			$app->system->exec_safe("postconf -e ?", 'smtpd_sender_restrictions = '.implode(", ", $new_options));
 		}
 
-		if ($mail_config['reject_unknown']) {
+		if (isset($mail_config['reject_unknown'])) {
 			if (($mail_config['reject_unknown'] === 'client') || ($mail_config['reject_unknown'] === 'client_helo')) {
 				$options = preg_split("/,\s*/", exec("postconf -h smtpd_client_restrictions"));
 				$new_options = array();
@@ -263,7 +263,7 @@ class postfix_server_plugin {
 			}
 		}
 
-		if ($mail_config['stress_adaptive']) {
+		if (isset($mail_config['stress_adaptive'])) {
 			if ($mail_config['stress_adaptive'] == 'y') {
 				if (version_compare($postfix_version , '3.0', '>=')) {
 					$app->system->exec_safe("postconf -e ?", 'in_flow_delay = ${stress?{3}:{1}}s');
@@ -363,8 +363,8 @@ class postfix_server_plugin {
 		}
 		exec("postconf -e 'smtpd_recipient_restrictions = ".implode(", ", $new_options)."'");
 
-		$rslm = ($mail_config['reject_sender_login_mismatch'] == 'y') ? "reject_sender_login_mismatch," : "";
-		$raslm = ($mail_config['reject_sender_login_mismatch'] == 'y') ? "reject_authenticated_sender_login_mismatch," : "";
+		$rslm = (isset($mail_config['reject_sender_login_mismatch']) && $mail_config['reject_sender_login_mismatch'] == 'y') ? "reject_sender_login_mismatch," : "";
+		$raslm = (isset($mail_config['reject_sender_login_mismatch']) && $mail_config['reject_sender_login_mismatch'] == 'y') ? "reject_authenticated_sender_login_mismatch," : "";
 
 		if($mail_config['content_filter'] == 'rspamd'){
 			exec("postconf -X 'receive_override_options'");

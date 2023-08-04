@@ -33,6 +33,7 @@ class cron_plugin {
 
 	var $plugin_name = 'cron_plugin';
 	var $class_name = 'cron_plugin';
+	var $parent_domain = array();
 
 	// private variables
 	var $action = '';
@@ -106,7 +107,7 @@ class cron_plugin {
 
 		// Get the client ID
 		$client = $app->dbmaster->queryOneRecord("SELECT client_id FROM sys_group WHERE sys_group.groupid = ?", $data["new"]["sys_groupid"]);
-		$client_id = intval($client["client_id"]);
+		$client_id = (is_array($client) && isset($client["client_id"]))?intval($client["client_id"]):0;
 		unset($client);
 
 		// Create group and user, if not exist
