@@ -30,7 +30,7 @@ if (!defined('vlibTemplateClassLoaded')) {
 	include_once ISPC_CLASS_PATH.'/tpl_error.inc.php';
 	include_once ISPC_CLASS_PATH.'/tpl_ini.inc.php';
 
-	class tpl{
+	class tpl extends stdClass {
 
 		/*-----------------------------------------------------------------------------\
         |                                 ATTENTION                                    |

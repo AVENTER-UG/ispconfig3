@@ -41,6 +41,7 @@
 $form["title"]    = "Shell User";
 $form["description"]  = "";
 $form["name"]    = "shell_user";
+$form["record_name_field"] = "username";
 $form["action"]   = "shell_user_edit.php";
 $form["db_table"]  = "shell_user";
 $form["db_table_idx"] = "shell_user_id";

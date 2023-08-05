@@ -41,6 +41,7 @@
 $form["title"]    = "Mail Domain";
 $form["description"]  = "";
 $form["name"]    = "mail_domain";
+$form["record_name_field"] = "domain";
 $form["action"]   = "mail_domain_edit.php";
 $form["db_table"]  = "mail_domain";
 $form["db_table_idx"] = "domain_id";
@@ -130,9 +131,9 @@ $form["tabs"]['domain'] = array (
 			'default'       => 'default',
 			'value'         => 'default',
 			'width'  => '20',
-			'maxlength' => '63',
+			'maxlength' => '126',
 			'validators' => array (  0 => array (   'type' => 'REGEX',
-					'regex' => '/^(?=.*[a-z])[a-z0-9]{1,63}$/',
+					'regex' => '/^[a-z0-9]{1,63}(?:\.[a-z0-9]{1,63})?$/',
 					'errmsg'=> 'dkim_selector_error'),
 			),
 		),

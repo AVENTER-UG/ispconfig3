@@ -33,6 +33,7 @@ class rspamd_plugin {
 	var $plugin_name = 'rspamd_plugin';
 	var $class_name  = 'rspamd_plugin';
 	var $users_config_dir = '/etc/rspamd/local.d/users/';
+	var $action = '';
 
 	//* This function is called during ispconfig installation to determine
 	//  if a symlink shall be created for this plugin.
@@ -281,7 +282,7 @@ class rspamd_plugin {
 				$app->system->mkdirpath($this->users_config_dir);
 			}
 
-			if((!$this->isValidEmail($app->functions->idn_encode($email_address))) || intval($data['new']['policy_id']) == 0 && $type == 'spamfilter_user') {
+			if((!$this->isValidEmail($app->functions->idn_encode($email_address))) || !isset($data['new']['policy_id']) || intval($data['new']['policy_id']) == 0 && $type == 'spamfilter_user') {
 				if(is_file($settings_file)) {
 					unlink($settings_file);
 				}
@@ -528,11 +529,16 @@ class rspamd_plugin {
 		);
 		foreach ($local_d as $f) {
 			$tpl = new tpl();
-			if (file_exists($conf['rootpath']."/conf-custom/install/rspamd_${f}.master")) {
-				$tpl->newTemplate($conf['rootpath']."/conf-custom/install/rspamd_${f}.master");
+			if (file_exists($conf['rootpath']."/conf-custom/install/rspamd_{$f}.master")) {
+				$tpl->newTemplate($conf['rootpath']."/conf-custom/install/rspamd_{$f}.master");
 			} else {
-				$tpl->newTemplate("rspamd_${f}.master");
+				$tpl->newTemplate("rspamd_{$f}.master");
 			}
+
+			if(!isset($mail_config['rspamd_redis_servers'])) $mail_config['rspamd_redis_servers'] = '';
+			if(!isset($mail_config['rspamd_redis_password'])) $mail_config['rspamd_redis_password'] = '';
+			if(!isset($mail_config['rspamd_redis_bayes_servers'])) $mail_config['rspamd_redis_bayes_servers'] = '';
+			if(!isset($mail_config['rspamd_redis_bayes_password'])) $mail_config['rspamd_redis_bayes_password'] = '';
 
 			$tpl->setVar('dkim_path', $mail_config['dkim_path']);
 			$tpl->setVar('rspamd_redis_servers', $mail_config['rspamd_redis_servers']);
@@ -543,7 +549,7 @@ class rspamd_plugin {
 				$tpl->setLoop('local_addrs', $local_addrs);
 			}
 
-			$app->system->file_put_contents("/etc/rspamd/local.d/${f}", $tpl->grab());
+			$app->system->file_put_contents("/etc/rspamd/local.d/{$f}", $tpl->grab());
 
 			if($mail_config['content_filter'] == 'rspamd'){
 				$app->services->restartServiceDelayed('rspamd', 'reload');
