@@ -143,6 +143,13 @@ class page_action extends tform_actions {
 		$global_config = $app->getconf->get_global_config();
 		$app->tpl->setVar('show_delete_on_forms', $global_config['misc']['show_delete_on_forms']);
 
+		# Fetch current disk usage.
+		$app->uses('quota_lib');
+		$clientid = $app->db->queryOneRecord('SELECT `client_id` FROM `sys_group` WHERE `groupid` = ?', $this->dataRecord['sys_groupid']);
+		$monitor_data = $app->quota_lib->get_mailquota_data($clientid, FALSE, $this->dataRecord['email']);
+		$app->tpl->setVar("used_percentage", round($monitor_data['used'] * 100 / $this->dataRecord['quota']));
+		$app->tpl->setVar('used', $app->functions->formatBytes($monitor_data['used'], 0));
+
 		parent::onShowEnd();
 	}
 

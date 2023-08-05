@@ -218,7 +218,7 @@ class quota_lib {
 		return $traffic_data;
 	}
 
-	public function get_mailquota_data($clientid = null, $readable = true) {
+       public function get_mailquota_data($clientid = null, $readable = true, $email = null) {
 		global $app;
 
 		$tmp_rec =  $app->db->queryAllRecords("SELECT data from monitor_data WHERE type = 'email_quota' ORDER BY created DESC");
@@ -236,6 +236,9 @@ class quota_lib {
 		}
 		//print_r($monitor_data);
 
+               if ($email) {
+                       return $monitor_data[$email];
+               }
 		// select all email accounts or email accounts belonging to client
 		$emails = $app->db->queryAllRecords("SELECT * FROM mail_user".(($clientid != null)? " WHERE sys_groupid = (SELECT default_group FROM sys_user WHERE client_id=?)" : '') . " ORDER BY email", $clientid);
 
