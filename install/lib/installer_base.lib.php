@@ -2060,8 +2060,10 @@ class installer_base extends stdClass {
 		}
 
 		# unneccesary, since this was done above?
-		$command = 'usermod -a -G amavis _rspamd';
-		caselog($command.' &> /dev/null', __FILE__, __LINE__, "EXECUTED: $command", "Failed to execute the command $command");
+		if(is_user('_rspamd') && is_group('amavis')) {
+			$command = 'usermod -a -G amavis _rspamd';
+			caselog($command.' &> /dev/null', __FILE__, __LINE__, "EXECUTED: $command", "Failed to execute the command $command");
+		}
 
 		if(strpos(rf('/etc/rspamd/rspamd.conf'), '.include "$LOCAL_CONFDIR/local.d/users.conf"') === false){
 			af('/etc/rspamd/rspamd.conf', '.include "$LOCAL_CONFDIR/local.d/users.conf"');
@@ -2682,7 +2684,7 @@ class installer_base extends stdClass {
 
 			//$command = 'adduser '.$conf['apache']['user'].' '.$apps_vhost_group;
 			$command = 'usermod -a -G '.$apps_vhost_group.' '.$conf['apache']['user'];
-			caselog($command.' &> /dev/null', __FILE__, __LINE__, "EXECUTED: $command", "Failed to execute the command $command");
+			caselog($command.' &> /dev/null 2>&1', __FILE__, __LINE__, "EXECUTED: $command", "Failed to execute the command $command");
 
 			if(!@is_dir($install_dir)){
 				mkdir($install_dir, 0755, true);
@@ -2774,7 +2776,7 @@ class installer_base extends stdClass {
 
 			//$command = 'adduser '.$conf['nginx']['user'].' '.$apps_vhost_group;
 			$command = 'usermod -a -G '.$apps_vhost_group.' '.$conf['nginx']['user'];
-			caselog($command.' &> /dev/null', __FILE__, __LINE__, "EXECUTED: $command", "Failed to execute the command $command");
+			caselog($command.' &> /dev/null 2>&1', __FILE__, __LINE__, "EXECUTED: $command", "Failed to execute the command $command");
 
 			if(!@is_dir($install_dir)){
 				mkdir($install_dir, 0755, true);
@@ -3654,19 +3656,31 @@ class installer_base extends stdClass {
 		// and must be fixed as this will allow the apache user to read the ispconfig files.
 		// Later this must run as own apache server or via suexec!
 		if($conf['apache']['installed'] == true){
-			$command = 'adduser '.$conf['apache']['user'].' ispconfig';
-			caselog($command.' &> /dev/null', __FILE__, __LINE__, "EXECUTED: $command", "Failed to execute the command $command");
-			if(is_group('ispapps')){
-				$command = 'adduser '.$conf['apache']['user'].' ispapps';
+			$ispc_groupinfo = posix_getgrnam('ispconfig');
+			if(!in_array($conf['apache']['user'],$ispc_groupinfo['members'])) {
+				$command = 'adduser '.$conf['apache']['user'].' ispconfig';
 				caselog($command.' &> /dev/null', __FILE__, __LINE__, "EXECUTED: $command", "Failed to execute the command $command");
+			}
+			if(is_group('ispapps')){
+				$ispapps_groupinfo = posix_getgrnam('ispapps');
+				if(!in_array($conf['apache']['user'],$ispapps_groupinfo['members'])) {
+					$command = 'adduser '.$conf['apache']['user'].' ispapps';
+					caselog($command.' &> /dev/null', __FILE__, __LINE__, "EXECUTED: $command", "Failed to execute the command $command");
+				}
 			}
 		}
 		if($conf['nginx']['installed'] == true){
-			$command = 'adduser '.$conf['nginx']['user'].' ispconfig';
-			caselog($command.' &> /dev/null', __FILE__, __LINE__, "EXECUTED: $command", "Failed to execute the command $command");
-			if(is_group('ispapps')){
-				$command = 'adduser '.$conf['nginx']['user'].' ispapps';
+			$ispc_groupinfo = posix_getgrnam('ispconfig');
+			if(!in_array($conf['nginx']['user'],$ispc_groupinfo['members'])) {
+				$command = 'adduser '.$conf['nginx']['user'].' ispconfig';
 				caselog($command.' &> /dev/null', __FILE__, __LINE__, "EXECUTED: $command", "Failed to execute the command $command");
+			}
+			if(is_group('ispapps')){
+				$ispapps_groupinfo = posix_getgrnam('ispapps');
+				if(!in_array($conf['nginx']['user'],$ispapps_groupinfo['members'])) {
+					$command = 'adduser '.$conf['nginx']['user'].' ispapps';
+					caselog($command.' &> /dev/null', __FILE__, __LINE__, "EXECUTED: $command", "Failed to execute the command $command");
+				}
 			}
 		}
 
