@@ -14,6 +14,7 @@ class dashlet_mailquota {
 		$wb = array();
 		$lng_file = 'lib/lang/'.$_SESSION['s']['language'].'_dashlet_mailquota.lng';
 		if(is_file($lng_file)) include $lng_file;
+               $wb['last_accessed_txt'] = $app->lng('last_accessed_txt');
 		$tpl->setVar($wb);
 
 		$emails = $app->quota_lib->get_mailquota_data( ($_SESSION["s"]["user"]["typ"] != 'admin') ? $_SESSION['s']['user']['client_id'] : null);
@@ -27,6 +28,7 @@ class dashlet_mailquota {
 			unset($email);
 			// email username is quoted in quota.lib already, so no htmlentities here to prevent double encoding
 			//$emails = $app->functions->htmlentities($emails);
+			$email['last_access'] = date($app->lng('conf_format_datetime'), $email['last_access']);
 			$tpl->setloop('mailquota', $emails);
 			$has_mailquota = isset($emails[0]['used']);
 		}

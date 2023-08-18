@@ -136,6 +136,13 @@ class page_action extends tform_actions {
 			$app->tpl->setVar("enable_custom_login", 0);
 		}
 
+		if (!empty($this->dataRecord['last_access'])) {
+			$app->tpl->setVar("last_access", date($app->lng('conf_format_datetime'), $this->dataRecord['last_access']));
+		}
+		else {
+			$app->tpl->setVar("last_access", $app->lng('never_accessed_txt'));
+		}
+
 		$csrf_token = $app->auth->csrf_token_get('mail_user_del');
 		$app->tpl->setVar('_csrf_id', $csrf_token['csrf_id']);
 		$app->tpl->setVar('_csrf_key', $csrf_token['csrf_key']);

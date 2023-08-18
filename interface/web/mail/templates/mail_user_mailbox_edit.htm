@@ -44,7 +44,10 @@
             <div class="form-group">
                 <label for="repeat_password" class="col-sm-3 control-label">{tmpl_var name='repeat_password_txt'}</label>
                 <div class="col-sm-9">
-	                <input type="password" name="repeat_password" id="repeat_password" value="" title="{tmpl_var name='password_click_to_set_txt'}" class="form-control" autocomplete="off" onkeyup="checkPassMatch('password','repeat_password');" /></div></div>
+                       <input type="password" name="repeat_password" id="repeat_password" value="" title="{tmpl_var name='password_click_to_set_txt'}" class="form-control" autocomplete="off" onkeyup="checkPassMatch('password','repeat_password');" />
+                    <tmpl_if name="id">{tmpl_var name='last_accessed_txt'}: {tmpl_var name='last_access'}</tmpl_if>
+                </div>
+            </div>
             <div class="form-group">
 				<div class="col-sm-offset-3 col-sm-9">
 					<div id="confirmpasswordError" style="display:none;" class="confirmpassworderror">{tmpl_var name='password_mismatch_txt'}</div>
