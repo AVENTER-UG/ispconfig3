@@ -107,4 +107,5 @@ $wb['show_aps_menu_note_txt'] = 'APS 将在不久的将来从面板中移除。'
 $wb['show_aps_menu_note_url_txt'] = '点击这里了解更多信息。';
 $wb['dns_show_zoneexport_txt'] = '显示区域导出。';
 $wb['le_caa_autocreate_options_txt'] = '在颁发 LE 时启用 CAA 记录的自动创建';
+$wb['mailbox_show_last_access_txt'] = 'Show last access time for mail accounts';
 ?>
