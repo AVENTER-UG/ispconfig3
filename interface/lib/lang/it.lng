@@ -174,4 +174,7 @@ $wb['server_id_0_error_txt'] = 'Please select a valid Server. Server ID must be 
 $wb['datalog_changes_close_txt'] = 'Chiudi';
 $wb['non_admin_error'] = 'Requires administrator level permissions';
 $wb['copy_to_clipboard_txt'] = 'Copy to clipboard';
+$wb['datalog_status_i_client'] = 'Create new client';
+$wb['datalog_status_u_client'] = 'Update client';
+$wb['datalog_status_d_client'] = 'Delete client';
 ?>
