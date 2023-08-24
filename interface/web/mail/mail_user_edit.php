@@ -136,7 +136,7 @@ class page_action extends tform_actions {
 			$app->tpl->setVar("enable_custom_login", 0);
 		}
 
-		$app->tpl->setVar('mailbox_show_last_access', $global_config['mail']['mailbox_show_last_access']);
+		$app->tpl->setVar('mailbox_show_last_access', $mail_config['mailbox_show_last_access']);
 		if (!empty($this->dataRecord['last_access'])) {
 			$app->tpl->setVar("last_access", date($app->lng('conf_format_datetime'), $this->dataRecord['last_access']));
 		}

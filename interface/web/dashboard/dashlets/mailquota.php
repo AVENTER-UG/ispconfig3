@@ -17,6 +17,10 @@ class dashlet_mailquota {
                $wb['last_accessed_txt'] = $app->lng('last_accessed_txt');
 		$tpl->setVar($wb);
 
+		$app->uses('getconf');
+		$mail_config = $app->getconf->get_global_config('mail');
+		$tpl->setVar('mailbox_show_last_access', $mail_config['mailbox_show_last_access']);
+
 		$emails = $app->quota_lib->get_mailquota_data( ($_SESSION["s"]["user"]["typ"] != 'admin') ? $_SESSION['s']['user']['client_id'] : null);
 		//print_r($emails);
 
