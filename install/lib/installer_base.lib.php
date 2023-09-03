@@ -1353,7 +1353,7 @@ class installer_base extends stdClass {
 			$change_maildrop_flags = @(preg_match("/$quoted_regex/", $configfile))?false:true;
 		}
 		if ($change_maildrop_flags) {
-			//* Change maildrop service in posfix master.cf
+			//* Change maildrop service in postfix master.cf
 			if(is_file($config_dir.'/master.cf')) {
 				copy($config_dir.'/master.cf', $config_dir.'/master.cf~');
 			}
@@ -1362,8 +1362,8 @@ class installer_base extends stdClass {
  			}
 			$configfile = $config_dir.'/master.cf';
 			$content = rf($configfile);
-			$content =	str_replace('flags=DRhu user=vmail argv=/usr/bin/maildrop -d ${recipient}',
-						'flags=DRhu user='.$cf['vmail_username'].' argv=/usr/bin/maildrop -d '.$cf['vmail_username'].' ${extension} ${recipient} ${user} ${nexthop} ${sender}',
+			$content =	preg_replace('/flags=(DRX?hu) user=vmail argv=\/usr\/bin\/maildrop -d \${recipient}/',
+						'flags=$1 user='.$cf['vmail_username'].' argv=/usr/bin/maildrop -d '.$cf['vmail_username'].' \${extension} \${recipient} \${user} \${nexthop} \${sender}',
 						$content);
 			wf($configfile, $content);
 		}
