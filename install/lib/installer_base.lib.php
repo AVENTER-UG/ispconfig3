@@ -2049,7 +2049,7 @@ class installer_base extends stdClass {
 			rename("/etc/rspamd/local.d/greylist.conf", "/etc/rspamd/local.d/greylist.old");
 		}
 
-		exec('chmod a+r /etc/rspamd/local.d/* /etc/rspamd/local.d/maps.d/* /etc/rspamd/override.d/*');
+		exec('chmod a+r,-x+X /etc/rspamd/local.d/* /etc/rspamd/local.d/maps.d/* /etc/rspamd/override.d/*');
 		# protect passwords in these files
 		exec('chgrp _rspamd /etc/rspamd/local.d/redis.conf /etc/rspamd/local.d/classifier-bayes.conf');
 		exec('chmod 640 /etc/rspamd/local.d/redis.conf /etc/rspamd/local.d/classifier-bayes.conf');
