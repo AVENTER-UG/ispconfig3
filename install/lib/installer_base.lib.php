@@ -3047,6 +3047,8 @@ class installer_base extends stdClass {
 			$crt_issuer = exec("openssl x509 -in ".escapeshellarg($ssl_crt_file)." -inform PEM -noout -issuer");
 		}
 
+		$issued_successfully = false;
+
 		if ((@file_exists($ssl_crt_file) && ($crt_subject == $crt_issuer)) || (!@is_dir($acme_cert_dir) || !@file_exists($check_acme_file) || !@file_exists($ssl_crt_file) || md5_file($check_acme_file) != md5_file($ssl_crt_file)) && $ip_address_match == true) {
 
 			// This script is needed earlier to check and open http port 80 or standalone might fail
@@ -3144,8 +3146,6 @@ class installer_base extends stdClass {
 					system($this->getinitcommand($conf[$server]['init_script'], 'restart').' &> /dev/null');
 				}
 			}
-
-			$issued_successfully = false;
 
 			// Backup existing ispserver ssl files
 			//
