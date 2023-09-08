@@ -2396,8 +2396,8 @@ class installer_base extends stdClass {
 			replaceLine('/etc/apache2/ports.conf', 'Listen 443', 'Listen 443', 1);
 
 			// Comment out the namevirtualhost lines, as they were added by ispconfig in ispconfig.conf file again
-			replaceLine('/etc/apache2/ports.conf', 'NameVirtualHost *:80', '# NameVirtualHost *:80', 1);
-			replaceLine('/etc/apache2/ports.conf', 'NameVirtualHost *:443', '# NameVirtualHost *:443', 1);
+			replaceLine('/etc/apache2/ports.conf', 'NameVirtualHost *:80', '# NameVirtualHost *:80', 1, 0);
+			replaceLine('/etc/apache2/ports.conf', 'NameVirtualHost *:443', '# NameVirtualHost *:443', 1, 0);
 		}
 
 		if(is_file('/etc/apache2/mods-available/fcgid.conf')) {
