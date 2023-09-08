@@ -209,14 +209,6 @@ class installer extends installer_base {
 
 	}
 
-	public function configure_apache() {
-		global $conf;
-
-		if(file_exists('/etc/apache2/mods-available/fcgid.conf')) replaceLine('/etc/apache2/mods-available/fcgid.conf', 'MaxRequestLen', 'MaxRequestLen 15728640', 0, 1);
-
-		parent::configure_apache();
-	}
-
 	public function configure_fail2ban() {
 		/*
         copy('tpl/dovecot-pop3imap.conf.master',"/etc/fail2ban/filter.d/dovecot-pop3imap.conf");
