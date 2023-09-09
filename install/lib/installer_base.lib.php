@@ -3927,7 +3927,7 @@ class installer_base extends stdClass {
 		$install_dir = $conf['ispconfig_install_dir'];
 
 		//* Root Crontab
-		exec('crontab -u root -l > crontab.txt');
+		exec('crontab -u root -l > crontab.txt 2>/dev/null');
 		$existing_root_cron_jobs = file('crontab.txt');
 
 		// remove existing ispconfig cronjobs, in case the syntax has changed
@@ -3956,7 +3956,7 @@ class installer_base extends stdClass {
 		//* Getmail crontab
 		if(is_user('getmail')) {
 			$cf = $conf['getmail'];
-			exec('crontab -u getmail -l > crontab.txt');
+			exec('crontab -u getmail -l > crontab.txt 2>/dev/null');
 			$existing_cron_jobs = file('crontab.txt');
 
 			$cron_jobs = array(
