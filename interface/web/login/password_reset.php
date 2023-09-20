@@ -84,6 +84,9 @@ if(isset($_POST['username']) && is_string($_POST['username']) && $_POST['usernam
 			else $server_domain = 'https://' . $server_domain;
 
 			if(isset($_SERVER['SERVER_PORT']) && $_SERVER['SERVER_PORT'] != '443') $server_domain .= ':' . $_SERVER['SERVER_PORT'];
+			if (!empty($conf['interface_base_url'])) {
+				$server_domain = $conf['interface_base_url'];
+			}
 
 			$app->uses('getconf,ispcmail');
 			$server_config_array = $app->getconf->get_global_config();

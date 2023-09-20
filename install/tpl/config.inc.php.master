@@ -158,6 +158,7 @@ $conf['timezone'] = '{timezone}';
 
 //** Misc.
 $conf['interface_logout_url'] = ''; // example: http://www.domain.tld/
+$conf['interface_base_url'] = ''; // example: http://www.domain.tld (no trailing slash)
 
 
 //** Auto Load Modules
