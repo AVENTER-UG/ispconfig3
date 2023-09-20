@@ -1,6 +1,5 @@
 .idea
 /nbproject/private/
-.vscode
 .phplint-cache
 *.swp
 
@@ -38,3 +37,17 @@ Temporary Items
 
 # Configuration for the Nova editor
 .nova
+
+# VS Code files for those working on multiple tools
+.vscode/*
+*.code-workspace
+
+# Local History for Visual Studio Code
+.history/
+
+# Built Visual Studio Code Extensions
+*.vsix
+
+# Visual Studio code coverage results
+*.coverage
+*.coveragexml
