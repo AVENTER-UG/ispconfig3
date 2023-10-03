@@ -2988,7 +2988,7 @@ class installer_base extends stdClass {
 			$dnsa=dns_get_record($hostname, DNS_A);
 			if($dnsa) {
 				foreach ($dnsa as $rec) {
-					$dns_ips[] = $rec['ip'];
+					if(is_array($rec) && isset($rec['ip'])) $dns_ips[] = $rec['ip'];
 				}
 			}
 		}
@@ -2996,7 +2996,7 @@ class installer_base extends stdClass {
 			$dnsaaaa=dns_get_record($hostname, DNS_AAAA);
 			if($dnsaaaa) {
 				foreach ($dnsaaaa as $rec) {
-					$dns_ips[] = $rec['ip'];
+					if(is_array($rec) && isset($rec['ip'])) $dns_ips[] = $rec['ip'];
 				}
 			}
 		}
