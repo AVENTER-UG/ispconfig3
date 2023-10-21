@@ -89,6 +89,7 @@ class maildeliver_plugin {
 			or $data["old"]["autoresponder_subject"] != $data["new"]["autoresponder_subject"]
 			or $data["old"]["autoresponder_text"] != $data["new"]["autoresponder_text"]
 			or $data["old"]["autoresponder"] != $data["new"]["autoresponder"]
+			or $data["old"]["autoresponder_html"] != $data["new"]["autoresponder_html"]
 			or (isset($data["new"]["email"]) and $data["old"]["email"] != $data["new"]["email"])
 			or $data["old"]["autoresponder_start_date"] != $data["new"]["autoresponder_start_date"]
 			or $data["old"]["autoresponder_end_date"] != $data["new"]["autoresponder_end_date"]
@@ -153,6 +154,9 @@ class maildeliver_plugin {
 
 				// Autoresponder
 				$tpl->setVar('autoresponder', $data["new"]["autoresponder"]);
+
+				// Autoresponder_html
+				$tpl->setVar('autoresponder_html', $data["new"]["autoresponder_html"]);
 
 				// Autoresponder Subject
 				$data["new"]["autoresponder_subject"] = str_replace("\"", "'", $data["new"]["autoresponder_subject"]);
