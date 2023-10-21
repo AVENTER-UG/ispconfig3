@@ -61,15 +61,7 @@ if currentdate :value "le" "iso8601" "<tmpl_var name='end_date'>" {
 vacation  :days 1
   :subject "<tmpl_var name='autoresponder_subject'>"
   <tmpl_var name='addresses'>
-<tmpl_if name="autoresponder_html" op="==" value="y">
-  :mime "MIME-Version: 1.0
-Content-Type: text/html; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-<tmpl_var name='autoresponder_text'>";
-</tmpl_if>
-<tmpl_if name="autoresponder_html" op="==" value="n">
   "<tmpl_var name='autoresponder_text'>";
-</tmpl_if>
 
 <tmpl_if name="end_date">
 }

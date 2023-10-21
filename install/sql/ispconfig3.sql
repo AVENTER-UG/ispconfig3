@@ -1076,7 +1076,6 @@ CREATE TABLE `mail_user` (
   `sender_cc` varchar(255) NOT NULL default '',
   `homedir` varchar(255) NOT NULL default '',
   `autoresponder` enum('n','y') NOT NULL default 'n',
-  `autoresponder_html` enum('n','y') NOT NULL default 'n',
   `autoresponder_start_date` datetime NULL default NULL,
   `autoresponder_end_date` datetime NULL default NULL,
   `autoresponder_subject` varchar(255) NOT NULL default 'Out of office reply',

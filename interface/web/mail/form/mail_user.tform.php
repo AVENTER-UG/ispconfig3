@@ -381,7 +381,7 @@ if ($global_config['mail']['mailbox_show_autoresponder_tab'] === 'y') {
 				'formtype' => 'TEXTAREA',
 				'filters'   => array(
 					0 => array( 'event' => 'SAVE',
-					'type' => 'TRIM')
+					'type' => 'STRIPTAGS')
 			),
 				'default' => '',
 				'value'  => '',
@@ -389,12 +389,6 @@ if ($global_config['mail']['mailbox_show_autoresponder_tab'] === 'y') {
 				'rows'  => '15'
 			),
 			'autoresponder' => array (
-				'datatype' => 'VARCHAR',
-				'formtype' => 'CHECKBOX',
-				'default' => 'n',
-				'value'  => array(1 => 'y', 0 => 'n')
-			),
-			'autoresponder_html' => array (
 				'datatype' => 'VARCHAR',
 				'formtype' => 'CHECKBOX',
 				'default' => 'n',
