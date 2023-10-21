@@ -104,24 +104,26 @@ class cronjob_monitor_clamav_log extends cronjob {
 
 		$tmp = explode("\n", $data);
 		$lastLog = array();
-		if ($tmp[sizeof($tmp) - 1] == '') {
-			/* the log ends with an empty line remove this */
-			array_pop($tmp);
-		}
-		if (strpos($tmp[sizeof($tmp) - 1], '-------------') !== false) {
-			/* the log ends with "-----..." remove this */
-			array_pop($tmp);
-		}
-		for ($i = sizeof($tmp) - 1; $i > 0; $i--) {
-			if (strpos($tmp[$i], '---------') === false) {
-				/* no delimiter found, so add this to the last-log */
-				$lastLog[] = $tmp[$i];
-			} else {
-				/* delimiter found, so there is no more line left! */
-				break;
+		if (count($tmp) >= 2) {
+			if ($tmp[sizeof($tmp) - 1] == '') {
+				/* the log ends with an empty line remove this */
+				array_pop($tmp);
+			}
+			if (strpos($tmp[sizeof($tmp) - 1], '-------------') !== false) {
+				/* the log ends with "-----..." remove this */
+				array_pop($tmp);
+			}
+			for ($i = sizeof($tmp) - 1; $i > 0; $i--) {
+				if (strpos($tmp[$i], '---------') === false) {
+					/* no delimiter found, so add this to the last-log */
+					$lastLog[] = $tmp[$i];
+				} else {
+					/* delimiter found, so there is no more line left! */
+					break;
+				}
 			}
 		}
-
+		
 		/*
 		 * Now we have the last log in the array.
 		 * Check if the outdated-string is found...
