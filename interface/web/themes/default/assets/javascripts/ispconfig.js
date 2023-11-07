@@ -813,4 +813,31 @@ $(document).ready(function() {
 		}
 		return iCaretPos;
 	};
+
+	//copy to clipboard
+	$(document).on('click', '.copy-to-clipboard', function() {
+		var $copyElement = $(this).children();
+		var temp = $("<input>");
+		$("body").append(temp);
+		temp.val($copyElement.text()).select();
+		//execCommand is Deprecated - but there is no alternative (2023)
+		document.execCommand("copy");
+		temp.remove();
+	} );
+
+	//display copy-to-clipboard icon
+	let lastCopyToClipboardIcon;
+	$(document).on("mouseenter", '.copy-to-clipboard', function() {
+		$(lastCopyToClipboardIcon).removeClass("copy-to-clipboard-icon"); //Clean up old icons - sometimes mouse is too fast to trigger mouseleave
+		$(this).addClass("copy-to-clipboard-icon");
+		lastCopyToClipboardIcon = $(this);
+		//console.log("Mouseenter e-tooltip");
+	});
+
+	//hide copy-to-clipboard icon
+	$(document).on("mouseleave", '.copy-to-clipboard', function() {
+		$(this).removeClass("copy-to-clipboard-icon");
+		//console.log("Mouseleave e-tooltip");
+	});
+
 });
