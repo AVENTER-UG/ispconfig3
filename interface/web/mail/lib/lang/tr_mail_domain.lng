@@ -23,3 +23,4 @@ $wb['dkim_selector_error'] = 'DKIM seçici geçersiz. En fazla 63 karakter uzunl
 $wb['relayhost_txt'] = 'Relayhost';
 $wb['relayhost_user_txt'] = 'Relayhost User';
 $wb['relayhost_password_txt'] = 'Relayhost Password';
+$wb['dkim_auto_dns_txt'] = 'Managed zone, dns updated automatically';
