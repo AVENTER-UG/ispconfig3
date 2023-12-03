@@ -388,6 +388,16 @@ class page_action extends tform_actions {
 					}
 				}
 			}
+		} else {
+			if(!empty($global_config['default_remote_dbserver'])) {
+				// Add default remote_ips from Main Configuration.
+				$remote_ips = explode(",", $global_config['default_remote_dbserver']);
+
+				if($this->dataRecord['remote_access'] != 'y'){
+					$this->dataRecord['remote_ips'] = implode(',', $remote_ips);
+					$this->dataRecord['remote_access'] = 'y';
+				}
+			}
 		}
 
 		if ($app->tform->errorMessage == '') {
@@ -476,6 +486,16 @@ class page_action extends tform_actions {
 						$this->dataRecord['remote_ips'] = implode(',', $tmp);
 						unset($tmp);
 					}
+				}
+			}
+		} else {
+			if(!empty($global_config['default_remote_dbserver'])) {
+				// Add default remote_ips from Main Configuration.
+				$remote_ips = explode(",", $global_config['default_remote_dbserver']);
+
+				if($this->dataRecord['remote_access'] != 'y'){
+					$this->dataRecord['remote_ips'] = implode(',', $remote_ips);
+					$this->dataRecord['remote_access'] = 'y';
 				}
 			}
 		}

@@ -240,7 +240,7 @@ includesections = php_common
 
 [php8_2]
 comment = php version 8.2
-paths = /usr/bin/php8.2, /usr/lib/php/8.2/, /usr/lib/php/20210902/, /usr/share/php/8.2/, /etc/php/8.2/cli/, /etc/php/8.2/mods-available/
+paths = /usr/bin/php8.2, /usr/lib/php/8.2/, /usr/lib/php/20220829/, /usr/share/php/8.2/, /etc/php/8.2/cli/, /etc/php/8.2/mods-available/
 includesections = php_common
 
 [imagemagick]

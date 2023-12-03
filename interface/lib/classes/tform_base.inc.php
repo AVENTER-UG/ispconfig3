@@ -1187,7 +1187,7 @@ class tform_base {
 				if (count($sql_v6_explode) < count($explode_field_value) && isset($sql_v6['ip_address'])) {
 					$errmsg = $validator['errmsg'];
 					if(isset($this->wordbook[$errmsg])) {
-						$this->errorMessage .= $this->wordbook[$errmsg].$sql_v6[ip_address]."<br />\r\n";
+						$this->errorMessage .= $this->wordbook[$errmsg].$sql_v6['ip_address']."<br />\r\n";
 					} else {
 						$this->errorMessage .= $errmsg."<br />\r\n";
 					}
