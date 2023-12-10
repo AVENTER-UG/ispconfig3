@@ -129,6 +129,12 @@ class dns_page_action extends tform_actions {
 
 		if($this->checkDuplicate()) $app->tform->errorMessage .= $app->tform->lng("data_error_duplicate")."<br>";
 
+		// Remove accidental quotes around a record.
+		$matches = array();
+		if(preg_match('/^"(.*)"$/', $this->dataRecord["data"], $matches)) {
+			$this->dataRecord["data"] = $matches[1];
+		}
+
 		// Set the server ID of the rr record to the same server ID as the parent record.
 		$this->dataRecord["server_id"] = $soa["server_id"];
 
