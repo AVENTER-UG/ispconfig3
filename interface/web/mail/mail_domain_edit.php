@@ -331,6 +331,11 @@ class page_action extends tform_actions {
 			$this->dataRecord["domain"] = strtolower($this->dataRecord["domain"]);
 		}
 
+		// Extract the dkim public key if not submitted.
+		if (!empty($this->dataRecord['dkim_private']) && empty( $this->dataRecord['dkim_public']) ) {
+			$this->dataRecord['dkim_public'] = openssl_pkey_get_details(openssl_pkey_get_private($this->dataRecord['dkim_private']))['key'];
+		}
+
 		//* server_id must be > 0
 		if(isset($this->dataRecord["server_id"]) && $this->dataRecord["server_id"] < 1) $app->tform->errorMessage .= $app->lng("server_id_0_error_txt");
 
