@@ -478,7 +478,7 @@ class tform_base {
 					if(isset($record[$key])) {
 						$val = $record[$key];
 					} else {
-						$val = '';
+						$val = $field['default'];
 					}
 
 					// If Datasource is set, get the data from there
@@ -621,11 +621,7 @@ class tform_base {
 						break;
 
 					default:
-						if(isset($record[$key])) {
-							$new_record[$key] = $app->functions->htmlentities($record[$key]);
-						} else {
-							$new_record[$key] = '';
-						}
+						$new_record[$key] = $app->functions->htmlentities($val);
 					}
 				}
 			}
