@@ -374,6 +374,14 @@ class page_action extends tform_actions {
 			}
 			if (!in_array($server_config['ip_address'], $remote_ips)) { $remote_ips[] = $server_config['ip_address']; }
 
+			// If server has a slave ... add it.
+			$mirrors = $app->db->queryAllRecords("SELECT server_id FROM server WHERE mirror_server_id = ?", $tmp['server_id']);
+			foreach ($mirrors as $mirror) {
+				// we need remote access rights for this server, so get it's ip address
+				$mirror_server_config = $app->getconf->get_server_config($mirror['server_id'], 'server');
+				if (!in_array($server_config['ip_address'], $remote_ips)) { $remote_ips[] = $mirror_server_config['ip_address']; }
+			}
+
 			if($server_config['ip_address']!='') {
 				if($this->dataRecord['remote_access'] != 'y'){
 					$this->dataRecord['remote_ips'] = implode(',', $remote_ips);
