@@ -402,7 +402,7 @@ class bind_plugin {
  		}
 
 		//* Restart bind nameserver if update_acl is not empty, otherwise reload it
-		if($data['new']['update_acl'] != '') {
+               if(!empty($data['new']['update_acl'])) {
 			$app->services->restartServiceDelayed('bind', 'restart');
 		} else {
 			$app->services->restartServiceDelayed('bind', 'reload');
