@@ -134,17 +134,20 @@ class maildeliver_plugin {
 				}
 
 				// Custom filters
-				if($data["new"]["custom_mailfilter"] == 'NULL') $data["new"]["custom_mailfilter"] = '';
+				if(is_null($data["new"]["custom_mailfilter"])) $data["new"]["custom_mailfilter"] = '';
 				$tpl->setVar('custom_mailfilter', str_replace("\r\n","\n",$data["new"]["custom_mailfilter"]));
 
 				// Move junk
 				$tpl->setVar('move_junk', $data["new"]["move_junk"]);
+				$tpl->setVar('imap_prefix', $data["new"]["imap_prefix"]);
 
 				// Set autoresponder start date
+				if(is_null($data["new"]["autoresponder_start_date"])) $data["new"]["autoresponder_start_date"] = '';
 				$data["new"]["autoresponder_start_date"] = str_replace(" ", "T", $data["new"]["autoresponder_start_date"]);
 				$tpl->setVar('start_date', $data["new"]["autoresponder_start_date"]);
 
 				// Set autoresponder end date
+				if(is_null($data["new"]["autoresponder_end_date"])) $data["new"]["autoresponder_end_date"] = '';
 				$data["new"]["autoresponder_end_date"] = str_replace(" ", "T", $data["new"]["autoresponder_end_date"]);
 				$tpl->setVar('end_date', $data["new"]["autoresponder_end_date"]);
 
@@ -156,10 +159,11 @@ class maildeliver_plugin {
 				$tpl->setVar('autoresponder_subject', $data["new"]["autoresponder_subject"]);
 
 				// Autoresponder Text
+				if(is_null($data["new"]["autoresponder_text"])) $data["new"]["autoresponder_text"] = '';
 				$data["new"]["autoresponder_text"] = str_replace("\"", "'", $data["new"]["autoresponder_text"]);
 				$tpl->setVar('autoresponder_text', $data["new"]["autoresponder_text"]);
 
-				if (! defined($address_str)) {
+				if (!isset($address_str)) {
 					//* Set alias addresses for autoresponder
 					$sql = "SELECT * FROM mail_forwarding WHERE type = 'alias' AND destination = ?";
 					$records = $app->db->queryAllRecords($sql, $data["new"]["email"]);

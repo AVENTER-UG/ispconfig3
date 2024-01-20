@@ -694,7 +694,8 @@ class page_action extends tform_actions {
 			/*
 			 * The domain-module is in use.
 			*/
-			$domains = $app->tools_sites->getDomainModuleDomains($this->_vhostdomain_type == 'subdomain' ? null : "web_domain");
+			$domains = $app->tools_sites->getDomainModuleDomains($this->_vhostdomain_type == 'subdomain' ? null : "web_domain", $this->dataRecord['domain']);
+
 			$domain_select = "<option value=''></option>";
 			$selected_domain = '';
 			if(is_array($domains) && sizeof($domains) > 0) {
@@ -725,6 +726,12 @@ class page_action extends tform_actions {
 			// remove the parent domain part of the domain name before we show it in the text field.
 			if($this->dataRecord["type"] == 'vhostsubdomain') $this->dataRecord["domain"] = str_replace('.'.$selected_domain, '', $this->dataRecord["domain"]);
 
+			// We have to set the client group id value as the client select field is hidden in this mode
+			if($is_admin) {
+				$app->tpl->setVar("client_group_id_value", $this->dataRecord["sys_groupid"], true);
+			} else {
+				$app->tpl->setVar("client_group_id_value", $_SESSION["s"]["user"]["default_group"], true);
+			}
 
 		} else {
 			// remove the parent domain part of the domain name before we show it in the text field.
@@ -835,6 +842,8 @@ class page_action extends tform_actions {
 		} else {
 			$app->tpl->setVar('is_pagespeed_enabled', ($web_config['nginx_enable_pagespeed']));
 		}
+
+		$app->tpl->setVar('app_module', 'sites');
 
 		parent::onShowEnd();
 	}

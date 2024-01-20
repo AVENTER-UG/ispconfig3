@@ -77,10 +77,12 @@ class db
 		$this->dbPort = $port ? $port : $conf['db_port'];
 		$this->dbName = $database ? $database : $conf['db_database'];
 		$this->dbUser = $user ? $user : $conf['db_user'];
-		$this->dbPass = $pass ? $pass : $conf['db_password'];
+		$this->dbPass = ( $pass !== NULL ) ? $pass : $conf['db_password'];
 		$this->dbCharset = $conf['db_charset'];
 		$this->dbClientFlags = ($flags !== NULL) ? $flags : $conf['db_client_flags'];
 		$this->_iConnId = mysqli_init();
+
+		mysqli_report(MYSQLI_REPORT_OFF);
 
 		mysqli_real_connect($this->_iConnId, $this->dbHost, $this->dbUser, $this->dbPass, '', (int)$this->dbPort, NULL, $this->dbClientFlags);
 		for($try=0;(!is_object($this->_iConnId) || mysqli_connect_errno()) && $try < 5;++$try) {
@@ -823,12 +825,13 @@ class db
 		return true;
 	}
 
-	//** Deletes a record and saves the changes into the datalog
+	// Updates a datalog record to store an error state.
 	public function datalogError($errormsg) {
 		global $app;
 
-		if(isset($app->modules->current_datalog_id) && $app->modules->current_datalog_id > 0) $this->query("UPDATE sys_datalog set error = ? WHERE datalog_id = ?", $errormsg, $app->modules->current_datalog_id);
-
+		if(isset($app->modules->current_datalog_id) && $app->modules->current_datalog_id > 0) {
+			$this->query("UPDATE sys_datalog set error = ? WHERE datalog_id = ?", $errormsg, $app->modules->current_datalog_id);
+		}
 		return true;
 	}
 

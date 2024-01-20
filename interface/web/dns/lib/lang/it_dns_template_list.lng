@@ -1,6 +1,6 @@
 <?php
-$wb['list_head_txt'] = 'DNS Wizard Modello';
+$wb['list_head_txt'] = 'Procedura guidata Modello DNS';
 $wb['visible_txt'] = 'Visibile';
 $wb['name_txt'] = 'Nome';
-$wb['add_new_record_txt'] = 'Aggiungi un nuovo  record';
+$wb['add_new_record_txt'] = 'Aggiungi un nuovo record';
 ?>

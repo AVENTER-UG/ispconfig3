@@ -266,7 +266,7 @@ class apache2_plugin {
 		// load the server configuration options
 		$app->uses('getconf');
 		$web_config = $app->getconf->get_server_config($conf['server_id'], 'web');
-		if ($web_config['CA_path']!='' && !file_exists($web_config['CA_path'].'/openssl.cnf'))
+		if (isset($web_config['CA_path']) && $web_config['CA_path'] !='' && !file_exists($web_config['CA_path'].'/openssl.cnf'))
 			$app->log("CA path error, file does not exist:".$web_config['CA_path'].'/openssl.cnf', LOGLEVEL_ERROR);
 
 		//* Only vhosts can have a ssl cert
@@ -1169,7 +1169,7 @@ class apache2_plugin {
 		if(!is_dir($web_config['website_basedir'].'/conf')) $app->system->mkdir($web_config['website_basedir'].'/conf');
 
 		//* add open_basedir restriction to custom php.ini content, required for suphp only
-		if(!stristr($data['new']['custom_php_ini'], 'open_basedir') && $data['new']['php'] == 'suphp') {
+		if(isset($data['new']['custom_php_ini']) && !stristr($data['new']['custom_php_ini'], 'open_basedir') && $data['new']['php'] == 'suphp') {
 			$data['new']['custom_php_ini'] .= "\nopen_basedir = '".$data['new']['php_open_basedir']."'\n";
 		}
 
@@ -1194,7 +1194,7 @@ class apache2_plugin {
 		//* Create custom php.ini
 		# Because of custom default PHP directives from snippet
 		# php.ini custom values order os: 1. general settings 2. Directive Snippets settings 3. custom php.ini settings defined in domain settings
-		if(trim($data['new']['custom_php_ini']) != '' || $data['new']['directive_snippets_id'] > "0") {
+		if((isset($data['new']['custom_php_ini']) && trim($data['new']['custom_php_ini']) != '') || $data['new']['directive_snippets_id'] > "0") {
 			$has_custom_php_ini = true;
 			$custom_sendmail_path = false;
 			if(!is_dir($custom_php_ini_dir)) $app->system->mkdirpath($custom_php_ini_dir);
@@ -1342,6 +1342,7 @@ class apache2_plugin {
 
 		$tpl->setVar($vhost_data);
 		$tpl->setVar('apache_version', $app->system->getapacheversion());
+		$tpl->setVar('apache_full_version', $app->system->getapacheversion(true));
 
 		// Rewrite rules
 		$rewrite_rules = array();
@@ -1400,14 +1401,12 @@ class apache2_plugin {
 
 		$server_alias = array();
 
-		// get autoalias
-		$auto_alias = $web_config['website_autoalias'];
-		if($auto_alias != '') {
+		if(isset($web_config['website_autoalias']) && $web_config['website_autoalias'] != '') {
 			// get the client username
 			$client = $app->db->queryOneRecord("SELECT `username` FROM `client` WHERE `client_id` = ?", $client_id);
 			$aa_search = array('[client_id]', '[website_id]', '[client_username]', '[website_domain]');
 			$aa_replace = array($client_id, $data['new']['domain_id'], $client['username'], $data['new']['domain']);
-			$auto_alias = str_replace($aa_search, $aa_replace, $auto_alias);
+			$auto_alias = str_replace($aa_search, $aa_replace, $web_config['website_autoalias']);
 			unset($client);
 			unset($aa_search);
 			unset($aa_replace);
@@ -1775,6 +1774,13 @@ class apache2_plugin {
 
 		//* create empty vhost array
 		$vhosts = array();
+		$proxy_protocol_protocols = explode(',', $web_config['vhost_proxy_protocol_protocols']);
+		$proxy_protocol_ipv4 = in_array('ipv4', $proxy_protocol_protocols);
+		$proxy_protocol_ipv6 = in_array('ipv6', $proxy_protocol_protocols);
+		$proxy_protocol_site = $web_config['vhost_proxy_protocol_enabled'] == 'all';
+		$proxy_protocol_site |= $web_config['vhost_proxy_protocol_enabled'] == 'y' && $data['new']['proxy_protocol'] == 'y';
+		$proxy_protocol_http_port = isset($web_config['vhost_proxy_protocol_http_port']) ? (int)$web_config['vhost_proxy_protocol_http_port'] : 0;
+		$proxy_protocol_https_port = isset($web_config['vhost_proxy_protocol_https_port']) ? (int)$web_config['vhost_proxy_protocol_https_port'] : 0;
 
 		//* Add vhost for ipv4 IP
 
@@ -1791,13 +1797,11 @@ class apache2_plugin {
 		if(count($alias_seo_redirects) > 0) $tmp_vhost_arr = $tmp_vhost_arr + array('alias_seo_redirects' => $alias_seo_redirects);
 		$vhosts[] = $tmp_vhost_arr;
 
-		//if proxy protocol is enabled we need to add a new port to lsiten to
-		if($web_config['vhost_proxy_protocol_enabled'] == 'y' && $data['new']['proxy_protocol'] == 'y'){
-			if((int)$web_config['vhost_proxy_protocol_http_port'] > 0) {
-				$tmp_vhost_arr['port']           = (int)$web_config['vhost_proxy_protocol_http_port'];
-				$tmp_vhost_arr['use_proxy_protocol'] = $data['new']['proxy_protocol'];
-				$vhosts[]                        = $tmp_vhost_arr;
-			}
+		//if proxy protocol is enabled we need to add a new port to listen to
+		if ($proxy_protocol_site && $proxy_protocol_ipv4 && $proxy_protocol_http_port > 0) {
+			$tmp_vhost_arr['port'] = $proxy_protocol_http_port;
+			$tmp_vhost_arr['use_proxy_protocol'] = 'y';
+			$vhosts[] = $tmp_vhost_arr;
 		}
 
 		unset($tmp_vhost_arr);
@@ -1815,13 +1819,11 @@ class apache2_plugin {
 			if(count($ipv4_ssl_alias_seo_redirects) > 0) $tmp_vhost_arr = $tmp_vhost_arr + array('alias_seo_redirects' => $ipv4_ssl_alias_seo_redirects);
 			$vhosts[] = $tmp_vhost_arr;
 
-			//if proxy protocol is enabled we need to add a new port to lsiten to
-			if($web_config['vhost_proxy_protocol_enabled'] == 'y' && $data['new']['proxy_protocol'] == 'y'){
-				if((int)$web_config['vhost_proxy_protocol_https_port'] > 0) {
-					$tmp_vhost_arr['port']           = (int)$web_config['vhost_proxy_protocol_https_port'];
-					$tmp_vhost_arr['use_proxy_protocol'] = $data['new']['proxy_protocol'];
-					$vhosts[]                        = $tmp_vhost_arr;
-				}
+			//if proxy protocol is enabled we need to add a new port to listen to
+			if ($proxy_protocol_site && $proxy_protocol_ipv4 && $proxy_protocol_https_port > 0) {
+				$tmp_vhost_arr['port'] = $proxy_protocol_https_port;
+				$tmp_vhost_arr['use_proxy_protocol'] = 'y';
+				$vhosts[] = $tmp_vhost_arr;
 			}
 
 			unset($tmp_vhost_arr, $ipv4_ssl_alias_seo_redirects);
@@ -1831,10 +1833,9 @@ class apache2_plugin {
 		//* Add vhost for IPv6 IP
 		if($data['new']['ipv6_address'] != '') {
 			//* rewrite ipv6 on mirrors
-			/* chang $conf to $web_config */
-			if ($web_config['serverconfig']['web']['vhost_rewrite_v6'] == 'y') {
-				if (isset($web_config['serverconfig']['server']['v6_prefix']) && $web_config['serverconfig']['server']['v6_prefix'] <> '') {
-					$explode_v6prefix=explode(':', $web_config['serverconfig']['server']['v6_prefix']);
+			if (isset($conf['serverconfig']['web']['vhost_rewrite_v6']) && $conf['serverconfig']['web']['vhost_rewrite_v6'] == 'y') {
+				if (isset($conf['serverconfig']['server']['v6_prefix']) && $conf['serverconfig']['server']['v6_prefix'] <> '') {
+					$explode_v6prefix=explode(':', $conf['serverconfig']['server']['v6_prefix']);
 					$explode_v6=explode(':', $data['new']['ipv6_address']);
 
 					for ( $i = 0; $i <= count($explode_v6prefix)-1; $i++ ) {
@@ -1848,6 +1849,13 @@ class apache2_plugin {
 			if(count($rewrite_rules) > 0)  $tmp_vhost_arr = $tmp_vhost_arr + array('redirects' => $rewrite_rules);
 			if(count($alias_seo_redirects) > 0) $tmp_vhost_arr = $tmp_vhost_arr + array('alias_seo_redirects' => $alias_seo_redirects);
 			$vhosts[] = $tmp_vhost_arr;
+
+			//if proxy protocol is enabled we need to add a new port to listen to
+			if ($proxy_protocol_site && $proxy_protocol_ipv6 && $proxy_protocol_http_port > 0) {
+				$tmp_vhost_arr['port'] = $proxy_protocol_http_port;
+				$tmp_vhost_arr['use_proxy_protocol'] = 'y';
+				$vhosts[] = $tmp_vhost_arr;
+			}
 			unset($tmp_vhost_arr);
 
 			//* Add vhost for ipv6 IP with SSL
@@ -1862,6 +1870,14 @@ class apache2_plugin {
 				}
 				if(count($ipv6_ssl_alias_seo_redirects) > 0) $tmp_vhost_arr = $tmp_vhost_arr + array('alias_seo_redirects' => $ipv6_ssl_alias_seo_redirects);
 				$vhosts[] = $tmp_vhost_arr;
+
+				//if proxy protocol is enabled we need to add a new port to listen to
+				if ($proxy_protocol_site && $proxy_protocol_ipv6 && $proxy_protocol_https_port > 0) {
+					$tmp_vhost_arr['port'] = $proxy_protocol_https_port;
+					$tmp_vhost_arr['use_proxy_protocol'] = 'y';
+					$vhosts[] = $tmp_vhost_arr;
+				}
+
 				unset($tmp_vhost_arr, $ipv6_ssl_alias_seo_redirects);
 				$app->log('Enable SSL for IPv6: '.$domain, LOGLEVEL_DEBUG);
 			}
@@ -1937,18 +1953,18 @@ class apache2_plugin {
 
 		if($data['new']['stats_type'] != '') {
 			if(!is_dir($data['new']['document_root'].'/' . $web_folder . '/stats')) $app->system->mkdir($data['new']['document_root'].'/' . $web_folder . '/stats');
-			$ht_file = "AuthType Basic\nAuthName \"Members Only\"\nAuthUserFile ".$data['new']['document_root']."/web/stats/.htpasswd_stats\nrequire valid-user\nDirectoryIndex index.html index.php\nHeader set Content-Security-Policy \"default-src * 'self' 'unsafe-inline' 'unsafe-eval' data:;\"\n<Files \"goaindex.html\">\nAddDefaultCharset UTF-8\n</Files>\n";
+			$ht_file = "AuthType Basic\nAuthName \"Members Only\"\nAuthUserFile ".$data['new']['document_root']."/".$web_folder."/stats/.htpasswd_stats\nrequire valid-user\nDirectoryIndex index.html index.php\nHeader set Content-Security-Policy \"default-src * 'self' 'unsafe-inline' 'unsafe-eval' data:;\"\n<Files \"goaindex.html\">\nAddDefaultCharset UTF-8\n</Files>\n";
 			$app->system->file_put_contents($data['new']['document_root'].'/' . $web_folder . '/stats/.htaccess', $ht_file);
 			$app->system->chmod($data['new']['document_root'].'/' . $web_folder . '/stats/.htaccess', 0755);
 			unset($ht_file);
 
-			if(!is_file($data['new']['document_root'].'/web/stats/.htpasswd_stats') || $data['new']['stats_password'] != $data['old']['stats_password']) {
-				if(trim($data['new']['stats_password']) != '') {
+			if(!is_file($data['new']['document_root'].'/'.$web_folder.'/stats/.htpasswd_stats') || $data['new']['stats_password'] != $data['old']['stats_password']) {
+				if(isset($data['new']['stats_password']) && trim($data['new']['stats_password']) != '') {
 					$htp_file = 'admin:'.trim($data['new']['stats_password']);
 					$app->system->web_folder_protection($data['new']['document_root'], false);
-					$app->system->file_put_contents($data['new']['document_root'].'/web/stats/.htpasswd_stats', $htp_file);
+					$app->system->file_put_contents($data['new']['document_root'].'/'.$web_folder.'/stats/.htpasswd_stats', $htp_file);
 					$app->system->web_folder_protection($data['new']['document_root'], true);
-					$app->system->chmod($data['new']['document_root'].'/web/stats/.htpasswd_stats', 0755);
+					$app->system->chmod($data['new']['document_root'].'/'.$web_folder.'/stats/.htpasswd_stats', 0755);
 					unset($htp_file);
 				}
 			}
@@ -2173,7 +2189,7 @@ class apache2_plugin {
 		}
 
 		if($data['old']['type'] == 'vhost' || $data['old']['type'] == 'vhostsubdomain' || $data['old']['type'] == 'vhostalias'){
-			if(is_array($log_folders) && !empty($log_folders)){
+			if(isset($log_folders) && is_array($log_folders) && !empty($log_folders)){
 				foreach($log_folders as $log_folder){
 					$app->system->exec_safe('umount -l ? 2>/dev/null', $data['old']['document_root'].'/'.$log_folder);
 				}
@@ -2193,7 +2209,7 @@ class apache2_plugin {
 		}
 
 		//* remove mountpoint from fstab
-		if(is_array($log_folders) && !empty($log_folders)){
+		if(isset($log_folders) && is_array($log_folders) && !empty($log_folders)){
 			foreach($log_folders as $log_folder){
 				$fstab_line = '/var/log/ispconfig/httpd/'.$data['old']['domain'].' '.$data['old']['document_root'].'/'.$log_folder.'    none    bind';
 				$app->system->removeLine('/etc/fstab', $fstab_line);
@@ -2349,7 +2365,7 @@ class apache2_plugin {
 
 				// Delete the symlinks for the sites
 				$client = $app->db->queryOneRecord('SELECT client_id FROM sys_group WHERE sys_group.groupid = ?', $data['old']['sys_groupid']);
-				$client_id = intval($client['client_id']);
+				$client_id = (is_array($client) && isset($client['client_id']))?intval($client['client_id']):0;
 				unset($client);
 				$tmp_symlinks_array = explode(':', $web_config['website_symlinks']);
 				if(is_array($tmp_symlinks_array)) {
@@ -2413,7 +2429,7 @@ class apache2_plugin {
 						//* cleanup database
 						$sql = "DELETE FROM web_backup WHERE server_id = ? AND parent_domain_id = ? AND filename LIKE ?";
 						$app->db->query($sql, $conf['server_id'], $data_old['domain_id'], "web".$data_old['domain_id']."_%");
-						if($app->db->dbHost != $app->dbmaster->dbHost) $app->dbmaster->query($sql, $conf['server_id'], $data_old['domain_id'], "web".$data_old['domain_id']."_%");
+						if($app->running_on_slaveserver()) $app->dbmaster->query($sql, $conf['server_id'], $data_old['domain_id'], "web".$data_old['domain_id']."_%");
 
 						$app->log('Deleted the web backup files', LOGLEVEL_DEBUG);
 					}
@@ -3375,7 +3391,7 @@ class apache2_plugin {
 
 		// Custom php.ini settings
 		$final_php_ini_settings = array();
-		$custom_php_ini_settings = trim($data['new']['custom_php_ini']);
+		$custom_php_ini_settings = (isset($data['new']['custom_php_ini']) && !is_null($data['new']['custom_php_ini']))?trim($data['new']['custom_php_ini']):'';
 
 		if(intval($data['new']['directive_snippets_id']) > 0){
 			$snippet = $app->db->queryOneRecord("SELECT * FROM directive_snippets WHERE directive_snippets_id = ? AND type = 'apache' AND active = 'y' AND customer_viewable = 'y'", intval($data['new']['directive_snippets_id']));

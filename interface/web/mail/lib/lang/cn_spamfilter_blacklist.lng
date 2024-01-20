@@ -1,0 +1,12 @@
+<?php
+$wb['server_id_txt'] = '服务器';
+$wb['wb_txt'] = 'wb';
+$wb['rid_txt'] = '用户';
+$wb['email_txt'] = '邮箱';
+$wb['priority_txt'] = '优先级';
+$wb['active_txt'] = '启用';
+$wb['limit_spamfilter_wblist_txt'] = '您的帐户的白名单或黑名单记录已达到上限。';
+$wb['10 - highest'] = '10 - 最高';
+$wb['5 - medium'] = '5 - 中等';
+$wb['1 - lowest'] = '1 - 最低';
+?>

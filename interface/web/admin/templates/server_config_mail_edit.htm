@@ -141,6 +141,14 @@
                 </div>
             </div>
             <div class="form-group">
+                <label class="col-sm-3 control-label">{tmpl_var name='mailbox_soft_delete_txt'}</label>
+                <div class="col-sm-9">
+                    <select name="mailbox_soft_delete" id="mailbox_soft_delete" class="form-control">
+                        {tmpl_var name='mailbox_soft_delete'}
+                    </select></a>
+                </div>
+            </div>
+            <div class="form-group">
                 <label class="col-sm-3 control-label">{tmpl_var name='mailbox_quota_stats_txt'}</label>
                 <div class="col-sm-9">
                     {tmpl_var name='mailbox_quota_stats'}
@@ -155,6 +163,12 @@
                 <label class="col-sm-3 control-label">{tmpl_var name='overquota_notify_admin_txt'}</label>
                 <div class="col-sm-9">
                     {tmpl_var name='overquota_notify_admin'}
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-3 control-label">{tmpl_var name='overquota_notify_reseller_txt'}</label>
+                <div class="col-sm-9">
+                    {tmpl_var name='overquota_notify_reseller'}
                 </div>
             </div>
             <div class="form-group">

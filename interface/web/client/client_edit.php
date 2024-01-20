@@ -61,7 +61,7 @@ class page_action extends tform_actions {
 			$client_group_id = $app->functions->intval($_SESSION["s"]["user"]["default_group"]);
 			$client = $app->db->queryOneRecord("SELECT limit_client FROM sys_group, client WHERE sys_group.client_id = client.client_id and sys_group.groupid = ?", $client_group_id);
 
-			// Check if the user may add another website.
+			// Check if the user may add another.
 			if($client["limit_client"] >= 0) {
 				$tmp = $app->db->queryOneRecord("SELECT count(client_id) as number FROM client WHERE sys_groupid = ?", $client_group_id);
 				if($tmp["number"] >= $client["limit_client"]) {
@@ -70,7 +70,40 @@ class page_action extends tform_actions {
 			}
 		}
 
+		// Hide the info tab when creating a new client.
+		unset($app->tform->formDef["tabs"]['info']);
+		$app->tform->formDef["tab_default"] = "address";
+
 		parent::onShowNew();
+	}
+
+	function onShowEdit() {
+		global $app, $conf;
+		chdir('../dashboard');
+
+		$dashlet_list = array();
+		$dashlets = array('databasequota.php', 'limits.php', 'mailquota.php', 'quota.php');
+		$current_client_id = $this->id;
+
+		foreach ($dashlets as $file) {
+			if ($file != '.' && $file != '..' && !is_dir(ISPC_WEB_PATH.'/dashboard/dashlets/'.$file)) {
+				$dashlet_name = substr($file, 0, -4);
+				$dashlet_class = 'dashlet_'.$dashlet_name;
+				include_once ISPC_WEB_PATH.'/dashboard/dashlets/'.$file;
+				$dashlet_list[$dashlet_name] = new $dashlet_class;
+				$dashlets_html .= $dashlet_list[$dashlet_name]->show($current_client_id);
+			}
+		}
+		$app->tpl->setVar('dashlets', $dashlets_html);
+
+		chdir('../client');
+
+		$tmp = $app->db->queryOneRecord("SELECT company_name, contact_firstname, contact_name, email FROM client WHERE client_id = ?", $current_client_id);
+		$app->tpl->setVar('company_name', $tmp['company_name']);
+		$app->tpl->setVar('contact_name', $tmp['contact_name']);
+		$app->tpl->setVar('email', $tmp['email']);
+
+		parent::onShowEdit();
 	}
 
 
@@ -84,7 +117,7 @@ class page_action extends tform_actions {
 			$client_group_id = $_SESSION["s"]["user"]["default_group"];
 			$client = $app->db->queryOneRecord("SELECT limit_client FROM sys_group, client WHERE sys_group.client_id = client.client_id and sys_group.groupid = ?", $client_group_id);
 
-			// Check if the user may add another website.
+			// Check if the user may add another.
 			if($client["limit_client"] >= 0) {
 				$tmp = $app->db->queryOneRecord("SELECT count(client_id) as number FROM client WHERE sys_groupid = ?", $client_group_id);
 				if($tmp["number"] >= $client["limit_client"]) {
@@ -119,7 +152,7 @@ class page_action extends tform_actions {
 			$this->oldTemplatesAssigned = array();
 		}
 
-		$this->_template_additional = explode('/', $this->dataRecord['template_additional']);
+		$this->_template_additional = (isset($this->dataRecord['template_additional']) && $this->dataRecord['template_additional'] != '')?explode('/', $this->dataRecord['template_additional']):array();
 		$this->dataRecord['template_additional'] = '';
 
 		parent::onSubmit();
@@ -169,7 +202,7 @@ class page_action extends tform_actions {
 			// old style
 			$sql = "SELECT template_additional FROM client WHERE client_id = ?";
 			$result = $app->db->queryOneRecord($sql, $this->id);
-			$tplAdd = explode("/", $result['template_additional']);
+			$tplAdd = (isset($result['template_additional']) && $result['template_additional'] != '')?explode("/", $result['template_additional']):array();
 			$text = '';
 			foreach($tplAdd as $item){
 				if (trim($item) != ''){
@@ -293,7 +326,7 @@ class page_action extends tform_actions {
 			$app->auth->add_group_to_user($_SESSION['s']['user']['userid'], $groupid);
 			$app->db->query("UPDATE client SET parent_client_id = ? WHERE client_id = ?", $_SESSION['s']['user']['client_id'], $this->id);
 		} else {
-			if($this->dataRecord['parent_client_id'] > 0) {
+			if(isset($this->dataRecord['parent_client_id']) && $this->dataRecord['parent_client_id'] > 0) {
 				//* get userid of the reseller and add it to the group of the client
 				$tmp = $app->db->queryOneRecord("SELECT sys_user.userid FROM sys_user,sys_group WHERE sys_user.default_group = sys_group.groupid AND sys_group.client_id = ?", $this->dataRecord['parent_client_id']);
 				$app->auth->add_group_to_user($tmp['userid'], $groupid);
@@ -304,14 +337,14 @@ class page_action extends tform_actions {
 
 		//* Set the default servers
 		$tmp = $app->getconf->get_global_config('mail');
-		$default_mailserver = $app->functions->intval($tmp['default_mailserver']);
+		$default_mailserver = (isset($tmp['default_mailserver']))?$app->functions->intval($tmp['default_mailserver']):0;
 		if (!$default_mailserver) {
 			$tmp = $app->db->queryOneRecord('SELECT server_id FROM server WHERE mail_server = 1 AND mirror_server_id = 0 LIMIT 0,1');
 			$default_mailserver = $app->functions->intval($tmp['server_id']);
 		}
 		$tmp = $app->getconf->get_global_config('sites');
-		$default_webserver = $app->functions->intval($tmp['default_webserver']);
-		$default_dbserver = $app->functions->intval($tmp['default_dbserver']);
+		$default_webserver = (isset($tmp['default_webserver']))?$app->functions->intval($tmp['default_webserver']):0;
+		$default_dbserver = (isset($tmp['default_dbserver']))?$app->functions->intval($tmp['default_dbserver']):0;
 		if (!$default_webserver) {
 			$tmp = $app->db->queryOneRecord('SELECT server_id FROM server WHERE web_server = 1 AND mirror_server_id = 0 LIMIT 0,1');
 			$default_webserver = $app->functions->intval($tmp['server_id']);
@@ -321,7 +354,7 @@ class page_action extends tform_actions {
 			$default_dbserver = $app->functions->intval($tmp['server_id']);
 		}
 		$tmp = $app->getconf->get_global_config('dns');
-		$default_dnsserver = $app->functions->intval($tmp['default_dnsserver']);
+		$default_dnsserver = (isset($tmp['default_dnsserver']))?$app->functions->intval($tmp['default_dnsserver']):0;
 		if (!$default_dnsserver) {
 			$tmp = $app->db->queryOneRecord('SELECT server_id FROM server WHERE dns_server = 1 AND mirror_server_id = 0 LIMIT 0,1');
 			$default_dnsserver = $app->functions->intval($tmp['server_id']);

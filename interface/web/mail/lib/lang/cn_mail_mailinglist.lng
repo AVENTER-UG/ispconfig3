@@ -1,0 +1,23 @@
+<?php
+$wb['mailinglist_txt'] = '邮件列表';
+$wb['limit_mailmailinglist_txt'] = '已达到限制';
+$wb['domain_error_empty'] = '域名为空。';
+$wb['listname_error_empty'] = '列表名称为空。';
+$wb['listname_error_regex'] = '列表名称无效。最小长度为2个字符（允许使用：[a-z 1-9 - _]）。';
+$wb['domain_error_regex'] = '无效的域名。';
+$wb['email_in_use_txt'] = '电子邮件已被使用';
+$wb['no_domain_perm'] = '您没有此域名的权限。';
+$wb['password_strength_txt'] = '密码强度';
+$wb['server_id_txt'] = '服务器';
+$wb['domain_txt'] = '域名';
+$wb['listname_txt'] = '列表名称';
+$wb['client_txt'] = '客户';
+$wb['email_txt'] = '电子邮件';
+$wb['password_txt'] = '密码';
+$wb['generate_password_txt'] = '生成密码';
+$wb['repeat_password_txt'] = '重复密码';
+$wb['password_mismatch_txt'] = '密码不匹配。';
+$wb['password_match_txt'] = '密码匹配。';
+$wb['listname_error_unique'] = '服务器上已存在同名的邮件列表。请换一个列表名称。';
+$wb['email_error_isemail'] = '电子邮件地址无效。';
+?>

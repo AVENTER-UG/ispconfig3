@@ -6,10 +6,15 @@
                 <label class="col-sm-3 control-label"><em>*</em> {tmpl_var name='email_txt'}</label>
                 <div class="col-sm-9">
 				    <div class='input-group'>
-						<input type="text" id="email_local_part" name="email_local_part" value="{tmpl_var name='email_local_part'}" class="form-control" />
+                                               <input type="text" id="email_local_part" name="email_local_part" value="{tmpl_var name='email_local_part'}" class="form-control" onPaste="javascript: e = this; setTimeout(function(){if (/@/.test(e.value)) { parts = e.value.split('@'); $('#email_domain').val(parts.pop()); $('#email_domain').trigger('change'); e.value=parts.pop(); } }, 4);" onChange="javascript: if (/@/.test(this.value)) { parts = this.value.split('@'); $('#email_domain').val(parts.pop()); $('#email_domain').trigger('change'); this.value=parts.pop(); } " />
 						<span class='input-group-addon'>@</span>
                         <div class='input-group-field'>
 							<select name="email_domain" id="email_domain" class="form-control" style="height:50px;min-width:170px;">{tmpl_var name='email_domain'}</select>
+                        </div>
+                        <div class="input-group-field">
+                          <a class="btn btn-default formbutton-narrow" href="javascript: navigator.clipboard.writeText(document.getElementById('email_local_part').value + '@' + document.getElementById('email_domain').value);" title="">
+                            <span class="fa fa-clone"></span>
+                          </a>
                         </div>
                     </div>
 				</div>
@@ -64,6 +69,12 @@
                 <label for="sender_name" class="col-sm-3 control-label">{tmpl_var name='sender_cc_txt'}</label>
                 <div class="col-sm-6"><input type="text" name="sender_cc" id="sender_cc" value="{tmpl_var name='sender_cc'}" class="form-control" /></div><div class="col-sm-3 input-sm"> &nbsp; {tmpl_var name='name_optional_txt'} {tmpl_var name='sender_cc_note_txt'}
             </div></div>
+            <tmpl_if name="is_admin"><div class="form-group">
+                <label for="imap_prefix" class="col-sm-3 control-label">{tmpl_var name='imap_prefix_txt'}</label>
+                <div class="col-sm-6">
+                    <input type="text" name="imap_prefix" id="imap_prefix" value="{tmpl_var name='imap_prefix'}" data-toggle="tooltip" title="{tmpl_var name='tooltip_imap_prefix_txt'}" class="form-control" />
+                </div><div class="col-sm-3 input-sm"> &nbsp; {tmpl_var name='name_optional_txt'}</div>
+            </div></tmpl_if>
             <div class="form-group">
                 <label for="policy" class="col-sm-3 control-label">{tmpl_var name='policy_txt'}</label>
                 <div class="col-sm-9"><select name="policy" id="policy" class="form-control">
@@ -109,7 +120,12 @@
 
         <input type="hidden" name="id" value="{tmpl_var name='id'}">
 
-        <div class="clear"><div class="right">
-            <button class="btn btn-default formbutton-success" type="button" value="{tmpl_var name='btn_save_txt'}" data-submit-form="pageForm" data-form-action="mail/mail_user_edit.php">{tmpl_var name='btn_save_txt'}</button>
-            <button class="btn btn-default formbutton-default" type="button" value="{tmpl_var name='btn_cancel_txt'}" data-load-content="mail/mail_user_list.php">{tmpl_var name='btn_cancel_txt'}</button>
-        </div></div>
+        <div class="clear">
+            <tmpl_if name='id'><tmpl_if name='show_delete_on_forms' op="==" value="y">
+                <a class="btn btn-default formbutton-danger formbutton-narrow" href="javascript: ISPConfig.confirm_action('mail/mail_user_del.php?id={tmpl_var name='id'}&_csrf_id={tmpl_var name='_csrf_id'}&_csrf_key={tmpl_var name='_csrf_key'}&phpsessid={tmpl_var name='phpsessid'}','{tmpl_var name='delete_confirmation'}');"><span class="icon icon-delete"></span></a>
+            </tmpl_if></tmpl_if>
+            <div class="right">
+                <button class="btn btn-default formbutton-success" type="button" value="{tmpl_var name='btn_save_txt'}" data-submit-form="pageForm" data-form-action="mail/mail_user_edit.php">{tmpl_var name='btn_save_txt'}</button>
+                <button class="btn btn-default formbutton-default" type="button" value="{tmpl_var name='btn_cancel_txt'}" data-load-content="mail/mail_user_list.php">{tmpl_var name='btn_cancel_txt'}</button>
+            </div>
+	</div>

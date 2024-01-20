@@ -66,6 +66,9 @@
                     </div>
                 </tmpl_unless>
             </tmpl_if>
+            <tmpl_if name="domain_option">
+                <input type="hidden" id="client_group_id" name="client_group_id" value="{tmpl_var name='client_group_id_value'}" />
+            </tmpl_if>
             <div class="form-group">
                 <label for="ip_address" class="col-sm-3 control-label">{tmpl_var name='ip_address_txt'}</label>
                 <div class="col-sm-9"><select name="ip_address" id="ip_address" class="form-control">
@@ -453,7 +456,9 @@
             //var options = '<option value="">Default</option>';
 			var options = '';
             var serverphpidselected = '';
-            $.each(data, function(key, val) {
+            $.each(data.phpversion, function(akey,aval) {
+                key=Object.getOwnPropertyNames(aval)[0];
+                val=aval[key];
 				<tmpl_if name="id">
                 if($('#server_php_id').val() == key){
                     serverphpidselected = ' selected="selected"';

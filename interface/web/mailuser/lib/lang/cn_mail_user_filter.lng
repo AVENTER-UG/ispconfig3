@@ -1,0 +1,26 @@
+<?php
+$wb['rulename_txt'] = '规则名称';
+$wb['action_txt'] = '操作';
+$wb['target_txt'] = '目标文件夹';
+$wb['active_txt'] = '启用';
+$wb['rulename_error_empty'] = '规则名称为空。';
+$wb['searchterm_is_empty'] = '搜索条件为空。';
+$wb['source_txt'] = '来源';
+$wb['target_error_regex'] = '目标文件夹只能包含以下字符：a-z、0-9、-、.、_、&、/ 和{space}';
+$wb['limit_mailfilter_txt'] = '已达到最大邮箱过滤器数量。';
+$wb['mailbox_filter_txt'] = '邮箱过滤器';
+$wb['subject_txt'] = '主题';
+$wb['from_txt'] = '发件人';
+$wb['to_txt'] = '收件人';
+$wb['list_id_txt'] = '列表ID';
+$wb['contains_txt'] = '包含';
+$wb['is_txt'] = '是';
+$wb['begins_with_txt'] = '以...开始';
+$wb['ends_with_txt'] = '以...结束';
+$wb['move_to_txt'] = '移动到';
+$wb['regex_txt'] = '正则匹配';
+$wb['delete_txt'] = '删除';
+$wb['header_txt'] = '邮件头';
+$wb['size_over_txt'] = '邮件大小超过（KB）';
+$wb['size_under_txt'] = '邮件大小小于（KB）';
+?>

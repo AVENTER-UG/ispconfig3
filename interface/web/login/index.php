@@ -126,13 +126,6 @@ function process_login_request(app $app, &$error, $conf, $module)
 			}
 		}
 
-		$app->plugin->raiseEvent('login', $username);
-
-		//* Save successful login message to var
-		$authlog = 'Successful login for user \''.$username.'\' from '.$_SERVER['REMOTE_ADDR'].' at '.date('Y-m-d H:i:s').' with session ID '.session_id();
-		$authlog_handle = fopen($conf['ispconfig_log_dir'].'/auth.log', 'a');
-		fwrite($authlog_handle, $authlog."\n");
-		fclose($authlog_handle);
 
 		/*
 		* We need LOGIN_REDIRECT instead of HEADER_REDIRECT to load the
@@ -141,10 +134,33 @@ function process_login_request(app $app, &$error, $conf, $module)
 
 		if ($loginAs) {
 			echo 'LOGIN_REDIRECT:'.$_SESSION['s']['module']['startpage'];
+			$app->plugin->raiseEvent('login', $username);
+			$app->auth_log('Successful login for user \''. $username .'\' ' . $msg . ' from '. $_SERVER['REMOTE_ADDR'] .' at '. date('Y-m-d H:i:s') . ' with session ID ' .session_id());
 			exit;
 		} else {
-			header('Location: ../index.php');
-			die();
+
+			//* Do 2FA authentication
+			if(isset($user['otp_type']) && $user['otp_type'] != 'none') {
+
+				//* Save session in pending state and destroy original session
+				$_SESSION['s_pending'] = $_SESSION['s'];
+				unset($_SESSION['s']);
+
+				//* Create OTP session
+				$_SESSION['otp']['session_attempts'] = 0;
+				$_SESSION['otp']['type'] = $user['otp_type'];
+				$_SESSION['otp']['data'] = $user['otp_data'];
+				//$_SESSION['otp']['recovery_debug'] = $user['otp_recovery']; // For DEBUG only.
+
+				//* Redirect to otp script
+				header('Location: otp.php');
+				die();
+			} else {
+				$app->plugin->raiseEvent('login', $username);
+				$app->auth_log('Successful login for user \''. $username .'\' ' . $msg . ' from '. $_SERVER['REMOTE_ADDR'] .' at '. date('Y-m-d H:i:s') . ' with session ID ' .session_id());
+				header('Location: ../index.php');
+				die();
+			}
 		}
 	} else {
 		if (!$alreadyfailed['times']) {
@@ -161,11 +177,7 @@ function process_login_request(app $app, &$error, $conf, $module)
 		if ($app->db->errorMessage != '') $error .= '<br />'.$app->db->errorMessage != '';
 
 		$app->plugin->raiseEvent('login_failed', $username);
-		//* Save failed login message to var
-		$authlog = 'Failed login for user \''.$username.'\' from '.$_SERVER['REMOTE_ADDR'].' at '.date('Y-m-d H:i:s');
-		$authlog_handle = fopen($conf['ispconfig_log_dir'].'/auth.log', 'a');
-		fwrite($authlog_handle, $authlog."\n");
-		fclose($authlog_handle);
+		$app->auth_log('Failed login for user \''. $username .'\' from '. $_SERVER['REMOTE_ADDR'] .' at '. date('Y-m-d H:i:s'));
 	}
 }
 

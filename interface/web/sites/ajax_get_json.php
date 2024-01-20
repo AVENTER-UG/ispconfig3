@@ -64,7 +64,7 @@ if($type == 'getserverid'){
 }
 
 if($type == 'getserverphp'){
-	$json = '{';
+	$json = '{"phpversion":['; //Wrap Objects into Array because chrome reorder objects itself
 
 	$server_type = 'apache';
 	$web_config = $app->getconf->get_server_config($server_id, 'web');
@@ -74,10 +74,10 @@ if($type == 'getserverphp'){
 
 	//* Client: If the logged in user is not admin and has no sub clients (no reseller)
 	if($_SESSION["s"]["user"]["typ"] != 'admin' && !$app->auth->has_clients($_SESSION['s']['user']['userid'])) {
-		$sql_where = " AND (client_id = 0 OR client_id = ".$app->functions->intval($_SESSION["s"]["user"]["client_id"]) . ")";
+		$sql_where = " AND (client_id = 0 OR client_id = ".$app->functions->intval($_SESSION["s"]["user"]["client_id"]) . ") ORDER BY sortprio";
 		//* Reseller: If the logged in user is not admin and has sub clients (is a reseller)
 	} elseif ($_SESSION["s"]["user"]["typ"] != 'admin' && $app->auth->has_clients($_SESSION['s']['user']['userid'])) {
-		$client = $app->db->queryOneRecord("SELECT client_id FROM sys_group WHERE groupid = ?", $client_group_id);
+		$client = $app->db->queryOneRecord("SELECT client_id FROM sys_group WHERE groupid = ? ORDER BY sortprio", $client_group_id);
 		//$sql_where = " AND (client_id = 0 OR client_id = ".$_SESSION["s"]["user"]["client_id"];
 		$sql_where = " AND (client_id = 0";
 		if($app->functions->intval($client['client_id']) > 0) $sql_where .= " OR client_id = ".$app->functions->intval($client['client_id']);
@@ -89,7 +89,7 @@ if($type == 'getserverphp'){
 		//$sql_where = " AND (client_id = 0 OR client_id = ".$_SESSION["s"]["user"]["client_id"];
 		$sql_where = " AND (client_id = 0";
 		if($app->functions->intval($client['client_id']) > 0) $sql_where .= " OR client_id = ".$app->functions->intval($client['client_id']);
-		$sql_where .= ")";
+		$sql_where .= ") ORDER BY sortprio";
 	}
 
 	$php_records = array();
@@ -98,10 +98,11 @@ if($type == 'getserverphp'){
 	} elseif($php_type == 'fast-cgi'){
 		$php_records = $app->db->queryAllRecords("SELECT * FROM server_php WHERE php_fastcgi_binary != '' AND php_fastcgi_ini_dir != '' AND server_id = ? AND active = 'y'".$sql_where, $server_id);
 	}
+        $usePHPDefault=false;
+        $usePHPDefaultDone=false;
 	if (empty($web_config['php_default_hide']) || 'n' === $web_config['php_default_hide']) {
-		$php_records[]=array('name' => $app->functions->htmlentities($web_config['php_default_name']));
+                $usePHPDefault=true;
 	}
-	uasort($php_records, 'sort_php');
 	$php_select = "";
 	if(is_array($php_records) && !empty($php_records)) {
 		foreach( $php_records as $php_record) {
@@ -110,16 +111,17 @@ if($type == 'getserverphp'){
 			} else {
 				$php_version = $php_record['server_php_id'];
 			}
-			if($php_record['name'] != $web_config['php_default_name']) {
-				$json .= '"'.$php_version.'": "'.$php_record['name'].'",';
-			} else {
-				$json .= '"0": "'.$php_record['name'].'",';
-			}
+                        if ($php_record['sortprio'] > 0 && $usePHPDefault && $usePHPDefaultDone == false)  //if DefaultPHP is enable insert it on virtual position 0
+                        {
+                            $json .= '{"0": "'.$web_config['php_default_name'].'"},';
+                            $usePHPDefaultDone = true;
+                        }
+			$json .= '{"'.$php_version.'": "'.$php_record['name'].'"},';
 		}
 	}
 	unset($php_records);
 	if(substr($json, -1) == ',') $json = substr($json, 0, -1);
-	$json .= '}';
+	$json .= ']}';
 }
 
 if($type == 'getphptype'){

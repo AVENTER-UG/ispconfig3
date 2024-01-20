@@ -32,7 +32,17 @@ class cronjob_ftplogfiles extends cronjob {
 		// Make the ftp logfiles directories world readable to enable ftp access
 		//######################################################################################################
 
-		if(is_dir('/var/log/pure-ftpd/')) exec('chmod +r /var/log/pure-ftpd/*');
+		$logfile = null;
+
+		if(is_dir('/var/log/pure-ftpd/')) {
+			exec('chmod +r /var/log/pure-ftpd/*');
+			$logfile="/var/log/pure-ftpd/transfer.log.1";
+		} elseif(is_file('/var/log/pureftpd.log')) {
+			$logfile="/var/log/pureftpd.log";
+		} else {
+			$app->log("The pure-ftpd log file could not be found.", LOGLEVEL_DEBUG);
+			return false;
+		}
 
 		//######################################################################################################
 		// Manage and compress ftp logfiles and create traffic statistics
@@ -60,7 +70,7 @@ class cronjob_ftplogfiles extends cronjob {
 		
 		function add_ftp_traffic(&$traffic_array, $parsed_line)
 		{		
-			if(is_array($traffic_array[$parsed_line['date']]) && array_key_exists($parsed_line['domain'], $traffic_array[$parsed_line['date']]))
+			if(isset($traffic_array[$parsed_line['date']]) && is_array($traffic_array[$parsed_line['date']]) && array_key_exists($parsed_line['domain'], $traffic_array[$parsed_line['date']]))
 			{
 				$traffic_array[$parsed_line['date']][$parsed_line['domain']][$parsed_line['direction']] += $parsed_line['size'];
 			}
@@ -71,7 +81,7 @@ class cronjob_ftplogfiles extends cronjob {
 			}
 		}
 		
-		$fp = @fopen('/var/log/pure-ftpd/transfer.log.1', 'r');
+		$fp = @fopen($logfile, 'r');
 		$ftp_traffic = array();
 
 		if ($fp) {
@@ -79,13 +89,13 @@ class cronjob_ftplogfiles extends cronjob {
 			while($line = fgets($fp))
 			{
 				$parsed_line = parse_ftp_log($line);
+				if (!empty($parsed_line)) {
+					$sql = "SELECT wd.domain FROM ftp_user AS fu INNER JOIN web_domain AS wd ON fu.parent_domain_id = wd.domain_id WHERE fu.username = ? ";
+					$temp = $app->db->queryOneRecord($sql, $parsed_line['username'] );
+					$parsed_line['domain'] = $temp['domain'];
+					add_ftp_traffic($ftp_traffic, $parsed_line);
+				}
 
-				$sql = "SELECT wd.domain FROM ftp_user AS fu INNER JOIN web_domain AS wd ON fu.parent_domain_id = wd.domain_id WHERE fu.username = ? ";		
-				$temp = $app->db->queryOneRecord($sql, $parsed_line['username'] );
-
-				$parsed_line['domain'] = $temp['domain'];
-
-				add_ftp_traffic($ftp_traffic, $parsed_line);
 			}
 
 			fclose($fp);

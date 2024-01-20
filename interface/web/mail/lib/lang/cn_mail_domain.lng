@@ -1,0 +1,25 @@
+<?php
+$wb['server_id_txt'] = '服务器';
+$wb['domain_txt'] = '域名';
+$wb['type_txt'] = '类型';
+$wb['active_txt'] = '启用';
+$wb['dkim_txt'] = '启用 DKIM';
+$wb['dkim_private_txt'] = 'DKIM 私钥';
+$wb['dkim_public_txt'] = 'DKIM 公钥' . "\n" . '仅供参考';
+$wb['dkim_generate_txt'] = '生成 DKIM 私钥';
+$wb['dkim_dns_txt'] = 'DNS 记录';
+$wb['dkim_private_key_error'] = '无效的 DKIM 私钥';
+$wb['domain_error_empty'] = '域名为空。';
+$wb['domain_error_unique'] = '重复的域名。';
+$wb['domain_error_regex'] = '无效的域名。';
+$wb['dkim_settings_txt'] = '域名密钥识别邮件（DKIM）';
+$wb['client_txt'] = '客户';
+$wb['limit_maildomain_txt'] = '您的帐户已达到电子邮件域的最大数量。';
+$wb['policy_txt'] = '垃圾邮件过滤器';
+$wb['no_policy'] = '- 未启用 -';
+$wb['error_not_allowed_server_id'] = '此帐户不允许选择此服务器。';
+$wb['dkim_selector_txt'] = 'DKIM 选择器';
+$wb['dkim_selector_error'] = '无效的 DKIM 选择器。仅使用小写字母数字字符（a-z或0-9），最多63个字符';
+$wb['relayhost_txt'] = 'Relayhost';
+$wb['relayhost_user_txt'] = 'Relayhost 用户';
+$wb['relayhost_password_txt'] = 'Relayhost 密码';

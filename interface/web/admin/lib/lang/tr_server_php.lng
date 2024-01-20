@@ -17,4 +17,7 @@ $wb['php_fpm_socket_dir_txt'] = 'PHP-FPM socket directory';
 $wb['active_txt'] = 'Etkin';
 $wb['php_in_use_error'] = 'This PHP-Version is in use.';
 $wb['php_name_in_use_error'] = 'The name can not be changed.';
+$wb['PHP Sort Priority'] = 'Priority';
+$wb['sortprio_txt'] = 'Priority';
+$wb['sortprio_long_txt'] = 'Priority of PHP version in the PHP version select box<br>Default PHP has prio 0 if enabled<br>Lower value is higher priority';
 ?>

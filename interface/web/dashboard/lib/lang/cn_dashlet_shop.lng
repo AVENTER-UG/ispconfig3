@@ -1,0 +1,8 @@
+<?php
+$wb['shop_txt'] = '订单';
+$wb['name_txt'] = '名称';
+$wb['price_txt'] = '价格';
+$wb['setup_fee_txt'] = '安装费';
+$wb['no_products_txt'] = '未找到产品。';
+$wb['order_txt'] = '订购';
+?>

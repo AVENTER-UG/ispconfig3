@@ -76,9 +76,9 @@ $liste["item"][] = array( 'field'  => "template_name",
 	'value'  => "");
 
 $liste["item"][] = array( 'field'  => "server_id",
-	'datatype' => "VARCHAR",
+	'datatype' => "INTEGER",
 	'formtype' => "SELECT",
-	'op'  => "like",
+	'op'  => "=",
 	'prefix' => "",
 	'suffix' => "",
 	'datasource' => array (  'type' => 'SQL',

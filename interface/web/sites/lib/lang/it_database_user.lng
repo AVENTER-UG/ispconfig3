@@ -15,11 +15,11 @@ $wb['repeat_password_txt'] = 'Ripeti Password';
 $wb['password_mismatch_txt'] = 'Le password non coincidono.';
 $wb['password_match_txt'] = 'Le password coincidono.';
 $wb['globalsearch_resultslimit_of_txt'] = 'of';
-$wb['globalsearch_resultslimit_results_txt'] = 'results';
-$wb['globalsearch_noresults_text_txt'] = 'Nessun results.';
-$wb['globalsearch_noresults_limit_txt'] = '0 results';
+$wb['globalsearch_resultslimit_results_txt'] = 'risultati';
+$wb['globalsearch_noresults_text_txt'] = 'Nessun risultato.';
+$wb['globalsearch_noresults_limit_txt'] = '0 risultati';
 $wb['globalsearch_searchfield_watermark_txt'] = 'Cerca';
 $wb['globalsearch_suggestions_text_txt'] = 'Suggerimenti';
-$wb['limit_database_user_txt'] = 'The max. number of database users is reached.';
-$wb['database_password_error_empty'] = 'Database password is empty.';
+$wb['limit_database_user_txt'] = 'Hai raggiunto il numero massimo di utenti database.';
+$wb['database_password_error_empty'] = 'La password del Database è vuota.';
 ?>

@@ -82,6 +82,8 @@ class db
 		$this->dbClientFlags = ($flags !== NULL) ? $flags : $conf['db_client_flags'];
 		$this->_iConnId = mysqli_init();
 
+		mysqli_report(MYSQLI_REPORT_OFF);
+
 		mysqli_real_connect($this->_iConnId, $this->dbHost, $this->dbUser, $this->dbPass, '', (int)$this->dbPort, NULL, $this->dbClientFlags);
 		for($try=0;(!is_object($this->_iConnId) || mysqli_connect_errno()) && $try < 5;++$try) {
 			sleep($try);
@@ -524,7 +526,7 @@ class db
 			$sString = '';
 		}
 
-		$cur_encoding = mb_detect_encoding($sString);
+		$cur_encoding = mb_detect_encoding($sString, "auto");
 		if($cur_encoding != "UTF-8") {
 			if($cur_encoding != 'ASCII') {
 				if(is_object($app) && method_exists($app, 'log')) $app->log('String ' . substr($sString, 0, 25) . '... is ' . $cur_encoding . '.', LOGLEVEL_DEBUG);
@@ -823,12 +825,13 @@ class db
 		return true;
 	}
 
-	//** Deletes a record and saves the changes into the datalog
+	// Updates a datalog record to store an error state.
 	public function datalogError($errormsg) {
 		global $app;
 
-		if(isset($app->modules->current_datalog_id) && $app->modules->current_datalog_id > 0) $this->query("UPDATE sys_datalog set error = ? WHERE datalog_id = ?", $errormsg, $app->modules->current_datalog_id);
-
+		if(isset($app->modules->current_datalog_id) && $app->modules->current_datalog_id > 0) {
+			$this->query("UPDATE sys_datalog set error = ? WHERE datalog_id = ?", $errormsg, $app->modules->current_datalog_id);
+		}
 		return true;
 	}
 
@@ -842,7 +845,11 @@ class db
 			$login = $_SESSION['s']['user']['username'];
 		}
 
-		$result = $this->queryAllRecords("SELECT COUNT( * ) AS cnt, sys_datalog.action, sys_datalog.dbtable FROM sys_datalog, server WHERE server.server_id = sys_datalog.server_id AND sys_datalog.user = ? AND sys_datalog.datalog_id > server.updated GROUP BY sys_datalog.dbtable, sys_datalog.action", $login);
+		$result = $this->queryAllRecords("SELECT COUNT( * ) AS cnt, sys_datalog.action, sys_datalog.dbtable
+				FROM sys_datalog, server
+				WHERE (server.server_id = sys_datalog.server_id or sys_datalog.server_id = 0) AND sys_datalog.user = ? AND sys_datalog.datalog_id > server.updated
+				GROUP BY sys_datalog.dbtable, sys_datalog.action",
+			$login);
 		foreach($result as $row) {
 			if(!$row['dbtable'] || in_array($row['dbtable'], array('aps_instances', 'aps_instances_settings', 'mail_access', 'mail_content_filter'))) continue; // ignore some entries, maybe more to come
 			$return['entries'][] = array('table' => $row['dbtable'], 'action' => $row['action'], 'count' => $row['cnt'], 'text' => $app->lng('datalog_status_' . $row['action'] . '_' . $row['dbtable'])); $return['count'] += $row['cnt'];

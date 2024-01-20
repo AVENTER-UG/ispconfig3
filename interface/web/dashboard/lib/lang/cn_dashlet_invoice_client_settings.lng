@@ -1,0 +1,4 @@
+<?php
+$wb['invoice_client_settings_txt'] = '发票客户端设置';
+$wb['edit_txt'] = '编辑';
+?>

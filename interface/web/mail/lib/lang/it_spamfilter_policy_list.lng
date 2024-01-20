@@ -1,9 +1,9 @@
 <?php
-$wb['list_head_txt'] = 'Spamfilter Policy';
+$wb['list_head_txt'] = 'Politica di Spamfilter';
 $wb['policy_name_txt'] = 'Nome';
-$wb['virus_lover_txt'] = 'Virus lover';
-$wb['spam_lover_txt'] = 'Spam lover';
-$wb['banned_files_lover_txt'] = 'Banned Files lover';
-$wb['bad_header_lover_txt'] = 'Bad Header lover';
-$wb['add_new_record_txt'] = 'Add Policy record';
+$wb['virus_lover_txt'] = 'Amante dei Virus';
+$wb['spam_lover_txt'] = 'Amante dello SPAM';
+$wb['banned_files_lover_txt'] = 'Amante dei files proibiti';
+$wb['bad_header_lover_txt'] = 'Amante delle intestazioni scorretter';
+$wb['add_new_record_txt'] = 'Aggiungi un record alla politica';
 ?>

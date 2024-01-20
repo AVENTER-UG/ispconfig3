@@ -34,4 +34,5 @@ $wb['username_txt'] = 'Nombre de usuario';
 $wb['username_unique'] = 'Ya existe un usuario con ese nombre de usuario.';
 $wb['vorname_txt'] = 'Primer nombre';
 $wb['no_user_insert'] = 'CP-Users of type -user- get added and updated automatically when you add a client or reseller.';
+$wb['otp_auth_txt'] = '2-Factor Authentication';
 ?>

@@ -1,0 +1,8 @@
+<?php
+$wb['list_head_txt'] = '域名别名';
+$wb['active_txt'] = '激活';
+$wb['source_txt'] = '源';
+$wb['destination_txt'] = '目的地';
+$wb['source_txt'] = '源';
+$wb['add_new_record_txt'] = '添加新的域名别名';
+?>

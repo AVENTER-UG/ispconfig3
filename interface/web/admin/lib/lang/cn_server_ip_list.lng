@@ -1,0 +1,10 @@
+<?php
+$wb['list_head_txt'] = 'IP地址';
+$wb['server_id_txt'] = '服务器';
+$wb['client_id_txt'] = '客户';
+$wb['ip_address_txt'] = 'IP地址';
+$wb['add_new_record_txt'] = '添加新的IP地址';
+$wb['virtualhost_txt'] = 'HTTP虚拟主机';
+$wb['virtualhost_port_txt'] = 'HTTP端口';
+$wb['ip_type_txt'] = '类型';
+?>

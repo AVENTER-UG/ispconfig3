@@ -33,6 +33,7 @@ class shelluser_base_plugin {
 	var $plugin_name = 'shelluser_base_plugin';
 	var $class_name = 'shelluser_base_plugin';
 	var $min_uid = 499;
+	var $data = array();
 
 	//* This function is called during ispconfig installation to determine
 	//  if a symlink shall be created for this plugin.
@@ -147,9 +148,8 @@ class shelluser_base_plugin {
 					}
 				}
 
-				$app->system->chown($data['new']['dir'],$data['new']['username'],false);
-				$app->system->chgrp($data['new']['dir'],$data['new']['pgroup'],false);
-
+				$app->system->chown($data['new']['dir'], 'root', false);
+				$app->system->chgrp($data['new']['dir'], 'root', false);
 
 				// call the ssh-rsa update function
 				$app->uses("getconf");
@@ -337,13 +337,12 @@ class shelluser_base_plugin {
 			// Get the UID of the user
 			$userid = intval($app->system->getuid($data['old']['username']));
 			if($userid > $this->min_uid) {
-				$web = $app->db->queryOneRecord("SELECT * FROM web_domain WHERE domain_id = ".intval($data['old']['parent_domain_id']));
+				$web = $app->db->queryOneRecord("SELECT * FROM web_domain WHERE domain_id = ?", $data['old']['parent_domain_id']);
 
 				// check if we have to delete the dir
 				$check = $app->db->queryOneRecord('SELECT shell_user_id FROM `shell_user` WHERE `dir` = ?', $data['old']['dir']);
 				if(!$check && is_dir($data['old']['dir'])) {
 
-					$web = $app->db->queryOneRecord("SELECT * FROM web_domain WHERE domain_id = ?", $data['old']['parent_domain_id']);
 					$app->system->web_folder_protection($web['document_root'], false);
 
 					// delete dir
@@ -432,10 +431,10 @@ class shelluser_base_plugin {
 		// Get the client ID, username, and the key
 		$domain_data = $app->db->queryOneRecord('SELECT sys_groupid FROM web_domain WHERE web_domain.domain_id = ?', $this->data['new']['parent_domain_id']);
 		$sys_group_data = $app->db->queryOneRecord('SELECT * FROM sys_group WHERE sys_group.groupid = ?', $domain_data['sys_groupid']);
-		$id = intval($sys_group_data['client_id']);
-		$username= $sys_group_data['name'];
+		$id = (is_array($sys_group_data) && isset($sys_group_data['client_id']))?intval($sys_group_data['client_id']):0;
+		$username= (is_array($sys_group_data) && isset($sys_group_data['name']))?$sys_group_data['name']:'';
 		$client_data = $app->db->queryOneRecord('SELECT * FROM client WHERE client.client_id = ?', $id);
-		$userkey = $client_data['ssh_rsa'];
+		$userkey = (is_array($client_data) && isset($client_data['ssh_rsa']))?$client_data['ssh_rsa']:'';
 		unset($domain_data);
 		unset($client_data);
 
@@ -477,7 +476,11 @@ class shelluser_base_plugin {
 			// Remove duplicate keys
 			$existing_keys = @file($sshkeys, FILE_IGNORE_NEW_LINES);
 			$new_keys = explode("\n", $userkey);
-			$final_keys_arr = @array_merge($existing_keys, $new_keys);
+			if(is_array($existing_keys)) {
+				$final_keys_arr = @array_merge($existing_keys, $new_keys);
+			} else {
+				$final_keys_arr = $new_keys;
+			}
 			$new_final_keys_arr = array();
 			if(is_array($final_keys_arr) && !empty($final_keys_arr)){
 				foreach($final_keys_arr as $key => $val){

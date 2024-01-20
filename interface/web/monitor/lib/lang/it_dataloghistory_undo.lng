@@ -1,7 +1,7 @@
 <?php
-$wb['list_head_txt'] = 'Data Log History Entry';
-$wb['success_txt'] = 'Undo successful';
-$wb['error_txt'] = 'Error during undo: Record does not exist anymore';
-$wb['error_undelete_txt'] = 'Error during undelete: Record with primary id already existing.';
-$wb['btn_cancel_txt'] = 'Back';
+$wb['list_head_txt'] = 'Elemento della History';
+$wb['success_txt'] = 'Annulla modifica eseguit con successo';
+$wb['error_txt'] = 'Errore durinte annulla modifica: il record non è più presente';
+$wb['error_undelete_txt'] = 'Errore durinte annulla modifica: il record con ID primario è già presente.';
+$wb['btn_cancel_txt'] = 'Indietro';
 ?>

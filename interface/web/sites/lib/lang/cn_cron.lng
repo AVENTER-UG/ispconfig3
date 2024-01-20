@@ -1,0 +1,26 @@
+<?php
+$wb['server_id_txt'] = '服务器';
+$wb['parent_domain_id_txt'] = '父网站';
+$wb['active_txt'] = '启用';
+$wb['client_txt'] = '客户';
+$wb['run_min_txt'] = '分钟';
+$wb['run_hour_txt'] = '小时';
+$wb['run_mday_txt'] = '月份中的天';
+$wb['run_month_txt'] = '月份';
+$wb['run_wday_txt'] = '星期几';
+$wb['command_txt'] = '要运行的命令（通过 sh 执行命令，通过 wget 执行 URL）';
+$wb['limit_cron_txt'] = '已达到允许的最大计划任务数。';
+$wb['limit_cron_frequency_txt'] = '计划任务频率超过了允许的限制。';
+$wb['run_min_error_format'] = '分钟格式无效。';
+$wb['run_hour_error_format'] = '小时格式无效。';
+$wb['run_mday_error_format'] = '月份中的天格式无效。';
+$wb['run_month_error_format'] = '月份格式无效。';
+$wb['run_wday_error_format'] = '星期几格式无效。';
+$wb['command_error_format'] = '命令格式无效。请注意，在 URL 调用的情况下，仅允许使用 http/https。';
+$wb['unknown_fieldtype_error'] = '使用了未知的字段类型。';
+$wb['server_id_error_empty'] = '服务器 ID 为空。';
+$wb['command_hint_txt'] = '例如，/var/www/clients/clientX/webY/myscript.sh 或 https://www.mydomain.com/path/script.php，您可以使用 [web_root] 占位符，它将被 /var/www/clients/clientX/webY/web 替换。';
+$wb['log_output_txt'] = '记录输出';
+$wb['limit_cron_url_txt'] = '仅限 URL 计划任务。请将以 https:// 开头的 URL 作为计划任务命令输入。';
+$wb['command_error_empty'] = '命令为空。';
+?>

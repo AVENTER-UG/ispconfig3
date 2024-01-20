@@ -1,0 +1,16 @@
+<?php
+$wb['email_txt'] = '电子邮件';
+$wb['destination_txt'] = '目的地';
+$wb['active_txt'] = '激活的';
+$wb['email_error_isemail'] = '电子邮件地址无效。';
+$wb['email_error_unique'] = '重复的电子邮件地址。';
+$wb['no_domain_perm'] = '您没有此域的权限。';
+$wb['destination_error_isemail'] = '目标电子邮件地址无效。';
+$wb['limit_mailalias_txt'] = '已达到您的帐户的电子邮件别名的最大数量。';
+$wb['duplicate_mailbox_txt'] = '已经存在一个使用此电子邮件地址的邮箱。';
+$wb['domain_txt'] = '域名';
+$wb['duplicate_email_alias_txt'] = '此电子邮件别名已经存在。';
+$wb['source_txt'] = '别名';
+$wb['send_as_txt'] = '以...的名义发送';
+$wb['send_as_exp'] = '允许目标使用此别名作为发件人发送邮件';
+$wb['greylisting_txt'] = '启用灰名单';

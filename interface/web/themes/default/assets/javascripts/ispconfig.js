@@ -112,7 +112,7 @@ var ISPConfig = {
 					else return escapeMarkup(o.text);
 				}
 			}).on('change', function(e) {
-				if ($("#pageForm .table #Filter").length > 0) {
+				if ($("#pageForm .table #Filter").length > 0 && ! $(this).hasClass("disableChangeEvent")) {
 					$("#pageForm .table #Filter").trigger('click');
 				}
 			});
@@ -223,7 +223,7 @@ var ISPConfig = {
 
 		var frame_id = 'ajaxUploader-iframe-' + Math.round(new Date().getTime() / 1000);
 		$('body').append('<iframe width="0" height="0" style="display:none;" name="'+frame_id+'" id="'+frame_id+'"/>');
-		$('#'+frame_id).load(function() {
+		$('#'+frame_id).on("load", function() {
 			var msg = handleResponse(this);
 			$('#errorMsg').remove();
 			$('#OKMsg').remove();
@@ -599,7 +599,7 @@ var ISPConfig = {
 
 $(document).on("change", function(event) {
 	var elName = event.target.localName;
-	if ($("#pageForm .table #Filter").length > 0 && elName == 'select') {
+	if ($("#pageForm .table #Filter").length > 0 && elName == 'select' && ! $(event.target).hasClass("disableChangeEvent") ) {
 		event.preventDefault();
 		$("#pageForm .table #Filter").trigger('click');
 	}

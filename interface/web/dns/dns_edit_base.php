@@ -41,6 +41,10 @@ $app->load('tform_actions');
 class dns_page_action extends tform_actions {
 
 	protected function checkDuplicate() {
+                global $app;
+		// If a CNAME RR is present at a node, no other data should be present
+                $tmp = $app->db->queryOneRecord("SELECT count(dns_rr.id) as number FROM dns_rr LEFT JOIN dns_soa ON dns_rr.zone = dns_soa.id WHERE (type = 'CNAME' AND ( name = replace(?, concat('.', dns_soa.origin), '') or name = ? or name = concat(?,'.',dns_soa.origin) ) AND zone = ? and dns_rr.id != ?)", $this->dataRecord["name"], $this->dataRecord["name"], $this->dataRecord["name"], $this->dataRecord["zone"], $this->id);
+                if($tmp['number'] > 0) return true;
 		return false;
 	}
 

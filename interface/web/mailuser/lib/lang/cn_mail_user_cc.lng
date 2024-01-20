@@ -1,0 +1,11 @@
+<?php
+$wb['mailbox_cc_txt'] = '抄送邮件地址';
+$wb['cc_txt'] = '抄送给';
+$wb['email_txt'] = '邮件';
+$wb['cc_error_isemail'] = '抄送邮件地址无效';
+$wb['email_is_cc_error'] = '邮件地址和抄送邮件地址不能相同。';
+$wb['name_optional_txt'] = '(可选)';
+$wb['cc_note_txt'] = '(多个邮件地址请用逗号隔开)';
+$wb['forward_in_lda_txt'] = '邮件投递时抄送';
+$wb['tooltip_forward_in_lda_txt'] = '控制是否在投递到邮箱之前或之后将邮件副本转发。';
+?>

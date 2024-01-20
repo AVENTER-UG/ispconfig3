@@ -1,20 +1,20 @@
 <?php
-$wb['btn_send_txt'] = 'Send email';
+$wb['btn_send_txt'] = 'Invia email';
 $wb['btn_cancel_txt'] = 'Annulla';
-$wb['sender_txt'] = 'Sender email address';
-$wb['subject_txt'] = 'Subject';
-$wb['message_txt'] = 'Message';
-$wb['form_legend_client_txt'] = 'Send email message to all clients.';
-$wb['form_legend_admin_txt'] = 'Send email message to all clients and resellers.';
-$wb['sender_invalid_error'] = 'Sender email invalid.';
-$wb['subject_invalid_error'] = 'Subject  vuoto.';
-$wb['message_invalid_error'] = 'Message  vuoto.';
-$wb['email_sent_to_txt'] = 'Email sent to:';
-$wb['page_head_txt'] = 'Send email message to clients and resellers';
-$wb['recipient_txt'] = 'Recipient';
-$wb['all_clients_resellers_txt'] = 'All clients and resellers';
-$wb['all_clients_txt'] = 'All clients';
-$wb['variables_txt'] = 'Variables:';
-$wb['gender_m_txt'] = 'Mr.';
-$wb['gender_f_txt'] = 'Ms.';
+$wb['sender_txt'] = 'Indirizzo email del mittente';
+$wb['subject_txt'] = 'Oggetto';
+$wb['message_txt'] = 'Messaggio';
+$wb['form_legend_client_txt'] = 'Invia messaggio email a tutti i clienti.';
+$wb['form_legend_admin_txt'] = 'Invia messaggio email a tutti i clienti e rivenditori.';
+$wb['sender_invalid_error'] = 'Mittente email invalido.';
+$wb['subject_invalid_error'] = 'Oggetto vuoto.';
+$wb['message_invalid_error'] = 'Messaggio  vuoto.';
+$wb['email_sent_to_txt'] = 'Email inviato a:';
+$wb['page_head_txt'] = 'Invia messaggio email a clienti e rivenditori';
+$wb['recipient_txt'] = 'Destinatario';
+$wb['all_clients_resellers_txt'] = 'Tutti i clienti e rivenditori';
+$wb['all_clients_txt'] = 'Tutti i clienti';
+$wb['variables_txt'] = 'Variabili:';
+$wb['gender_m_txt'] = 'Sig.';
+$wb['gender_f_txt'] = 'Sig.ra';
 ?>

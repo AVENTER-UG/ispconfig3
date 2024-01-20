@@ -60,6 +60,7 @@ if(isset($_SESSION['s']['var']['vhostdomain_type'])) {
 $form["title"]    = $form_title;
 $form["description"]  = "";
 $form["name"]    = "web_vhost_domain";
+$form["record_name_field"] = "domain";
 $form["action"]   = "web_vhost_domain_edit.php";
 $form["db_table"]  = "web_domain";
 $form["db_table_idx"] = "domain_id";
@@ -417,7 +418,7 @@ $form["tabs"]['redirect'] = array (
 			'datatype' => 'VARCHAR',
 			'formtype' => 'SELECT',
 			'default' => '',
-			'value'  => array('' => 'no_redirect_txt', 'non_www_to_www' => 'domain.tld => www.domain.tld', 'www_to_non_www' => 'www.domain.tld => domain.tld', '*_domain_tld_to_domain_tld' => '*.doman.tld => domain.tld', '*_domain_tld_to_www_domain_tld' => '*.domain.tld => www.domain.tld', '*_to_domain_tld' => '* => domain.tld', '*_to_www_domain_tld' => '* => www.domain.tld')
+			'value'  => array('' => 'no_redirect_txt', 'non_www_to_www' => 'domain.tld => www.domain.tld', 'www_to_non_www' => 'www.domain.tld => domain.tld', '*_domain_tld_to_domain_tld' => '*.domain.tld => domain.tld', '*_domain_tld_to_www_domain_tld' => '*.domain.tld => www.domain.tld', '*_to_domain_tld' => '* => domain.tld', '*_to_www_domain_tld' => '* => www.domain.tld')
 		),
 		'rewrite_rules' => array (
 			'datatype' => 'TEXT',

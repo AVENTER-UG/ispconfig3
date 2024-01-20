@@ -1,0 +1,8 @@
+<?php
+$wb['list_head_txt'] = '可用软件包';
+$wb['name_txt'] = '名称';
+$wb['version_txt'] = '版本';
+$wb['category_txt'] = '类别';
+$wb['status_txt'] = '未锁定';
+$wb['filter_txt'] = '搜索';
+?>

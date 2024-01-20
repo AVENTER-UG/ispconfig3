@@ -118,12 +118,13 @@ class file{
 			$content = $input;
 		}
 		$lines = explode("\n", $content);
+		$new_lines = array();
 		if(!empty($lines)){
 			foreach($lines as $line){
 				if(trim($line) != '') $new_lines[] = $line;
 			}
 		}
-		if(is_array($new_lines)){
+		if(!empty($new_lines)){
 			$content = implode("\n", $new_lines);
 		} else {
 			$content = '';

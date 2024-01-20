@@ -77,7 +77,7 @@ class ids {
 				$line = trim($line);
 				if(substr($line,0,1) != '#') {
 					list($user,$path,$varname) = explode(':',$line);
-					if($current_script_name == $path) {
+					if($current_script_name == $path || $path == '*') {
 						if($user = 'any' 
 							|| ($user == 'user' && ($_SESSION['s']['user']['typ'] == 'user' || $_SESSION['s']['user']['typ'] == 'admin')) 
 							|| ($user == 'admin' && $_SESSION['s']['user']['typ'] == 'admin')) {
@@ -100,7 +100,7 @@ class ids {
 				$line = trim($line);
 				if(substr($line,0,1) != '#') {
 					list($user,$path,$varname) = explode(':',$line);
-					if($current_script_name == $path) {
+					if($current_script_name == $path || $path == '*') {
 						if($user = 'any' 
 							|| ($user == 'user' && ($_SESSION['s']['user']['typ'] == 'user' || $_SESSION['s']['user']['typ'] == 'admin')) 
 							|| ($user == 'admin' && $_SESSION['s']['user']['typ'] == 'admin')) {

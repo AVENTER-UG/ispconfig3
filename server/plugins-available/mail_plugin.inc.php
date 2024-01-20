@@ -222,8 +222,8 @@ class mail_plugin {
 		$placeholders = array(
 			'{domain}' => "$domain",
 			'{email}' => $data["new"]["email"],
-			'{admin_mail}' => ($global_mail_config['admin_mail'] != '' ? $global_mail_config['admin_mail'] : 'root'),
-			'{admin_name}' => ($global_mail_config['admin_name'] != '' ? $global_mail_config['admin_name'] : ''),
+			'{admin_mail}' => (isset($global_mail_config['admin_mail']) && $global_mail_config['admin_mail'] != '' ? $global_mail_config['admin_mail'] : 'root'),
+			'{admin_name}' => (isset($global_mail_config['admin_name']) && $global_mail_config['admin_name'] != '' ? $global_mail_config['admin_name'] : ''),
 		);
 
 		//* Get from address
@@ -429,8 +429,19 @@ class mail_plugin {
 		$maildir_path_deleted = false;
 		$old_maildir_path = $data['old']['maildir'];
 		if($old_maildir_path != $mail_config['homedir_path'] && strlen($old_maildir_path) > strlen($mail_config['homedir_path']) && !stristr($old_maildir_path, '//') && !stristr($old_maildir_path, '..') && !stristr($old_maildir_path, '*') && strlen($old_maildir_path) >= 10) {
-			$app->system->exec_safe('rm -rf ?', $old_maildir_path);
-			$app->log('Deleted the Maildir: '.$data['old']['maildir'], LOGLEVEL_DEBUG);
+			if ($mail_config['mailbox_soft_delete'] == 'y' && is_dir($old_maildir_path)) {
+				// Move it, adding a date based suffix. A cronjob should purge or archive.
+				$thrash_maildir_path = $old_maildir_path . '-deleted-' . date("YmdHis");
+				$app->system->exec_safe('mv ? ?', $old_maildir_path, $thrash_maildir_path);
+
+				// Update the dir's timestamp to make filtering on age easier in any cleanup cronjob.
+				$app->system->exec_safe('touch ?', $thrash_maildir_path);
+
+				$app->log('Renamed the Maildir: ' . $data['old']['maildir'] . ' to ' . $thrash_maildir_path, LOGLEVEL_DEBUG);
+			} else  {
+				$app->system->exec_safe('rm -rf ?', $old_maildir_path);
+				$app->log('Deleted the Maildir: '.$data['old']['maildir'], LOGLEVEL_DEBUG);
+			}
 			$maildir_path_deleted = true;
 		} else {
 			$app->log('Possible security violation when deleting the maildir: '.$data['old']['maildir'], LOGLEVEL_ERROR);
@@ -455,7 +466,7 @@ class mail_plugin {
 					//* cleanup database
 					$sql = "DELETE FROM mail_backup WHERE server_id = ? AND parent_domain_id = ? AND mailuser_id = ?";
 					$app->db->query($sql, $conf['server_id'], $domain_rec['domain_id'], $data['old']['mailuser_id']);
-					if($app->db->dbHost != $app->dbmaster->dbHost) $app->dbmaster->query($sql, $conf['server_id'], $domain_rec['domain_id'], $data['old']['mailuser_id']);
+					if($app->running_on_slaveserver()) $app->dbmaster->query($sql, $conf['server_id'], $domain_rec['domain_id'], $data['old']['mailuser_id']);
 
 					$app->log('Deleted the mail backups for: '.$data['old']['email'], LOGLEVEL_DEBUG);
 				}
@@ -473,8 +484,19 @@ class mail_plugin {
 		//* Delete maildomain path
 		$old_maildomain_path = $mail_config['homedir_path'].'/'.$data['old']['domain'];
 		if($old_maildomain_path != $mail_config['homedir_path'] && !stristr($old_maildomain_path, '//') && !stristr($old_maildomain_path, '..') && !stristr($old_maildomain_path, '*') && !stristr($old_maildomain_path, '&') && strlen($old_maildomain_path) >= 10  && !empty($data['old']['domain'])) {
-			$app->system->exec_safe('rm -rf ?', $old_maildomain_path);
-			$app->log('Deleted the mail domain directory: '.$old_maildomain_path, LOGLEVEL_DEBUG);
+			if ($mail_config['mailbox_soft_delete'] == 'y' && is_dir($old_maildomain_path)) {
+				// Move it, adding a date based suffix. A cronjob should purge or archive.
+				$thrash_maildomain_path = $old_maildomain_path . '-deleted-' . date("YmdHis");
+				$app->system->exec_safe('mv ? ?', $old_maildomain_path, $thrash_maildomain_path);
+
+				// Update the dir's timestamp to make filtering on age easier in any cleanup cronjob.
+				$app->system->exec_safe('touch ?', $thrash_maildomain_path);
+
+				$app->log('Renamed the mail domain directory: ' . $old_maildomain_path . ' to ' . $thrash_maildomain_path, LOGLEVEL_DEBUG);
+			} else  {
+				$app->system->exec_safe('rm -rf ?', $old_maildomain_path);
+				$app->log('Deleted the mail domain directory: '.$old_maildomain_path, LOGLEVEL_DEBUG);
+			}
 			$maildomain_path_deleted = true;
 		} else {
 			$app->log('Possible security violation when deleting the mail domain directory: '.$old_maildomain_path, LOGLEVEL_ERROR);
@@ -502,7 +524,7 @@ class mail_plugin {
 				//* cleanup database
 				$sql = "DELETE FROM mail_backup WHERE server_id = ? AND parent_domain_id = ?";
 				$app->db->query($sql, $conf['server_id'], $data['old']['domain_id']);
-				if($app->db->dbHost != $app->dbmaster->dbHost) $app->dbmaster->query($sql, $conf['server_id'], $domain_rec['domain_id']);
+				if($app->running_on_slaveserver()) $app->dbmaster->query($sql, $conf['server_id'], $domain_rec['domain_id']);
 
 				$app->log('Deleted the mail backup directory: '.$mail_backup_dir, LOGLEVEL_DEBUG);
 			}

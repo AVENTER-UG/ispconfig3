@@ -1,0 +1,10 @@
+<?php
+$wb['list_head_txt'] = '虚拟服务器';
+$wb['active_txt'] = '启用';
+$wb['server_id_txt'] = '主机服务器';
+$wb['ostemplate_id_txt'] = 'OS模板';
+$wb['template_id_txt'] = '虚拟机模板';
+$wb['hostname_txt'] = '主机名';
+$wb['ip_address_txt'] = 'IP地址';
+$wb['veid_txt'] = 'VEID';
+?>

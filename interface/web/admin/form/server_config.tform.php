@@ -734,6 +734,20 @@ $form["tabs"]['mail'] = array(
 			'default' => 'y',
 			'value' => array(0 => 'n', 1 => 'y')
 		),
+		'mailbox_soft_delete' => array (
+			'datatype' => 'VARCHAR',
+			'formtype' => 'SELECT',
+			'default' => 'n',
+			'value' => array(
+				0 => 'soft_delete_directly_txt',
+				-1 => 'soft_delete_keep_indefinitely_txt',
+				1 => 'soft_delete_keep_1_txt',
+				7 => 'soft_delete_keep_7_txt',
+				30 => 'soft_delete_keep_30_txt',
+				90 => 'soft_delete_keep_90_txt',
+				365 => 'soft_delete_keep_365_txt',
+			)
+		),
 		'mailbox_quota_stats' => array (
 			'datatype' => 'VARCHAR',
 			'formtype' => 'CHECKBOX',
@@ -753,6 +767,12 @@ $form["tabs"]['mail'] = array(
 			'maxlength' => '3'
 		),
 		'overquota_notify_admin' => array(
+			'datatype' => 'VARCHAR',
+			'formtype' => 'CHECKBOX',
+			'default' => 'y',
+			'value' => array(0 => 'n', 1 => 'y')
+		),
+		'overquota_notify_reseller' => array(
 			'datatype' => 'VARCHAR',
 			'formtype' => 'CHECKBOX',
 			'default' => 'y',
@@ -914,10 +934,24 @@ $form["tabs"]['web'] = array(
 		),
 		'vhost_proxy_protocol_enabled' => array (
 			'datatype' => 'VARCHAR',
-			'formtype' => 'CHECKBOX',
+			'formtype' => 'SELECT',
 			'default' => 'n',
-			'value' => array(0 => 'n',1 => 'y')
+			'value' => array(
+                'n' => 'Disabled',
+                'y' => 'Enabled (per site)',
+                'all' => 'Enabled (all sites)'
+            )
 		),
+        'vhost_proxy_protocol_protocols' => array(
+            'datatype' => 'VARCHAR',
+            'formtype' => 'SELECT',
+            'value' => array(
+                'ipv4' => 'IPv4',
+                'ipv6' => 'IPv6',
+                'ipv4,ipv6' => 'IPv4 + IPv6'
+            ),
+            'default' => 'ipv4'
+        ),
 		'vhost_proxy_protocol_http_port' => array(
 			'datatype' => 'VARCHAR',
 			'formtype' => 'TEXT',
@@ -1082,6 +1116,12 @@ $form["tabs"]['web'] = array(
 			'default' => 'y',
 			'value' => array(0 => 'n', 1 => 'y')
 		),
+		'overtraffic_notify_reseller' => array(
+			'datatype' => 'VARCHAR',
+			'formtype' => 'CHECKBOX',
+			'default' => 'y',
+			'value' => array(0 => 'n', 1 => 'y')
+		),
 		'overtraffic_notify_client' => array(
 			'datatype' => 'VARCHAR',
 			'formtype' => 'CHECKBOX',
@@ -1112,6 +1152,12 @@ $form["tabs"]['web'] = array(
 			'default' => 'y',
 			'value' => array(0 => 'n', 1 => 'y')
 		),
+		'overquota_notify_reseller' => array(
+			'datatype' => 'VARCHAR',
+			'formtype' => 'CHECKBOX',
+			'default' => 'y',
+			'value' => array(0 => 'n', 1 => 'y')
+		),
 		'overquota_notify_client' => array(
 			'datatype' => 'VARCHAR',
 			'formtype' => 'CHECKBOX',
@@ -1131,6 +1177,12 @@ $form["tabs"]['web'] = array(
 			'maxlength' => '3'
 		),
 		'overquota_db_notify_admin' => array(
+			'datatype' => 'VARCHAR',
+			'formtype' => 'CHECKBOX',
+			'default' => 'y',
+			'value' => array(0 => 'n', 1 => 'y')
+		),
+		'overquota_db_notify_reseller' => array(
 			'datatype' => 'VARCHAR',
 			'formtype' => 'CHECKBOX',
 			'default' => 'y',
@@ -1617,6 +1669,44 @@ $form["tabs"]['dns'] = array(
 									1 => array ( 	'type' => 'REGEX',
 										'regex' => '/^\/[a-zA-Z0-9\.\-\_\/]{1,128}$/',
 										'errmsg'=> 'bind_zonefiles_dir_error_regex'),
+			),
+			'value' => '',
+			'width' => '40',
+			'maxlength' => '255'
+		),
+		'bind_keyfiles_dir' => array(
+			'datatype' => 'VARCHAR',
+			'formtype' => 'TEXT',
+			'default' => '',
+			'validators' => array(	0 => array('type' => 'NOTEMPTY',
+										'errmsg' => 'bind_keyfiles_dir_error_empty'),
+									1 => array ( 	'type' => 'REGEX',
+										'regex' => '/^\/[a-zA-Z0-9\.\-\_\/]{1,128}$/',
+										'errmsg'=> 'bind_keyfiles_dir_error_regex'),
+			),
+			'value' => '',
+			'width' => '40',
+			'maxlength' => '255'
+		),
+		'bind_zonefiles_masterprefix' => array(
+			'datatype' => 'VARCHAR',
+			'formtype' => 'TEXT',
+			'default' => '',
+			'validators' => array( 0 => array ( 	'type' => 'REGEX',
+										'regex' => '/^[a-zA-Z0-9\.\-\_\/]{0,128}$/',
+										'errmsg'=> 'bind_zonefiles_masterprefix_error_regex'),
+			),
+			'value' => '',
+			'width' => '40',
+			'maxlength' => '255'
+		),
+		'bind_zonefiles_slaveprefix' => array(
+			'datatype' => 'VARCHAR',
+			'formtype' => 'TEXT',
+			'default' => '',
+			'validators' => array( 0 => array ( 	'type' => 'REGEX',
+										'regex' => '/^[a-zA-Z0-9\.\-\_\/]{0,128}$/',
+										'errmsg'=> 'bind_zonefiles_slaveprefix_error_regex'),
 			),
 			'value' => '',
 			'width' => '40',

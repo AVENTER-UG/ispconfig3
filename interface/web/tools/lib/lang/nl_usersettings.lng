@@ -12,4 +12,5 @@ $wb['password_match_txt'] = 'The passwords do match.';
 $wb['language_txt'] = 'Taal';
 $wb['startmodule_txt'] = 'Startmodule';
 $wb['app_theme_txt'] = 'Design';
+$wb['otp_auth_txt'] = 'Twee-factor Authenticatie';
 ?>

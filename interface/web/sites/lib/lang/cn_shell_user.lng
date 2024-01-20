@@ -1,0 +1,36 @@
+<?php
+$wb['puser_txt'] = 'Web 用户名';
+$wb['pgroup_txt'] = 'Web 用户组';
+$wb['shell_txt'] = 'Shell';
+$wb['dir_txt'] = '基础目录';
+$wb['server_id_txt'] = '服务器';
+$wb['parent_domain_id_txt'] = '站点';
+$wb['username_txt'] = '用户名';
+$wb['password_txt'] = '密码';
+$wb['password_strength_txt'] = '密码强度';
+$wb['chroot_txt'] = 'Chroot Shell';
+$wb['quota_size_txt'] = '磁盘配额';
+$wb['active_txt'] = '启用';
+$wb['username_error_empty'] = '用户名为空。';
+$wb['username_error_unique'] = '用户名必须唯一。';
+$wb['username_error_regex'] = '用户名包含了不允许的字符。';
+$wb['quota_size_error_empty'] = '磁盘配额为空。';
+$wb['uid_error_empty'] = 'GID 为空。';
+$wb['directory_error_empty'] = '目录为空。';
+$wb['limit_shell_user_txt'] = '已达到 shell 用户的最大数量。';
+$wb['parent_domain_id_error_empty'] = '未选择网站。';
+$wb['ssh_rsa_txt'] = 'SSH-RSA 公钥（用于基于密钥的登录）';
+$wb['dir_dot_error'] = '路径中不能包含 ..。';
+$wb['dir_slashdot_error'] = '路径中不能包含 ./。';
+$wb['generate_password_txt'] = '生成密码';
+$wb['repeat_password_txt'] = '确认密码';
+$wb['password_mismatch_txt'] = '两次输入的密码不一致。';
+$wb['password_match_txt'] = '两次输入的密码一致。';
+$wb['username_must_not_exceed_32_chars_txt'] = '用户名不能超过 32 个字符。';
+$wb['username_not_allowed_txt'] = '用户名不允许。';
+$wb['invalid_system_user_or_group_txt'] = '无效的系统用户或用户组。';
+$wb['directory_error_regex'] = '无效的目录。';
+$wb['shell_error_regex'] = '无效的 shell。';
+$wb['invalid_username_txt'] = '无效的用户名。';
+$wb['directory_error_notinweb'] = '目录必须在 web 根目录内。';
+?>

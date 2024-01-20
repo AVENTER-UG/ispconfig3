@@ -7,6 +7,11 @@ server {
 </tmpl_if>
 <tmpl_if name='ipv6_enabled'>
         listen [<tmpl_var name='ipv6_address'>]:<tmpl_var name='http_port'>;
+<tmpl_if name='use_proxy_protocol_ipv6' op='==' value='y'>
+<tmpl_if name='proxy_protocol_http' op='>' value='0'>
+        listen [<tmpl_var name='ipv6_address'>]:<tmpl_var name='proxy_protocol_http'> proxy_protocol;
+</tmpl_if>
+</tmpl_if>
 </tmpl_if>
 <tmpl_if name='ipv6_wildcard'>
         listen [::]:<tmpl_var name='http_port'>;
@@ -28,6 +33,11 @@ server {
 		# ssl_prefer_server_ciphers on;
 <tmpl_if name='ipv6_enabled'>
         listen [<tmpl_var name='ipv6_address'>]:<tmpl_var name='https_port'> ssl http2;
+<tmpl_if name='use_proxy_protocol_ipv6' op='==' value='y'>
+<tmpl_if name='proxy_protocol_https' op='>' value='0'>
+        listen [<tmpl_var name='ipv6_address'>]:<tmpl_var name='proxy_protocol_https'> ssl http2 proxy_protocol;
+</tmpl_if>
+</tmpl_if>
 </tmpl_if>
 <tmpl_if name='ipv6_wildcard'>
         listen [::]:<tmpl_var name='https_port'> ssl http2;
@@ -69,6 +79,16 @@ server {
         <tmpl_if name='exclude_own_hostname'>if ($http_host != "<tmpl_var name='exclude_own_hostname'>") { </tmpl_if>rewrite ^<tmpl_var name='rewrite_exclude'>(.*)$ <tmpl_var name='rewrite_target'>$2 <tmpl_var name='rewrite_type'>;<tmpl_if name='exclude_own_hostname'> }</tmpl_if>
 </tmpl_if>
 <tmpl_if name='use_proxy'>
+        ## no proxy for acme-challenge
+        location ^~ /.well-known/acme-challenge/ {
+            access_log off;
+            log_not_found off;
+            root /usr/local/ispconfig/interface/acme/;
+            autoindex off;
+            index index.html;
+            try_files $uri $uri/ =404;
+        }
+
         location / {
             proxy_pass <tmpl_var name='rewrite_target'>;
             <tmpl_if name='rewrite_subdir'>rewrite ^/<tmpl_var name='rewrite_subdir'>(.*) /$1;</tmpl_if>

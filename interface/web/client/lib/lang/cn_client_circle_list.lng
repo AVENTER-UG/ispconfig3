@@ -1,0 +1,10 @@
+<?php
+$wb['list_head_txt'] = '客户圈';
+$wb['circle_id_txt'] = '圈ID';
+$wb['circle_name_txt'] = '圈名';
+$wb['description_txt'] = '描述';
+$wb['add_new_record_txt'] = '添加新圈';
+$wb['filter_txt'] = '筛选';
+$wb['delete_txt'] = '删除';
+$wb['active_txt'] = '活跃';
+?>

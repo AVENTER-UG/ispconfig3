@@ -1,0 +1,9 @@
+<?php
+$wb['list_head_txt'] = '导入语言文件';
+$wb['list_desc_txt'] = '警告：不要从不受信任的来源导入语言文件。';
+$wb['language_import_txt'] = '选择语言文件';
+$wb['btn_save_txt'] = '导入所选的语言文件';
+$wb['language_overwrite_txt'] = '如果存在则覆盖文件。';
+$wb['btn_cancel_txt'] = '返回';
+$wb['ignore_version_txt'] = '跳过 ISPConfig 版本检查';
+?>

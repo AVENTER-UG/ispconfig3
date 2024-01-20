@@ -17,7 +17,11 @@
                 <div class="col-sm-9">
 					<div class="input-group">
 						<span class="input-group-addon" id="username-desc">{tmpl_var name='username_prefix'}</span>
-						<input type="text" name="username" id="username" value="{tmpl_var name='username'}" class="form-control" aria-describedby="username-desc" />
+						<input type="text" name="username" id="username" value="{tmpl_var name='username'}" class="form-control" aria-describedby="username-desc" style="width: 90%" />
+						<a class="btn btn-default formbutton-narrow" href="javascript: navigator.clipboard.writeText(document.getElementById('username-desc').innerText + document.getElementById('username').value);" title="{tmpl_var name='copy_to_clipboard_txt'}">
+							<span class="fa fa-clone"></span>
+						</a>
+
 					</div>
 				</div>
             </div>

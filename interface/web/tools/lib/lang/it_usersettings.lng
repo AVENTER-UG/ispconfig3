@@ -2,14 +2,15 @@
 $wb['password_txt'] = 'Password';
 $wb['language_txt'] = 'Lingua';
 $wb['password_mismatch'] = 'Il secondo campo password non corrisponde con il primo.';
-$wb['Form to edit the user password and language.'] = 'Form per modificare la password e la lingua dellutente.';
+$wb['Form to edit the user password and language.'] = 'Form per modificare la password e la lingua dell\'utente.';
 $wb['Settings'] = 'Impostazioni';
 $wb['password_strength_txt'] = 'Sicurezza della Password';
-$wb['generate_password_txt'] = 'Generate Password';
-$wb['repeat_password_txt'] = 'Repeat Password';
-$wb['password_mismatch_txt'] = 'The passwords do not match.';
-$wb['password_match_txt'] = 'The passwords do match.';
-$wb['language_txt'] = 'Language';
-$wb['startmodule_txt'] = 'Startmodule';
-$wb['app_theme_txt'] = 'Design';
+$wb['generate_password_txt'] = 'Genera Password';
+$wb['repeat_password_txt'] = 'Ripeti Password';
+$wb['password_mismatch_txt'] = 'Le password sono diverse.';
+$wb['password_match_txt'] = 'Le password coincidono.';
+$wb['language_txt'] = 'Lingua pannello';
+$wb['startmodule_txt'] = 'Modulo di avvio';
+$wb['app_theme_txt'] = 'Apparenza';
+$wb['otp_auth_txt'] = 'Two Factor Authentication';
 ?>

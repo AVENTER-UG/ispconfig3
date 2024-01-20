@@ -6,5 +6,5 @@ $wb['loglevel_txt'] = 'Nível';
 $wb['message_txt'] = 'Mensagem';
 $wb['batch_delete_warnings_txt'] = 'Remove all warnings';
 $wb['batch_delete_errors_txt'] = 'Remove all errors';
-$wb['batch_delete_confirmation'] = 'Are you sure you want to acknowledge all log entries?'
+$wb['batch_delete_confirmation'] = 'Are you sure you want to acknowledge all log entries?';
 ?>

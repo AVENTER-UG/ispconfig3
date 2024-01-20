@@ -2,10 +2,10 @@
 $wb['server_id_txt'] = 'Server';
 $wb['domain_txt'] = 'Dominio';
 $wb['destination_txt'] = 'Destinazione';
-$wb['type_txt'] = 'Type';
+$wb['type_txt'] = 'Tipo';
 $wb['mx_txt'] = 'No MX lookup';
 $wb['sort_order_txt'] = 'Ordina per';
 $wb['active_txt'] = 'Attivo';
-$wb['limit_mailrouting_txt'] = 'The max. number of routes raggiunto per il tuo account.';
+$wb['limit_mailrouting_txt'] = 'Hai raggiunto il numero massimo di mailroutes per il tuo profilo.';
 $wb['transport_txt'] = 'Transport';
-$wb['domain_error_unique'] = 'A mail transport for this Domain already exists on this server.';
+$wb['domain_error_unique'] = 'Un sistema di trasporto mail esiste già per questo dominio su questo server.';

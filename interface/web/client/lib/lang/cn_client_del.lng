@@ -1,0 +1,10 @@
+<?php
+$wb['confirm_action_txt'] = '确认操作';
+$wb['delete_explanation'] = '此操作将删除与此客户相关联的以下记录数量';
+$wb['btn_save_txt'] = '删除客户';
+$wb['btn_cancel_txt'] = '取消删除客户';
+$wb['confirm_client_delete_txt'] = '您确定要删除此客户吗？';
+$wb['list_head_txt'] = '删除客户';
+$wb['table_txt'] = '表格';
+$wb['data_txt'] = '数据';
+?>

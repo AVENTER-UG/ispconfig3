@@ -41,6 +41,7 @@
 $form["title"]    = "Database";
 $form["description"]  = "";
 $form["name"]    = "database";
+$form["record_name_field"] = "database_name";
 $form["action"]   = "database_edit.php";
 $form["db_table"]  = "web_database";
 $form["db_table_idx"] = "database_id";

@@ -1,0 +1,10 @@
+<?php
+$wb['list_head_txt'] = 'FTP流量';
+$wb['domain_txt'] = '域名';
+$wb['this_month_txt'] = '本月';
+$wb['last_month_txt'] = '上月';
+$wb['this_year_txt'] = '今年';
+$wb['last_year_txt'] = '去年';
+$wb['sum_txt'] = '总计（下载 + 上传）';
+$wb['in_out_txt'] = '下载/上传';
+?>

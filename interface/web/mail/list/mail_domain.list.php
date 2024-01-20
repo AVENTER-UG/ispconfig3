@@ -83,7 +83,7 @@ if($_SESSION['s']['user']['typ'] == 'admin') {
 $liste["item"][] = array( 'field'  => "server_id",
 	'datatype' => "INTEGER",
 	'formtype' => "SELECT",
-	'op'  => "like",
+	'op'  => "=",
 	'prefix' => "",
 	'suffix' => "",
 	'datasource' => array (  'type' => 'SQL',

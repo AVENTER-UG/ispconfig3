@@ -41,6 +41,7 @@
 $form["title"]    = "Reseller";
 $form["description"]  = "";
 $form["name"]    = "reseller";
+$form["record_name_field"] = "username";
 $form["action"]   = "reseller_edit.php";
 $form["db_table"]  = "client";
 $form["db_table_idx"] = "client_id";

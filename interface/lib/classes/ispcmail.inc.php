@@ -169,7 +169,7 @@ class ispcmail {
 			$this->smtp_host = $value;
 			break;
 		case 'smtp_port':
-			if(intval($value) > 0) $this->smtp_port = $value;
+			if(intval($value) > 0) $this->smtp_port = intval($value);
 			break;
 		case 'smtp_user':
 			$this->smtp_user = $value;
@@ -585,7 +585,7 @@ class ispcmail {
 	 * @access private
 	 */
 	private function _smtp_login() {
-		$this->_smtp_conn = fsockopen(($this->smtp_crypt == 'ssl' ? 'tls://' : '') . $this->smtp_host, $this->smtp_port, $errno, $errstr, 30);
+		$this->_smtp_conn = fsockopen(($this->smtp_crypt == 'ssl' ? 'tls://' : '') . $this->smtp_host, (int)$this->smtp_port, $errno, $errstr, 30);
 		if(empty($this->_smtp_conn)) return false;
 		$response = fgets($this->_smtp_conn, 515);
 

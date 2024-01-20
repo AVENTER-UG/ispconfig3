@@ -1,0 +1,8 @@
+<?php
+$wb['list_head_txt'] = '语言文件编辑器';
+$wb['language_select_txt'] = '选择语言';
+$wb['module_txt'] = '模块';
+$wb['lang_file_txt'] = '语言文件';
+$wb['btn_save_txt'] = '保存';
+$wb['btn_cancel_txt'] = '返回';
+?>

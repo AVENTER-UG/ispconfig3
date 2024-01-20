@@ -6,9 +6,9 @@ $wb['server_id_txt'] = 'Server';
 $wb['domain_txt'] = 'Dominio';
 $wb['add_new_record_txt'] = 'Aggiungi nuovo sito';
 $wb['parent_domain_id_txt'] = 'Website';
-$wb['add_new_subdomain_txt'] = 'Add new subdomain';
-$wb['add_new_aliasdomain_txt'] = 'Add new aliasdomain';
-$wb['domain_list_head_txt'] = 'Websites';
-$wb['aliasdomain_list_head_txt'] = 'Aliasdomains (Vhost)';
-$wb['subdomain_list_head_txt'] = 'Subdomains (Vhost)';
+$wb['add_new_subdomain_txt'] = 'Aggiungi nuovo sottodominio';
+$wb['add_new_aliasdomain_txt'] = 'Aggiungi nuovo alis di dominio';
+$wb['domain_list_head_txt'] = 'Siti Web';
+$wb['aliasdomain_list_head_txt'] = 'Alias dominio (Vhost)';
+$wb['subdomain_list_head_txt'] = 'Subdominio (Vhost)';
 ?>

@@ -51,6 +51,7 @@ if(!$app->auth->is_admin()) {
 $form["title"]    = "Mailbox";
 $form["description"]  = "";
 $form["name"]    = "mail_user";
+$form["record_name_field"] = "email";
 $form["action"]   = "mail_user_edit.php";
 $form["db_table"]  = "mail_user";
 $form["db_table_idx"] = "mailuser_id";
@@ -166,7 +167,7 @@ $form["tabs"]['mailuser'] = array(
 					'regex' => '/^([0-9]{1,})$/',
 					'errmsg'=> 'quota_error_value'),
 			),
-			'default' => '-1',
+			'default' => '0',
 			'value'  => '',
 			'width'  => '30',
 			'maxlength' => '255'
@@ -216,6 +217,29 @@ $form["tabs"]['mailuser'] = array(
 			'maxlength' => '255',
 			'searchable' => 2
 		),
+	)
+);
+
+if($app->auth->is_admin()) {
+	$form["tabs"]['mailuser']['fields'] += array(
+			'imap_prefix' => array (
+				'datatype' => 'VARCHAR',
+				'formtype' => 'TEXT',
+				'filters'   => array(
+						0 => array( 'event' => 'SAVE',
+						'type' => 'STRIPTAGS'),
+						1 => array( 'event' => 'SAVE',
+						'type' => 'STRIPNL')
+				),
+				'default' => '',
+				'value'  => '',
+				'width'  => '30',
+				'maxlength' => '255',
+			),
+	);
+}
+
+$form["tabs"]['mailuser']['fields'] += array(
 		'maildir' => array (
 			'datatype' => 'VARCHAR',
 			'formtype' => 'TEXT',
@@ -321,7 +345,6 @@ $form["tabs"]['mailuser'] = array(
 		//#################################
 		// END Datatable fields
 		//#################################
-	)
 );
 
 if($global_config['mail']['mail_password_onlyascii'] == 'y') {

@@ -334,6 +334,14 @@ class functions {
 			$domain = substr($domain, strrpos($domain, '@') + 1);
 		}
 
+		// idn_to_* chokes on leading dots, but we need them for amavis, so remove it for later
+		if(substr($domain, 0, 1) === '.') {
+			$leading_dot = true;
+			$domain = substr($domain, 1);
+		} else {
+			$leading_dot = false;
+		}
+
 		if($encode == true) {
 			if(function_exists('idn_to_ascii')) {
 				if(defined('IDNA_NONTRANSITIONAL_TO_ASCII') && defined('INTL_IDNA_VARIANT_UTS46') && constant('IDNA_NONTRANSITIONAL_TO_ASCII')) {
@@ -376,6 +384,10 @@ class functions {
 				}
 				$domain = $this->idn_converter->decode($domain);
 			}
+		}
+
+		if($leading_dot == true) {
+			$domain = '.' . $domain;
 		}
 
 		if($user_part !== false) return $user_part . '@' . $domain;

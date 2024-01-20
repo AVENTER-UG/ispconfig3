@@ -1,7 +1,7 @@
 <?php
-$wb['getmail_config_dir_txt'] = 'Getmail Config Path';
+$wb['getmail_config_dir_txt'] = 'Percorso di configurazione Getmail';
 $wb['ip_address_txt'] = 'Indirizzo IP';
-$wb['netmask_txt'] = 'Netmask';
+$wb['netmask_txt'] = 'Maschera sottorete';
 $wb['gateway_txt'] = 'Gateway';
 $wb['hostname_txt'] = 'Hostname';
 $wb['nameservers_txt'] = 'Nameservers';

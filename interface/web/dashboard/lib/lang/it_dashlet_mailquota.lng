@@ -4,5 +4,5 @@ $wb['email_txt'] = 'Indirizzo e-mail';
 $wb['name_txt'] = 'Nome';
 $wb['used_txt'] = 'Spazio Usato';
 $wb['quota_txt'] = 'Quota';
-$wb['no_email_accounts_txt'] = 'Nessun account e-mail trovato.';
+$wb['no_email_accounts_txt'] = 'Nessun profilo e-mail trovato.';
 ?>

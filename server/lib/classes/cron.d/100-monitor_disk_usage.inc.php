@@ -83,7 +83,7 @@ class cronjob_monitor_disk_usage extends cronjob {
 		 * ignore the first line, process the rest
 		 */
 		for ($i = 1; $i <= sizeof($df); $i++) {
-			if ($df[$i] != '') {
+			if (isset($df[$i]) && $df[$i] != '') {
 				/*
 				 * Make an array of the data
 				 */

@@ -1,0 +1,21 @@
+<?php
+$wb['server_id_txt'] = '服务器';
+$wb['zone_txt'] = '区域';
+$wb['name_txt'] = '主机名';
+$wb['order_txt'] = '排序';
+$wb['pref_txt'] = '优先级';
+$wb['flags_txt'] = '标记';
+$wb['service_txt'] = '服务';
+$wb['regexp_txt'] = '正则表达式';
+$wb['replacement_txt'] = '替换';
+$wb['ttl_txt'] = 'TTL';
+$wb['active_txt'] = '激活';
+$wb['limit_dns_record_txt'] = '您的帐户的 DNS 记录数量已达到最大值。';
+$wb['no_zone_perm'] = '您没有权限向此 DNS 区域添加记录。';
+$wb['name_error_empty'] = '主机名为空。';
+$wb['name_error_regex'] = '主机名格式错误。';
+$wb['data_error_empty'] = 'NAPTR 记录为空。';
+$wb['naptr_error_regex'] = '无效的 NAPTR 记录。NAPTR 记录必须包括排序，优先级以及正则表达式或替换。';
+$wb['ttl_range_error'] = '最小 TTL 时间为 60 秒。';
+$wb['record_parse_error'] = '无法解析数据库中找到的记录。';
+?>

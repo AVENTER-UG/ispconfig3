@@ -60,7 +60,7 @@ ignore_hostname_dns=n
 ispconfig_postfix_ssl_symlink=y
 ispconfig_pureftpd_ssl_symlink=y
 
-; These are for service-detection (defaulting to old behaviour where alle changes were automatically accepted)
+; These are for service-detection (defaulting to old behaviour where all changes were automatically accepted)
 svc_detect_change_mail_server=yes
 svc_detect_change_web_server=yes
 svc_detect_change_dns_server=yes

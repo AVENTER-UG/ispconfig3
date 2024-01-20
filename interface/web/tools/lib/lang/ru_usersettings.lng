@@ -14,4 +14,5 @@ $wb['interface_desc_txt'] = 'Измените свой интерфейс';
 $wb['language_txt'] = 'Язык';
 $wb['startmodule_txt'] = 'Стартовый модуль';
 $wb['app_theme_txt'] = 'Тема';
+$wb['otp_auth_txt'] = 'Two Factor Authentication';
 ?>

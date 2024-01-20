@@ -51,6 +51,8 @@ $conf['services']['dns'] = true;
 $conf['services']['file'] = true;
 $conf['services']['db'] = true;
 $conf['services']['vserver'] = true;
+$conf['services']['proxy'] = false;
+$conf['services']['firewall'] = false;
 
 //* MySQL
 $conf['mysql']['installed'] = false; // will be detected automatically during installation
@@ -66,6 +68,7 @@ $conf['mysql']['ispconfig_user'] = 'ispconfig';
 $conf['mysql']['ispconfig_password'] = md5(random_bytes(20));
 $conf['mysql']['master_slave_setup'] = 'n';
 $conf['mysql']['master_host'] = '';
+$conf['mysql']['master_port'] = '3306';
 $conf['mysql']['master_database'] = 'dbispconfig';
 $conf['mysql']['master_admin_user'] = 'root';
 $conf['mysql']['master_admin_password'] = '';
@@ -80,7 +83,7 @@ $conf['apache']['installed'] = false; // will be detected automatically during i
 $conf['apache']['user'] = 'apache';
 $conf['apache']['group'] = 'apache';
 $conf['apache']['init_script'] = 'apache2';
-$conf['apache']['version'] = '2.2';
+$conf['apache']['version'] = '2.4';
 $conf['apache']['config_dir'] = '/etc/apache2';
 $conf['apache']['config_file'] = $conf['apache']['config_dir'] .'/httpd.conf';
 $conf['apache']['ssl_dir'] = '/etc/ssl/apache2';
@@ -88,8 +91,8 @@ $conf['apache']['vhost_conf_dir'] = $conf['apache']['config_dir'] . '/vhosts.d';
 $conf['apache']['vhost_conf_enabled_dir'] = $conf['apache']['vhost_conf_dir'];
 $conf['apache']['vhost_default'] = '00_default_vhost.conf';
 $conf['apache']['vhost_port'] = '8080';
-$conf['apache']['php_ini_path_apache'] = '/etc/php/apache2-php5/php.ini';
-$conf['apache']['php_ini_path_cgi'] = '/etc/php/cgi-php5/php.ini';
+$conf['apache']['php_ini_path_apache'] = '/etc/php/apache2-php7.4/php.ini';
+$conf['apache']['php_ini_path_cgi'] = '/etc/php/cgi-php7.4/php.ini';
 
 //* Website base settings
 $conf['web']['website_basedir'] = '/var/www';
@@ -110,7 +113,7 @@ $conf['awstats']['pl'] = '/usr/bin/awstats.pl';
 $conf['awstats']['buildstaticpages_pl'] = '/usr/bin/awstats_buildstaticpages.pl';
 
 //* Fastcgi
-$conf['fastcgi']['fastcgi_phpini_path'] = '/etc/php/cgi-php5';
+$conf['fastcgi']['fastcgi_phpini_path'] = '/etc/php/cgi-php7.4';
 $conf['fastcgi']['fastcgi_starter_path'] = '/var/www/php-fcgi-scripts/[system_user]/';
 $conf['fastcgi']['fastcgi_bin'] = '/usr/bin/php-cgi';
 
@@ -130,6 +133,10 @@ $conf['postfix']['vmail_mailbox_base'] = '/var/vmail';
 $conf['mailman']['installed'] = false; // will be detected automatically during installation
 $conf['mailman']['config_dir'] = '/etc/mailman';
 $conf['mailman']['init_script'] = 'mailman';
+
+//* mlmmj
+$conf['mlmmj']['installed'] = false; // will be detected automatically during installation
+$conf['mlmmj']['config_dir'] = '/etc/mlmmj';
 
 //* Getmail
 $conf['getmail']['installed'] = false; // will be detected automatically during installation
@@ -176,6 +183,7 @@ $conf['pureftpd']['installed'] = false; // will be detected automatically during
 $conf['pureftpd']['config_file'] = '/etc/conf.d/pure-ftpd';
 $conf['pureftpd']['mysql_config_file'] = '/etc/pureftpd-mysql.conf';
 $conf['pureftpd']['init_script'] = 'pure-ftpd';
+$conf['pureftpd']['main_config_file'] = '/etc/pure-ftpd.conf';
 
 //* MyDNS
 $conf['mydns']['installed'] = false; // will be detected automatically during installation
@@ -226,6 +234,13 @@ $conf['nginx']['php_fpm_pool_dir'] = '/etc/php5/fpm/pool.d';
 $conf['nginx']['php_fpm_start_port'] = 9010;
 $conf['nginx']['php_fpm_socket_dir'] = '/var/lib/php5-fpm';
 
+//* OpenVZ
+$conf['openvz']['installed'] = false;
+
+//*Bastille-Firwall
+$conf['bastille']['installed'] = false;
+$conf['bastille']['config_dir'] = '/etc/Bastille';
+
 //* vlogger
 $conf['vlogger']['config_dir'] = '/etc/vlogger';
 
@@ -235,10 +250,12 @@ $conf['cron']['crontab_dir'] = '/etc/cron.d';
 $conf['cron']['group'] = 'cron';
 $conf['cron']['wget'] = '/usr/bin/wget';
 
-//* OpenVZ
-$conf['openvz']['installed'] = false;
+//* Metronome XMPP
+$conf['xmpp']['installed'] = false;
+$conf['xmpp']['init_script'] = 'metronome';
 
 // AppArmor
 $conf['apparmor']['installed'] = false;
+
 
 ?>

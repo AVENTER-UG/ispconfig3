@@ -34,6 +34,7 @@ class cron_jailkit_plugin {
 	//* $plugin_name and $class_name have to be the same then the name of this class
 	var $plugin_name = 'cron_jailkit_plugin';
 	var $class_name = 'cron_jailkit_plugin';
+	var $parent_domain = array();
 
 	//* This function is called during ispconfig installation to determine
 	//  if a symlink shall be created for this plugin.

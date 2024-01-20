@@ -1,0 +1,19 @@
+<?php
+$wb['server_id_txt'] = '服务器';
+$wb['zone_txt'] = '区域';
+$wb['name_txt'] = '主机名';
+$wb['type_txt'] = '类型';
+$wb['data_txt'] = '文本';
+$wb['ttl_txt'] = 'TTL';
+$wb['active_txt'] = '启用';
+$wb['limit_dns_record_txt'] = '您的帐户已达到DNS记录的最大数量。';
+$wb['no_zone_perm'] = '您无权向此DNS区域添加记录。';
+$wb['name_error_empty'] = '主机名为空。';
+$wb['name_error_regex'] = '主机名格式错误。';
+$wb['data_error_empty'] = '文本为空。';
+$wb['data_error_regex'] = '文本格式无效。';
+$wb['ttl_range_error'] = '最小TTL时间为60秒。';
+$wb['invalid_type_dkim'] = '不允许使用DKIM。请使用DKIM按钮。';
+$wb['invalid_type_dmarc'] = '不允许使用DMARC。请使用DMARC按钮。';
+$wb['invalid_type_spf'] = '不允许使用SPF。请使用SPF按钮。';
+?>

@@ -384,7 +384,7 @@ class ApsInstaller extends ApsBase
 					if(is_dir($this->document_root)){
 						$files = array_diff(scandir($this->document_root), array('.', '..', 'error', 'stats'));
 						foreach($files as $file){
-							if(is_dir($this->document_root.'/'.$file)){
+							if(is_dir($this->document_root.'/'.$file) and !is_link($this->document_root.'/'.$file)){
 								$app->file->removeDirectory($this->document_root.'/'.$file);
 							} else {
 								@unlink($this->document_root.'/'.$file);
@@ -693,7 +693,7 @@ class ApsInstaller extends ApsBase
 		{
 			$app->db->query('DELETE FROM aps_instances WHERE id = ?', $task['instance_id']);
 			$app->db->query('DELETE FROM aps_instances_settings WHERE instance_id = ?', $task['instance_id']);
-			if ($app->dbmaster != $app->db) {
+			if (!$app->running_on_masterserver()) {
 				$app->dbmaster->query('DELETE FROM aps_instances WHERE id = ?', $task['instance_id']);
 				$app->dbmaster->query('DELETE FROM aps_instances_settings WHERE instance_id = ?', $task['instance_id']);
 			}

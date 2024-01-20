@@ -36,6 +36,11 @@ if(isset($conf['timezone']) && $conf['timezone'] != '') {	// note: !empty($conf[
 	date_default_timezone_set($conf['timezone']);
 }
 
+//* Set error reporting level when we are not on a developer system
+if(DEVSYSTEM !== true) {
+	@ini_set('error_reporting', E_ALL & ~E_NOTICE & ~E_DEPRECATED & ~E_WARNING);
+}
+
 /**
  * Class for defining (mostly static) methods that are commonly used across the whole application.
  *
@@ -45,7 +50,7 @@ if(isset($conf['timezone']) && $conf['timezone'] != '') {	// note: !empty($conf[
  * @license bsd-3-clause
  * @link empty
  **/
-class app {
+class app extends stdClass {
 	/** @var array	List of modules that have been loaded. */
 	var $loaded_modules = [];
 	/** @var array	List of plugins that have been loaded. */
@@ -348,6 +353,26 @@ class app {
 	function error($msg) {
 		$this->log($msg, 3);	// isn't this supposed to be error code 2? (gwyneth 20220315)
 		die($msg);
+	}
+
+	/**
+	 * Determin if the current process is running on the master or a slave server.
+	 *
+	 * @return boolean
+	 */
+	function running_on_masterserver() {
+
+		return $this->dbmaster == $this->db;
+	}
+
+	/**
+	 * Determin if the current process is running on the master or a slave server.
+	 *
+	 * @return boolean
+	 */
+	function running_on_slaveserver() {
+
+		return $this->dbmaster != $this->db;
 	}
 }
 

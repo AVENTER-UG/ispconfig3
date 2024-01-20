@@ -1,0 +1,6 @@
+<?php
+$wb['domain_error_empty'] = '域名为空';
+$wb['domain_error_unique'] = '域名已存在';
+$wb['domain_error_regex'] = '该域名不被允许';
+$wb['Domain'] = '域名';
+?>

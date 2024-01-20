@@ -1,0 +1,13 @@
+<?php
+$wb['mailbox_autoresponder_txt'] = '自动回复';
+$wb['autoresponder_subject'] = '外出办公回复';
+$wb['autoresponder_text_txt'] = '正文';
+$wb['autoresponder_txt'] = '启用';
+$wb['autoresponder_start_date_txt'] = '开始时间';
+$wb['autoresponder_start_date_isfuture'] = '开始时间不能为过去时间。';
+$wb['autoresponder_end_date_txt'] = '结束时间';
+$wb['autoresponder_end_date_isgreater'] = '必须设置结束时间，并且结束时间必须晚于开始时间。';
+$wb['autoresponder_active'] = '启用自动回复';
+$wb['now_txt'] = '立即';
+$wb['autoresponder_subject_txt'] = '主题';
+?>

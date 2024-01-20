@@ -43,6 +43,7 @@ if(isset($_SESSION['s']['var']['childdomain_type']) && $_SESSION['s']['var']['ch
 $form["title"]    = ($childdomain_type == 'subdomain' ? "Subdomain" : 'Web Aliasdomain');
 $form["description"]  = "";
 $form["name"]    = "web_childdomain";
+$form["record_name_field"] = "domain";
 $form["action"]   = "web_childdomain_edit.php";
 $form["db_table"]  = "web_domain";
 $form["db_table_idx"] = "domain_id";
@@ -168,7 +169,7 @@ if($childdomain_type == 'aliasdomain') {
 			'datatype' => 'VARCHAR',
 			'formtype' => 'SELECT',
 			'default' => '',
-			'value'  => array('' => 'no_redirect_txt', 'non_www_to_www' => 'domain.tld => www.domain.tld', 'www_to_non_www' => 'www.domain.tld => domain.tld', '*_domain_tld_to_domain_tld' => '*.doman.tld => domain.tld', '*_domain_tld_to_www_domain_tld' => '*.domain.tld => www.domain.tld', '*_to_domain_tld' => '* => domain.tld', '*_to_www_domain_tld' => '* => www.domain.tld')
+			'value'  => array('' => 'no_redirect_txt', 'non_www_to_www' => 'domain.tld => www.domain.tld', 'www_to_non_www' => 'www.domain.tld => domain.tld', '*_domain_tld_to_domain_tld' => '*.domain.tld => domain.tld', '*_domain_tld_to_www_domain_tld' => '*.domain.tld => www.domain.tld', '*_to_domain_tld' => '* => domain.tld', '*_to_www_domain_tld' => '* => www.domain.tld')
 		);
 
 }

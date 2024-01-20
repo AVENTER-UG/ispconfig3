@@ -34,4 +34,5 @@ $wb['username_error_collision'] = 'Brugernavn må ikke være web eller web plus 
 $wb['client_not_admin_err'] = 'En bruger der hører til en klient kan ikke indstilles til typen: admin';
 $wb['lost_password_function_txt'] = 'Forgot password function is available';
 $wb['no_user_insert'] = 'CP-Users of type -user- get added and updated automatically when you add a client or reseller.';
+$wb['otp_auth_txt'] = '2-Factor Authentication';
 ?>

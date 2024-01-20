@@ -1151,6 +1151,7 @@ class system{
 		$group_file = $app->file->rf($this->server_conf['group_datei']);
 		$group_file_lines = explode("\n", $group_file);
 		foreach($group_file_lines as $group_file_line){
+			if(empty($group_file_line)) continue;
 			list($group_name, $group_x, $group_id, $group_users) = explode(':', $group_file_line);
 			if($group_name == $group){
 				$group_users = explode(',', str_replace(' ', '', $group_users));
@@ -2132,6 +2133,26 @@ class system{
 		}
 		
 		$full_init_script_path = realpath($init_script_directory.'/'.$servicename);
+    
+    //** Gentoo, keep symlink as init script, but do some checks
+    if(file_exists('/etc/gentoo-release')) {  
+      //* check if init script is symlink
+      if(is_link($init_script_directory.'/'.$servicename)) {                 
+        //* Check init script owner (realpath, symlink is checked later)
+      	if(fileowner($full_init_script_path) !== 0) {
+      		$app->log('Init script '.$full_init_script_path.' not owned by root user',LOGLEVEL_WARN);
+      		return false;
+        }
+        
+        //* full path is symlink
+        $full_init_script_path_symlink = $init_script_directory.'/'.$servicename;
+        
+        //* check if realpath matches symlink
+        if(strpos($full_init_script_path_symlink,$full_init_script_path) == 0) {
+          $full_init_script_path = $full_init_script_path_symlink;
+        }
+      }
+    }
 		
 		if($full_init_script_path == '') {
 			$app->log('No init script, we quit here.',LOGLEVEL_WARN);
@@ -2325,6 +2346,16 @@ class system{
 		if($restrict_names == true && preg_match('/^client\d+$/', $groupname) == false) return false;
 
 		return true;
+	}
+
+	public function is_redhat_os() {
+		global $app;
+
+		if(file_exists('/etc/redhat-release') && (filesize('/etc/redhat-release') > 0)) {
+			return true;
+		} else {
+			return false;
+		}
 	}
 
 	public function is_allowed_path($path) {

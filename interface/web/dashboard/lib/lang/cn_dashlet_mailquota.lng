@@ -1,0 +1,8 @@
+<?php
+$wb['mailquota_txt'] = '邮箱配额';
+$wb['email_txt'] = '电子邮件地址';
+$wb['name_txt'] = '名称';
+$wb['used_txt'] = '已使用空间';
+$wb['quota_txt'] = '配额';
+$wb['no_email_accounts_txt'] = '未找到电子邮件帐户。';
+?>

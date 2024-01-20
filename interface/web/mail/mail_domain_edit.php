@@ -245,9 +245,12 @@ class page_action extends tform_actions {
 		$rec = $app->db->queryOneRecord($sql, $app->functions->intval($_GET['id']));
 		$dns_key = str_replace(array('-----BEGIN PUBLIC KEY-----','-----END PUBLIC KEY-----',"\r","\n"),'',$rec['dkim_public']);
 
-                $keyparts = str_split('v=DKIM1; t=s; p=' . $dns_key, 200);
-                array_walk($keyparts, function(&$value, $key) { $value = '"'.$value.'"'; } );
-                $dkim_txt = implode('', $keyparts);
+        /* we do not show split DKIM key anymore
+		$keyparts = str_split('v=DKIM1; t=s; p=' . $dns_key, 200);
+        array_walk($keyparts, function(&$value, $key) { $value = '"'.$value.'"'; } );
+        $dkim_txt = implode('', $keyparts);
+		*/
+		$dkim_txt = '"v=DKIM1; t=s; p=' . $dns_key . '"';
 
 		$dns_record = $rec['dkim_selector'] . '._domainkey.' . $rec['domain'] . '. 3600  IN  TXT   '.$dkim_txt;
 
@@ -255,6 +258,13 @@ class page_action extends tform_actions {
 		$app->tpl->setVar('dkim_private', $rec['dkim_private'], true);
 		$app->tpl->setVar('dkim_public', $rec['dkim_public'], true);
 		if (!empty($rec['dkim_public'])) $app->tpl->setVar('dns_record', $dns_record, true);
+
+		$csrf_token = $app->auth->csrf_token_get('mail_domain_del');
+		$app->tpl->setVar('_csrf_id', $csrf_token['csrf_id']);
+		$app->tpl->setVar('_csrf_key', $csrf_token['csrf_key']);
+
+		$global_config = $app->getconf->get_global_config();
+		$app->tpl->setVar('show_delete_on_forms', $global_config['misc']['show_delete_on_forms']);
 
 		parent::onShowEnd();
 	 }

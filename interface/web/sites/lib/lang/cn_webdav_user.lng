@@ -1,0 +1,21 @@
+<?php
+$wb['dir_txt'] = '目录';
+$wb['server_id_txt'] = '服务器';
+$wb['parent_domain_id_txt'] = '网站';
+$wb['username_txt'] = '用户名';
+$wb['password_txt'] = '密码';
+$wb['password_strength_txt'] = '密码强度';
+$wb['active_txt'] = '活动';
+$wb['limit_webdav_user_txt'] = '您的帐户的WebDAV用户数量已达到上限。';
+$wb['username_error_empty'] = '用户名为空。';
+$wb['username_error_unique'] = '用户名必须是唯一的。';
+$wb['username_error_regex'] = '用户名包含不允许的字符。';
+$wb['directory_error_empty'] = '目录为空。';
+$wb['parent_domain_id_error_empty'] = '未选择网站。';
+$wb['dir_dot_error'] = '路径中不允许 .. 。';
+$wb['dir_slashdot_error'] = '路径中不允许 ./ 。';
+$wb['generate_password_txt'] = '生成密码';
+$wb['repeat_password_txt'] = '重复密码';
+$wb['password_mismatch_txt'] = '两次密码不匹配。';
+$wb['password_match_txt'] = '两次密码匹配。';
+?>

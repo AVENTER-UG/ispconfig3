@@ -6,4 +6,5 @@ $wb['client_id_txt'] = 'ID Клиента';
 $wb['name_txt'] = 'Имя PHP';
 $wb['active_txt'] = 'Active';
 $wb['usage_txt'] = 'Usage count';
+$wb['sortprio_txt'] = 'Priority';
 ?>

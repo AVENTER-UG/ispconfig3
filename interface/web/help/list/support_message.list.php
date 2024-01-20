@@ -36,7 +36,7 @@ $liste['auth']    = 'yes';
 *****************************************************/
 
 $liste['item'][] = array( 'field'  => 'sender_id',
-	'datatype' => 'VARCHAR',
+	'datatype' => 'INTEGER',
 	'formtype' => 'SELECT',
 	'op'  => '=',
 	'prefix' => '',

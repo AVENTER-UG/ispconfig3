@@ -1,0 +1,25 @@
+<?php
+$wb['head_txt'] = '从ISPConfig 3导入电子邮件配置';
+$wb['legend_txt'] = '远程服务器连接详细信息';
+$wb['legend2_txt'] = '导入电子邮件域';
+$wb['resync_sites_txt'] = '重新同步网站';
+$wb['resync_ftp_txt'] = '重新同步FTP用户';
+$wb['resync_shell_txt'] = '重新同步shell用户';
+$wb['resync_cron_txt'] = '重新同步cronjobs';
+$wb['resync_db_txt'] = '重新同步clientdb配置';
+$wb['resync_mailbox_txt'] = '重新同步邮箱';
+$wb['resync_dns_txt'] = '重新同步DNS记录';
+$wb['btn_start_txt'] = '开始导入';
+$wb['btn_connect_txt'] = '连接到远程服务器';
+$wb['btn_cancel_txt'] = '取消';
+$wb['client_group_id_txt'] = '本地客户端';
+$wb['mail_domain_txt'] = '远程电子邮件域';
+$wb['import_mailbox_txt'] = '导入邮箱';
+$wb['import_aliasdomain_txt'] = '导入别名域';
+$wb['import_alias_txt'] = '导入电子邮件别名';
+$wb['import_forward_txt'] = '导入转发';
+$wb['import_user_filter_txt'] = '导入用户过滤器';
+$wb['import_spamfilter_txt'] = '导入垃圾邮件过滤器';
+$wb['local_server_txt'] = '本地邮件服务器';
+
+?>

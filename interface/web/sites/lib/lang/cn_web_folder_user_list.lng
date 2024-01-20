@@ -1,0 +1,7 @@
+<?php
+$wb['list_head_txt'] = '文件夹用户';
+$wb['active_txt'] = '启用';
+$wb['web_folder_id_txt'] = '文件夹';
+$wb['username_txt'] = '用户名';
+$wb['add_new_record_txt'] = '添加新的文件夹用户';
+?>

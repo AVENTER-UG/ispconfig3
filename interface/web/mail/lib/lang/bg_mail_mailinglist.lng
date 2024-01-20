@@ -2,6 +2,7 @@
 $wb['limit_mailmailinglist_txt'] = 'Достигнат лимит';
 $wb['domain_error_empty'] = 'Полето с домейн е празно.';
 $wb['listname_error_empty'] = 'Listname is empty.';
+$wb['listname_error_regex'] = 'The list name is invalid. The minimum length is 2 characters (allowed are: [a-z 1-9 - _]).';
 $wb['domain_error_regex'] = 'Invalid domain name.';
 $wb['email_in_use_txt'] = 'Имейла се изполва';
 $wb['no_domain_perm'] = 'Ти нямаш права за този домейн.';

@@ -42,6 +42,7 @@ global $app;
 $form["title"]    = "DNS Zone";
 $form["description"]  = "";
 $form["name"]    = "dns_soa";
+$form["record_name_field"] = "origin";
 $form["action"]   = "dns_soa_edit.php";
 $form["db_table"]  = "dns_soa";
 $form["db_table_idx"] = "id";
@@ -302,6 +303,7 @@ $form["tabs"]['dns_soa'] = array (
 			'separator' => ',',
 			'default' => 'ECDSAP256SHA256',
 			'value'  => array('NSEC3RSASHA1' => '7 (NSEC3RSASHA1)','ECDSAP256SHA256' => '13 (ECDSAP256SHA256)'),
+			'data-check-fields' => 'dnssec_wanted',
 			'width'  => '30',
 			'maxlength' => '255'
 		),

@@ -1,0 +1,35 @@
+<?php
+$wb['Websites'] = '网站';
+$wb['Website'] = '网站';
+$wb['Subdomain'] = '网站子域名';
+$wb['Aliasdomain'] = '网站别名域名';
+$wb['Database'] = '数据库';
+$wb['Database User'] = '数据库用户';
+$wb['Web Access'] = '网站访问';
+$wb['FTP-User'] = 'FTP-账户';
+$wb['Webdav-User'] = 'WebDAV-用户';
+$wb['Folder'] = '受保护的文件夹';
+$wb['Folder users'] = '受保护的文件夹用户';
+$wb['Command Line'] = '命令行';
+$wb['Shell-User'] = 'SSH/SFTP用户';
+$wb['Cron Jobs'] = '定时任务';
+$wb['Statistics'] = '统计信息';
+$wb['Web traffic'] = '网站流量';
+$wb['Website quota (Harddisk)'] = '网站配额 (硬盘)';
+$wb['Cron'] = '定时任务';
+$wb['Stats'] = '统计信息';
+$wb['Shell'] = 'Shell';
+$wb['Webdav'] = 'WebDAV';
+$wb['FTP'] = 'FTP';
+$wb['Options'] = '选项';
+$wb['Domain'] = '域名';
+$wb['Redirect'] = '重定向';
+$wb['SSL'] = 'SSL';
+$wb['Sites'] = '网站';
+$wb['APS Installer'] = 'APS安装程序';
+$wb['Available packages'] = '可用包';
+$wb['Installed packages'] = '已安装的包';
+$wb['Update Packagelist'] = '更新软件包列表';
+$wb['Subdomain (Vhost)'] = '网站子域名(Vhost)';
+$wb['error_proxy_requires_url'] = '重定向类型"proxy"需要一个URL作为重定向路径。';
+?>

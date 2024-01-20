@@ -570,7 +570,7 @@ INSERT INTO `dns_ssl_ca` (`id`, `sys_userid`, `sys_groupid`, `sys_perm_user`, `s
 (NULL, 1, 1, 'riud', 'riud', '', 'Y', 'certSIGN', 'certsign.ro', 'Y', '', 0),
 (NULL, 1, 1, 'riud', 'riud', '', 'Y', 'CFCA', 'cfca.com.cn', 'Y', '', 0),
 (NULL, 1, 1, 'riud', 'riud', '', 'Y', 'Chunghwa Telecom', 'cht.com.tw', 'Y', '', 0),
-(NULL, 1, 1, 'riud', 'riud', '', 'Y', 'Sectigo / Comodo CA', 'comodoca.com', 'Y', '', 0),
+(NULL, 1, 1, 'riud', 'riud', '', 'Y', 'Sectigo (formerly Comodo CA)', 'sectigo.com', 'Y', '', 0),
 (NULL, 1, 1, 'riud', 'riud', '', 'Y', 'D-TRUST', 'd-trust.net', 'Y', '', 0),
 (NULL, 1, 1, 'riud', 'riud', '', 'Y', 'DigiCert', 'digicert.com', 'Y', '', 0),
 (NULL, 1, 1, 'riud', 'riud', '', 'Y', 'DocuSign', 'docusign.fr', 'Y', '', 0),
@@ -1072,7 +1072,7 @@ CREATE TABLE `mail_user` (
   `gid` int(11) NOT NULL default '5000',
   `maildir` varchar(255) NOT NULL default '',
   `maildir_format` varchar(255) NOT NULL default 'maildir',
-  `quota` bigint(20) NOT NULL default '-1',
+  `quota` bigint(20) NOT NULL default '0',
   `cc` text,
   `forward_in_lda` enum('n','y') NOT NULL default 'n',
   `sender_cc` varchar(255) NOT NULL default '',
@@ -1103,6 +1103,7 @@ CREATE TABLE `mail_user` (
   `last_quota_notification` date NULL default NULL,
   `backup_interval` VARCHAR( 255 ) NOT NULL default 'none',
   `backup_copies` INT NOT NULL DEFAULT '1',
+  `imap_prefix` varchar(255) NULL default NULL,
   PRIMARY KEY  (`mailuser_id`),
   KEY `server_id` (`server_id`,`email`),
   KEY `email_access` (`email`,`access`)
@@ -1462,6 +1463,7 @@ CREATE TABLE `server_php` (
   `php_fpm_pool_dir` varchar(255) DEFAULT NULL,
   `php_fpm_socket_dir` varchar(255) DEFAULT NULL,
   `active` enum('n','y') NOT NULL DEFAULT 'y',
+  `sortprio` int(20) NOT NULL DEFAULT 100,
   PRIMARY KEY (`server_php_id`)
 ) DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
 
@@ -1844,6 +1846,10 @@ CREATE TABLE `sys_user` (
   `lost_password_function` tinyint(1) NOT NULL default '1',
   `lost_password_hash` VARCHAR(50) NOT NULL default '',
   `lost_password_reqtime` DATETIME NULL default NULL,
+  `otp_type` set('none', 'email') NOT NULL DEFAULT 'none',
+  `otp_data` varchar(255) DEFAULT NULL,
+  `otp_recovery` varchar(64) DEFAULT NULL,
+  `otp_attempts` tinyint(4) NOT NULL DEFAULT 0,
   PRIMARY KEY  (`userid`)
 ) DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
 

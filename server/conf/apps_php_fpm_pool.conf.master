@@ -18,3 +18,6 @@ chdir = /
 
 ; php_admin_value[open_basedir] = /var/www/apps:/srv/www/apps:/usr/share
 php_admin_flag[magic_quotes_gpc] = off
+
+php_admin_value[post_max_size] = 100M
+php_admin_value[upload_max_filesize] = 100M

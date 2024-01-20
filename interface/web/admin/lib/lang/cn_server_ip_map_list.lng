@@ -1,0 +1,7 @@
+<?php
+$wb['list_head_txt'] = 'IP映射';
+$wb['server_id_txt'] = '服务器';
+$wb['source_ip_txt'] = '源IP';
+$wb['destination_ip_txt'] = '目标IP';
+$wb['active_txt'] = '激活';
+?>

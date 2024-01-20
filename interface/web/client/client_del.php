@@ -62,12 +62,12 @@ class page_action extends tform_actions {
 		'ftp_user' => 'username', 
 		'mail_access' => 'source', 
 		'mail_content_filter' => '', 
-		'mail_domain' => 'domain', 
 		'mail_forwarding' => '', 
 		'mail_get' => '', 
 		'mail_mailinglist' => 'listname',
 		'mail_user' => 'email', 
 		'mail_user_filter' => '', 
+		'mail_domain' => 'domain',
 		'shell_user' => 'username', 
 		'spamfilter_users' => '',
 		'spamfilter_wblist' => '',
@@ -76,6 +76,7 @@ class page_action extends tform_actions {
 		'web_folder' => 'path', 
 		'web_folder_user' => 'username', 
 		'web_database_user' => 'database_user', 
+		'web_database' => 'database_name',
 	);
 
 	function onDelete() {
@@ -110,6 +111,11 @@ class page_action extends tform_actions {
 			$table_list = array();
 			$client_group_id = $app->functions->intval($client_group['groupid']);
 			if($client_group_id > 1) {
+
+				$client = $app->db->queryOneRecord("SELECT CONCAT(IF(client.company_name != '', CONCAT(client.company_name, ' :: '), ''), IF(client.contact_firstname != '', CONCAT(client.contact_firstname, ' '), ''), client.contact_name, ' (', client.username, IF(client.customer_no != '', CONCAT(', ', client.customer_no), ''), ')') as contactname FROM sys_group, client WHERE sys_group.client_id = client.client_id and sys_group.groupid = ?", $client_group_id);
+
+				$app->tpl->setVar('contactname', $client['contactname']);
+
 				foreach($this->tables as $table => $field) {
 					if($table != '') {
 						$records = $app->db->queryAllRecords("SELECT * FROM ?? WHERE sys_groupid = ?", $table, $client_group_id);
@@ -150,6 +156,8 @@ class page_action extends tform_actions {
 
 	function onBeforeDelete() {
 		global $app, $conf;
+
+		// DUPLICATE CODE IN interface/lib/classes/remote.d/client.inc.php
 
 		$client_id = $app->functions->intval($this->dataRecord['client_id']);
 

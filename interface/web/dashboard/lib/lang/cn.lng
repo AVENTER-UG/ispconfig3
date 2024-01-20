@@ -1,0 +1,4 @@
+<?php
+$wb['welcome_user_txt'] = '欢迎 %s';
+$wb['available_modules_txt'] = '可用模块';
+?>

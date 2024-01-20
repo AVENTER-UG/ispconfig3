@@ -1,0 +1,4 @@
+<?php
+$wb['available_modules_txt'] = '可用模块';
+$wb['go_to_txt'] = '前往';
+?>
