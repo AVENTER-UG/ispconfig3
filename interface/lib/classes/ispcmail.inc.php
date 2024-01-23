@@ -823,7 +823,7 @@ class ispcmail {
 				$recipname = trim(str_replace('"', '', $recipname));
 
 				if($rec_string != '') $rec_string .= ', ';
-				if($recipname && !is_numeric($recipname)) $rec_string .= $recipname . '<' . $recip . '>';
+				if($recipname && !is_numeric($recipname)) $rec_string .= '"' . $recipname . '"<' . $recip . '>';
 				else $rec_string .= $recip;
 			}
 			$to = $this->_encodeHeader($rec_string, $this->mail_charset);
