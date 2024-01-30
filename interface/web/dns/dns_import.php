@@ -194,7 +194,7 @@ if ($settings['use_domain_module'] == 'y') {
 				$domain_select .= " selected";
 				$selected_domain = $domain['domain'];
 			}
-			$domain_select .= ">" . $app->functions->idn_decode($selected_domain) . ".</option>\r\n";
+			$domain_select .= ">" . $app->functions->idn_decode($domain['domain']) . ".</option>\r\n";
 		}
 	}
 	$app->tpl->setVar("domain_option", $domain_select);
