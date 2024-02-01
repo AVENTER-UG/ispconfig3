@@ -64,6 +64,8 @@ if (isset($_POST['client_group_id'])) {
 	$sys_groupid = $_SESSION["s"]["user"]["default_group"];
 }
 $domain = (isset($_POST['domain'])&&!empty($_POST['domain']))?$_POST['domain']:NULL;
+$settings = $app->getconf->get_global_config('dns');
+$external_slave_servers = $settings['dns_external_slave_fqdn'];
 
 // get the correct server_id
 if (isset($_POST['server_id'])) {
@@ -73,7 +75,6 @@ if (isset($_POST['server_id'])) {
 	$server_id = $app->functions->intval($_POST['server_id_value']);
 	$post_server_id = true;
 } else {
-	$settings = $app->getconf->get_global_config('dns');
 	$server_id = $app->functions->intval($settings['default_dnsserver']);
 	$post_server_id = false;
 }
@@ -263,6 +264,13 @@ if(isset($_FILES['file']['name']) && is_uploaded_file($_FILES['file']['tmp_name'
 			$servers[$i]['server_name'] .= ".";
 		}
 	}
+	if (!empty($external_slave_servers)) {
+		$external_servers = preg_split('/[\s,]+/', $external_slave_servers);
+		foreach($external_servers as $e) {
+			$servers[]['server_name'] = rtrim($e, '.') . '.';
+		}
+	}
+
 	$lines = file($_FILES['file']['tmp_name']);
 
 	// Remove empty lines, comments, whitespace, tabs, etc.
