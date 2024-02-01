@@ -79,6 +79,7 @@ if (isset($_POST['server_id'])) {
 	$post_server_id = false;
 }
 
+$ignore_ns_records = (isset($_POST['ignore_ns_records']))?$app->functions->intval($_POST['ignore_ns_records']):0;
 
 // Load the templates
 $records = $app->db->queryAllRecords("SELECT * FROM dns_template WHERE visible = 'Y'");
@@ -332,7 +333,7 @@ if(isset($_FILES['file']['name']) && is_uploaded_file($_FILES['file']['tmp_name'
 	$owner = $name;
 	$r = 0;
 	$dns_rr = array();
-	$add_default_ns = TRUE;
+	$ns_record_included = FALSE;
 	$found_soa = FALSE;
 	foreach($lines as $line){
 
@@ -580,7 +581,12 @@ if(isset($_FILES['file']['name']) && is_uploaded_file($_FILES['file']['tmp_name'
 			$dns_rr[$r]['type'] = strtoupper($resource_type);
 
 			if($dns_rr[$r]['type'] == 'NS' && fqdn_name( $dns_rr[$r]['name'], $soa['name'] ) == $soa['name']){
-				$add_default_ns = FALSE;
+				if ($ignore_ns_records) {
+					unset($dns_rr[$r]);
+					continue;
+				} else {
+					$ns_record_included = TRUE;
+				}
 			}
 
 			$dns_rr[$r]['ttl'] = $app->functions->intval($dns_rr[$r]['ttl']);
@@ -611,7 +617,7 @@ if(isset($_FILES['file']['name']) && is_uploaded_file($_FILES['file']['tmp_name'
 		$i++;
 	}
 
-	if ( $add_default_ns ) {
+	if ( $ignore_ns_records || !$ns_record_included ) {
 		foreach ($servers as $server){
 			$dns_rr[$r]['name'] = $soa['name'];
 			$dns_rr[$r]['type'] = 'NS';
