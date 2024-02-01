@@ -190,16 +190,17 @@ if ($settings['use_domain_module'] == 'y') {
 		/* We have domains in the list, so create the drop-down-list */
 		foreach( $domains as $domain) {
 			$domain_select .= "<option value=" . $domain['domain_id'] ;
-			if ($domain['domain'] == $_POST['domain']) {
+			if ($domain['domain_id'] == $_POST['domain']) {
 				$domain_select .= " selected";
+				$selected_domain = $domain['domain'];
 			}
 			$domain_select .= ">" . $app->functions->idn_decode($domain['domain']) . ".</option>\r\n";
 		}
 	}
 	$app->tpl->setVar("domain_option", $domain_select);
 	/* check if the selected domain can be used! */
-	if ($domain) {
-		$domain_check = $app->tools_sites->checkDomainModuleDomain($domain);
+	if ($selected_domain) {
+		$domain_check = $app->tools_sites->checkDomainModuleDomain($selected_domain);
 		if(!$domain_check) {
 			// invalid domain selected
 			$domain = NULL;
@@ -207,6 +208,7 @@ if ($settings['use_domain_module'] == 'y') {
 			$domain = $domain_check;
 		}
 	}
+	$domain = $selected_domain;
 }
 
 $lng_file = 'lib/lang/'.$app->functions->check_language($_SESSION['s']['language']).'_dns_import.lng';
