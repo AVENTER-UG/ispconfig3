@@ -3,4 +3,5 @@ $wb['domain_error_empty'] = 'Domæne-navn er tomt';
 $wb['domain_error_unique'] = 'Domænet findes allerede';
 $wb['domain_error_regex'] = 'Dette domæne-navn er ikke tilladt';
 $wb['Domain'] = 'Domæne';
+$wb['domain_txt'] = 'Domain';
 ?>
