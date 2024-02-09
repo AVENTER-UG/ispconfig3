@@ -107,7 +107,8 @@ $form["tabs"]['domain'] = array (
 			'default' => '',
 			'value'  => '',
 			'width'  => '30',
-			'maxlength' => '255'
+			'maxlength' => '255',
+			'searchable' => 1,
 		),
 		//#################################
 		// END Datatable fields
