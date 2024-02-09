@@ -180,4 +180,5 @@ $wb['server_id_0_error_txt'] = 'Please select a valid Server. Server ID must be 
 $wb['datalog_changes_close_txt'] = 'Sluiten';
 $wb['non_admin_error'] = 'Requires administrator level permissions';
 $wb['copy_to_clipboard_txt'] = 'Kopieer naar klembord';
+$wb['datalog_status_d_web_backup'] = 'Delete website backup';
 ?>
