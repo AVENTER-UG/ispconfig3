@@ -352,7 +352,7 @@ class bind_plugin {
 				$loglevel = @($dns_config['disable_bind_log'] === 'y') ? LOGLEVEL_DEBUG : LOGLEVEL_WARN;
 				$app->log("Writing BIND domain file failed: ".$filename." ".implode(' ', $out), $loglevel);
 				if(is_array($out) && !empty($out)){
-					$app->log('Reason for Bind restart failure: '.implode("\n", $out), $loglevel);
+					$app->log('Reason for Bind zone check failure: '.implode("\n", $out), $loglevel);
 					$app->dbmaster->datalogError(implode("\n", $out));
 				}
 				if ($old_zonefile != '') {
@@ -523,6 +523,11 @@ class bind_plugin {
 
 	function rr_delete($event_name, $data) {
 		global $app, $conf;
+
+		if (!empty($data['options']['deleting_dns_soa']) && $data['options']['deleting_dns_soa'] == TRUE) {
+			$app->log("Skipping zone update since it's alse being deleted", LOGLEVEL_DEBUG);
+			return;
+		}
 
 		//* Get the data of the soa and call soa_update
 		$tmp = $app->db->queryOneRecord("SELECT * FROM dns_soa WHERE id = ?", $data['old']['zone']);
