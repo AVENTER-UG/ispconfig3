@@ -180,4 +180,8 @@ $wb['datalog_status_d_client'] = 'Delete client';
 $wb['datalog_status_i_domain'] = 'Create new domain';
 $wb['datalog_status_u_domain'] = 'Update domain';
 $wb['datalog_status_d_domain'] = 'Delete domain';
+$wb['datalog_status_d_web_backup'] = 'Delete website backup';
+$wb['datalog_status_i_dns_template'] = 'Create DNS template';
+$wb['datalog_status_u_dns_template'] = 'Update DNS template';
+$wb['datalog_status_d_dns_template'] = 'Delete DNS template';
 ?>
