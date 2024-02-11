@@ -3,7 +3,7 @@ ISPConfig is a open source project and community contributions are very welcome.
 
 This document is under development and will be continuously improved.
 
-Please do not refactor any existing code and do not change the signature or the behaviour of central functions or libraries. Such changes may only be made by the core development team. We have had many bad experiences with such changes affecting the stability of ISPConfig, so we no longer accept submissions containing such changes. Merge requests containing such changes will be closed and not merged.
+Please do not refactor existing code and do not change the signature or the behaviour of central functions or libraries. Such changes may only be made by the core development team. We have had many bad experiences with such changes affecting the stability of ISPConfig, so we no longer accept submissions containing such changes. Merge requests containing such changes will be closed and not merged.
 
 # Issues
 * Before opening a new issue, use the search function to check if there isn't a bug report / feature request already.
