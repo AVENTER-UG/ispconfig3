@@ -352,7 +352,7 @@ class bind_plugin {
 				$loglevel = @($dns_config['disable_bind_log'] === 'y') ? LOGLEVEL_DEBUG : LOGLEVEL_WARN;
 				$app->log("Writing BIND domain file failed: ".$filename." ".implode(' ', $out), $loglevel);
 				if(is_array($out) && !empty($out)){
-					$app->log('Reason for Bind restart failure: '.implode("\n", $out), $loglevel);
+                                       $app->log('Reason for Bind zone check failure: '.implode("\n", $out), $loglevel);
 					$app->dbmaster->datalogError(implode("\n", $out));
 				}
 				if ($old_zonefile != '') {
