@@ -677,7 +677,7 @@ $error[] = print_r( $soa, true );
 			"expire" => $soa['expire'],
 			"minimum" => $soa['minimum'],
 			"ttl" => $soa['ttl'],
-			"active" => 'Y',
+			"active" => 'N', // Activated later when all DNS records are added.
 			"xfer" => $xfer
 		);
 		$dns_soa_id = $app->db->datalogInsert('dns_soa', $insert_data, 'id');
@@ -709,6 +709,9 @@ $error[] = print_r( $soa, true );
 				);
 				$dns_rr_id = $app->db->datalogInsert('dns_rr', $insert_data, 'id');
 			}
+
+			// Activate the DNS zone.
+			$app->db->datalogUpdate('dns_soa', array('active' => 'Y'), 'id', $dns_soa_id);
 
 			$msg[] = $wb['zone_file_successfully_imported_txt'];
 		} elseif (is_array($dns_rr)) {
