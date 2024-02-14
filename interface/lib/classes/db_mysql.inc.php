@@ -686,7 +686,7 @@ class db
 	}
 
 	//** Function to fill the datalog with a full differential record.
-	public function datalogSave($db_table, $action, $primary_field, $primary_id, $record_old, $record_new, $force_update = false, $options = []) {
+	public function datalogSave($db_table, $action, $primary_field, $primary_id, $record_old, $record_new, $force_update = false) {
 		global $app;
 
 		// Insert backticks only for incomplete table names.
@@ -712,7 +712,6 @@ class db
 		$server_id = (isset($record_old['server_id']) && $record_old['server_id'] > 0)?$record_old['server_id']:0;
 		if(isset($record_new['server_id'])) $server_id = $record_new['server_id'];
 
-		$diffrec_full['options'] = $options;
 
 		if($diff_num > 0) {
 			$diffstr = serialize($diffrec_full);
@@ -811,7 +810,7 @@ class db
 	}
 
 	//** Deletes a record and saves the changes into the datalog
-	public function datalogDelete($tablename, $index_field, $index_value, $options = []) {
+	public function datalogDelete($tablename, $index_field, $index_value) {
 		global $app;
 
 		// Check fields
@@ -821,7 +820,7 @@ class db
 		$old_rec = $this->queryOneRecord("SELECT * FROM ?? WHERE ?? = ?", $tablename, $index_field, $index_value);
 		$this->query("DELETE FROM ?? WHERE ?? = ?", $tablename, $index_field, $index_value);
 		$new_rec = array();
-		$this->datalogSave($tablename, 'DELETE', $index_field, $index_value, $old_rec, $new_rec, FALSE, $options);
+		$this->datalogSave($tablename, 'DELETE', $index_field, $index_value, $old_rec, $new_rec);
 
 		return true;
 	}
