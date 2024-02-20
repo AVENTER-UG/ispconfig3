@@ -229,7 +229,7 @@ class cron_jailkit_plugin {
 
 	function _setup_jailkit_chroot()
 	{
-		global $app;
+		global $app, $conf;
 
 		if (isset($this->jailkit_config) && isset($this->jailkit_config['jailkit_hardlinks'])) {
 			if ($this->jailkit_config['jailkit_hardlinks'] == 'yes') {
@@ -293,7 +293,7 @@ class cron_jailkit_plugin {
 			$programs = $this->jailkit_config['jailkit_chroot_app_programs'] . ' '
 				  . $this->jailkit_config['jailkit_chroot_cron_programs'];
 
-			if ($update_hash == $parent_domain['last_jailkit_hash']) {
+			if ($update_hash == $this->parent_domain['last_jailkit_hash']) {
 				return;
 			}
 
