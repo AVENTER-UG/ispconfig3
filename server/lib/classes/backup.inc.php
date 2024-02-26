@@ -632,7 +632,14 @@ class backup
         elseif(file_exists($backup_dir.'/'.$filename) && file_exists($domain['document_root'].'/backup/') && !stristr($backup_dir.'/'.$filename, '..') && !stristr($backup_dir.'/'.$filename, 'etc')) {
             $success = copy($backup_dir.'/'.$filename, $domain['document_root'].'/backup/'.$filename);
         }
+        if (file_exists($domain['document_root'].'/backup') && fileowner($domain['document_root'].'/backup') === 0) {
+            // Fix old web backup dir permissions from before #6628
+            chown($domain['document_root'].'/backup', $domain['system_user']);
+            chgrp($domain['document_root'].'/backup', $domain['system_group']);
+            $app->log('Fixed old directory permissions from root:root to '.$domain['system_user'].':'.$domain['system_group'].' for backup dir '.$domain['document_root'].'/backup/', LOGLEVEL_DEBUG);
+        }
         if (file_exists($domain['document_root'].'/backup/'.$filename)) {
+            // Change backup file permissions
             chgrp($domain['document_root'].'/backup/'.$filename, $domain['system_group']);
             chown($domain['document_root'].'/backup/'.$filename, $domain['system_user']);
             chmod($domain['document_root'].'/backup/'.$filename,0600);
