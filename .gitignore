@@ -1,7 +1,11 @@
 .idea
 /nbproject/private/
 .phplint-cache
+
+# Vim and patch specific excludes
 *.swp
+*.orig
+*.rej
 
 # macOS-specific things to exclude
 
