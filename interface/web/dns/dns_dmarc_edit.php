@@ -94,7 +94,7 @@ class page_action extends tform_actions {
 			$this->id = 1;
 			$old_data = strtolower($rec['data']);
 			$app->tpl->setVar("data", $old_data, true);
-      //if ($rec['active'] == 'Y') $app->tpl->setVar("active", "CHECKED"); else $app->tpl->setVar("active", "UNCHECKED");
+			if ($rec['active'] == 'Y') $app->tpl->setVar("active", '<input name="active" id="active" value="" type="checkbox" CHECKED>'); else $app->tpl->setVar("active", '<input name="active" id="active" value="" type="checkbox">');
 			$dmarc_rua = '';
 			$dmarc_ruf = '';
 			$dmac_rf = '';

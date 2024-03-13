@@ -1533,9 +1533,9 @@ CREATE TABLE `spamfilter_policy` (
   `addr_extension_spam` varchar(64) default NULL,
   `addr_extension_banned` varchar(64) default NULL,
   `addr_extension_bad_header` varchar(64) default NULL,
-  `warnvirusrecip` enum('N','Y') default 'N',
-  `warnbannedrecip` enum('N','Y') default 'N',
-  `warnbadhrecip` enum('N','Y') default 'N',
+  `warnvirusrecip` VARCHAR(1) NULL default 'N',
+  `warnbannedrecip` VARCHAR(1) NULL default 'N',
+  `warnbadhrecip` VARCHAR(1) NULL default 'N',
   `newvirus_admin` varchar(64) default NULL,
   `virus_admin` varchar(64) default NULL,
   `banned_admin` varchar(64) default NULL,
@@ -1742,8 +1742,8 @@ CREATE TABLE `sys_group` (
 CREATE TABLE `sys_ini` (
   `sysini_id` int(11) unsigned NOT NULL auto_increment,
   `config` longtext,
-  `default_logo` text NOT NULL,
-  `custom_logo` text NOT NULL,
+  `default_logo` text NULL,
+  `custom_logo` text NULL,
   PRIMARY KEY  (`sysini_id`)
 ) DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
 

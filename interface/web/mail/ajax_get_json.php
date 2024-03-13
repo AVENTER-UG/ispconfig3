@@ -34,8 +34,10 @@ require_once '../../lib/app.inc.php';
 //* Check permissions for module
 $app->auth->check_module_permissions('mail');
 
+$app->uses('functions');
+
 $type = $_GET['type'];
-$domain_id = $_GET['domain_id'];
+$domain_id = $app->functions->idn_encode($_GET['domain_id']);
 
 if($type == 'create_dkim' && $domain_id != ''){
 	$dkim_public = $_GET['dkim_public'];

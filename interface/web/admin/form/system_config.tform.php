@@ -493,6 +493,18 @@ $form["tabs"]['dns'] = array (
 			'value'  => '',
 			'name'  => 'default_slave_dnsserver'
 		),
+		'dns_external_slave_fqdn' => array (
+			'datatype' => 'VARCHAR',
+			'formtype' => 'TEXT',
+			'filters'   => array(
+					0 => array( 'event' => 'SAVE',
+					'type' => 'STRIPTAGS'),
+					1 => array( 'event' => 'SAVE',
+					'type' => 'STRIPNL')
+			),
+			'default' => '',
+			'value'  => ''
+		),
 		'dns_show_zoneexport' => array (
 			'datatype' => 'VARCHAR',
 			'formtype' => 'CHECKBOX',

@@ -181,6 +181,10 @@ $wb['server_id_0_error_txt'] = 'Please select a valid Server. Server ID must be 
 $wb['datalog_changes_close_txt'] = 'Close';
 $wb['non_admin_error'] = 'Requires administrator level permissions';
 $wb['copy_to_clipboard_txt'] = 'Copy to clipboard';
+$wb['datalog_status_d_web_backup'] = 'Delete website backup';
+$wb['datalog_status_i_dns_template'] = 'Create DNS template';
+$wb['datalog_status_u_dns_template'] = 'Update DNS template';
+$wb['datalog_status_d_dns_template'] = 'Delete DNS template';
 $wb['last_accessed_txt'] = 'Last accessed';
 $wb['never_accessed_txt'] = 'Never or unknown';
 ?>
