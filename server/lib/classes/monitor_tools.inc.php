@@ -677,14 +677,14 @@ class monitor_tools {
 				$log = 'Logfile path error.';
 			} else {
 				if (is_readable($logfile)) {
-					$log = $this->_getOutputFromExecCommand('tail -n '.intval($max_lines).' ' . escapeshellarg($logfile));
+					$log = $this->_getOutputFromExecCommand('tail -n '.intval($max_lines).' ' . escapeshellarg($logfile), $max_lines);
 				} else {
 					$log = 'Unable to read ' . $logfile;
 				}
 			}
 		} else {
 			if($journalmatch != ''){
-				$log = $this->_getOutputFromExecCommand('journalctl -n '.intval($max_lines).' --no-pager ' . escapeshellcmd($journalmatch));
+				$log = $this->_getOutputFromExecCommand('journalctl -n '.intval($max_lines).' --no-pager ' . escapeshellcmd($journalmatch), $max_lines);
 			}else{
 				$log = 'Unable to read logfile';
 			}
@@ -694,7 +694,7 @@ class monitor_tools {
 		return $log;
 	}
 
-	private function _getOutputFromExecCommand ($command) {
+	private function _getOutputFromExecCommand ($command, $max4k = 1000) {
 		$log = '';
 		$fd = popen($command, 'r');
 		if ($fd) {
@@ -702,7 +702,7 @@ class monitor_tools {
 			while (!feof($fd)) {
 				$log .= fgets($fd, 4096);
 				$n++;
-				if ($n > 1000)
+				if ($n > $max4k)
 					break;
 			}
 			fclose($fd);
