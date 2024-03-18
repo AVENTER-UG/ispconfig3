@@ -78,7 +78,7 @@ class cronjob_mailbox_stats_hourly extends cronjob {
 		$this->_tools = new monitor_tools();
 
 		// Get the data of the log
-		$log_lines = $this->_tools->_getLogData('log_mail', 1000000);
+		$log_lines = $this->_tools->_getLogData('log_mail', 10000000);
 
 		$updatedUsers = [];
 
