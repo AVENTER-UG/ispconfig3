@@ -73,39 +73,35 @@ class cronjob_mailbox_stats_hourly extends cronjob {
 	private function update_last_mail_login() {
 		global $app;
 
-		// Command to get all successful dovecot and postfix logins from the last hour.
-		$journalCmd = "journalctl -u dovecot.service -u postfix@-.service --since='60 minutes ago' --grep '((imap|pop3)-login: Login|sasl_method=PLAIN)'";
+		// used for all monitor cronjobs
+		$app->load('monitor_tools');
+		$this->_tools = new monitor_tools();
 
-		$process = popen($journalCmd, 'r');
-		if ($process === false) {
-			die("Failed to execute the command");
-		}
+		// Get the data of the log
+		$log_lines = $this->_tools->_getLogData('log_mail', 1000000);
 
 		$updatedUsers = [];
 
 		// Loop over all lines.
-		while (!feof($process)) {
-			$line = fgets($process);
-			if ($line === false) {
-				break;
-			}
-
+		$line = strtok($log_lines, PHP_EOL);
+		while ($line !== FALSE) {
 			$matches = [];
 			// Match pop3/imap logings, or alternately smtp logins.
-			if (preg_match('/(.*) dovecot\[.*\]: (imap|pop3)-login: Login: user=\<([\w\.@-]+)\>/', $line, $matches) || preg_match('/(.*) sasl_method=PLAIN, sasl_username=([\w\.@-]+)/', $line, $matches)) {
+			if (preg_match('/(.*) (imap|pop3)-login: Login: user=\<([\w\.@-]+)\>/', $line, $matches) || preg_match('/(.*) sasl_method=PLAIN, sasl_username=([\w\.@-]+)/', $line, $matches)) {
 				$user = $matches[3] ?? $matches[2];
 				$updatedUsers[] = $user;
 			}
-		}
 
-		pclose($process);
+			// get the next line
+			$line = strtok(PHP_EOL);
+		}
 
 		$uniqueUsers = array_unique($updatedUsers);
 
 		$app->log('Updating last_access stats for ' . count($uniqueUsers) . ' mail users', LOGLEVEL_DEBUG);
 
 		// Date/time rounded to hours.
-		$now = time() - (time() % (60 * 60));
+		$now = time() - (time() % (60 * 60 * 24));
 		$nowFormatted = date('Y-m-d H:i:s', $now);
 		$sqlStatement = "UPDATE mail_user SET last_access=? WHERE email=?";
 
