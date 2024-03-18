@@ -111,7 +111,7 @@ class cronjob_mailbox_stats_hourly extends cronjob {
 
 		// Save to master db.
 		foreach ($uniqueUsers as $user) {
-			$ret = $app->dbmaster->query($sql, $now, $user);
+			$ret = $app->dbmaster->query($sqlStatement, $now, $user);
 		}
 	}
 }
