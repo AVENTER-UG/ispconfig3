@@ -255,7 +255,7 @@ class mail_mail_domain_plugin {
 			// If domain changes, update spamfilter_users
 			// and fire spamfilter_wblist_update events so rspamd files are rewritten
 			if ($old_domain != $domain) {
-				$tmp_users = $app->db->queryOneRecord("SELECT id,fullname FROM spamfilter_users WHERE email LIKE ?", '%@' . $old_domain);
+				$tmp_users = $app->db->queryAllRecords("SELECT id,fullname FROM spamfilter_users WHERE email LIKE ?", '%@' . $old_domain);
 				if(is_array($tmp_users)) {
 					foreach ($tmp_users as $tmp_old) {
 						$tmp_new = $app->db->queryOneRecord("SELECT id,fullname FROM spamfilter_users WHERE email = ?", '@' . $domain);
