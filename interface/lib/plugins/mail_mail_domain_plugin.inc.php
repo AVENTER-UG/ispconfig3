@@ -60,7 +60,7 @@ class mail_mail_domain_plugin {
 		}
 
 		//** If the domain name or owner has been changed, change the domain and owner in all mailbox records
-		if($page_form->oldDataRecord && ($page_form->oldDataRecord['domain'] != $domain ||
+		if($page_form->oldDataRecord && !empty($page_form->oldDataRecord['domain']) && ($page_form->oldDataRecord['domain'] != $domain ||
 				(isset($page_form->dataRecord['client_group_id']) && $page_form->oldDataRecord['sys_groupid'] != $page_form->dataRecord['client_group_id']))) {
 			$app->uses('getconf');
 			$mail_config = $app->getconf->get_server_config($page_form->dataRecord["server_id"], 'mail');
