@@ -355,7 +355,7 @@ class page_action extends tform_actions {
 			// We create a new record
 			$insert_data = array(
 				"sys_userid" => $_SESSION["s"]["user"]["userid"],
-				"sys_groupid" => $tmp_domain["sys_groupid"],
+				"sys_groupid" => (isset($this->dataRecord["client_group_id"]))?$this->dataRecord["client_group_id"]:$tmp_domain["sys_groupid"],
 				"sys_perm_user" => 'riud',
 				"sys_perm_group" => 'riud',
 				"sys_perm_other" => '',
