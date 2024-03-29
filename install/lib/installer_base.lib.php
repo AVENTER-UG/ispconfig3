@@ -2098,6 +2098,18 @@ class installer_base extends stdClass {
 		$tpl->setVar('rspamd_password', $rspamd_password);
 		wf('/etc/rspamd/local.d/worker-controller.inc', $tpl->grab());
 		chmod('/etc/rspamd/local.d/worker-controller.inc', 0644);
+
+		// rspamd.local.lua
+		if(file_exists($conf['ispconfig_install_dir']."/server/conf-custom/install/rspamd.local.lua.master")) {
+			exec('cp '.$conf['ispconfig_install_dir']."/server/conf-custom/install/rspamd.local.lua.master /etc/rspamd/rspamd.local.lua");
+		} else {
+			exec("cp tpl/rspamd.local.lua.master /etc/rspamd/rspamd.local.lua");
+		}
+		if(file_exists('/etc/rspamd/rspamd.local.lua')) {
+			exec('chgrp _rspamd /etc/rspamd/rspamd.local.lua');
+			exec('chmod 640 /etc/rspamd/rspamd.local.lua');
+		}
+
 	}
 
 	public function configure_spamassassin() {
