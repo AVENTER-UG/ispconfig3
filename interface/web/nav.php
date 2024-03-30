@@ -124,6 +124,7 @@ if(isset($_GET['nav']) && $_GET['nav'] == 'side') {
 				}
 				$nav['title'] = $app->lng($nav['title']);
 				$nav['startpage'] = $nav['items'][0]['link'];
+				$nav['startpage_target'] = $nav['items'][0]['target'];
 				$nav['items'] = $tmp_items;
 				$nav_translated[] = $nav;
 			}

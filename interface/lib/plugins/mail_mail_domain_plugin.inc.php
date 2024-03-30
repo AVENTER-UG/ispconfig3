@@ -60,7 +60,7 @@ class mail_mail_domain_plugin {
 		}
 
 		//** If the domain name or owner has been changed, change the domain and owner in all mailbox records
-		if($page_form->oldDataRecord && ($page_form->oldDataRecord['domain'] != $domain ||
+		if($page_form->oldDataRecord && !empty($page_form->oldDataRecord['domain']) && ($page_form->oldDataRecord['domain'] != $domain ||
 				(isset($page_form->dataRecord['client_group_id']) && $page_form->oldDataRecord['sys_groupid'] != $page_form->dataRecord['client_group_id']))) {
 			$app->uses('getconf');
 			$mail_config = $app->getconf->get_server_config($page_form->dataRecord["server_id"], 'mail');
@@ -255,7 +255,7 @@ class mail_mail_domain_plugin {
 			// If domain changes, update spamfilter_users
 			// and fire spamfilter_wblist_update events so rspamd files are rewritten
 			if ($old_domain != $domain) {
-				$tmp_users = $app->db->queryOneRecord("SELECT id,fullname FROM spamfilter_users WHERE email LIKE ?", '%@' . $old_domain);
+				$tmp_users = $app->db->queryAllRecords("SELECT id,fullname FROM spamfilter_users WHERE email LIKE ?", '%@' . $old_domain);
 				if(is_array($tmp_users)) {
 					foreach ($tmp_users as $tmp_old) {
 						$tmp_new = $app->db->queryOneRecord("SELECT id,fullname FROM spamfilter_users WHERE email = ?", '@' . $domain);
