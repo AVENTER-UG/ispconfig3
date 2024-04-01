@@ -1076,6 +1076,12 @@ class installer_dist extends installer_base {
 		if(!is_link('/usr/local/bin/ispconfig_update_from_dev.sh')) exec('ln -s /usr/local/ispconfig/server/scripts/ispconfig_update.sh /usr/local/bin/ispconfig_update_from_dev.sh');
 		if(!is_link('/usr/local/bin/ispconfig_update.sh')) exec('ln -s /usr/local/ispconfig/server/scripts/ispconfig_update.sh /usr/local/bin/ispconfig_update.sh');
 
+		// Install ISPConfig cli command
+		if(is_file('/usr/local/bin/ispc')) unlink('/usr/local/bin/ispc');
+		chown($install_dir.'/server/cli/ispc', 'root');
+		chmod($install_dir.'/server/cli/ispc', 0700);
+		symlink($install_dir.'/server/cli/ispc', '/usr/local/bin/ispc');
+
 		// set the fast cgi starter script to executable
 		// exec('chmod 755 '.$install_dir.'/interface/bin/php-fcgi');
 

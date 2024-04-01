@@ -3811,6 +3811,12 @@ class installer_base extends stdClass {
 		if(!is_link('/usr/local/bin/ispconfig_update_from_dev.sh')) symlink($install_dir.'/server/scripts/ispconfig_update.sh', '/usr/local/bin/ispconfig_update_from_dev.sh');
 		if(!is_link('/usr/local/bin/ispconfig_update.sh')) symlink($install_dir.'/server/scripts/ispconfig_update.sh', '/usr/local/bin/ispconfig_update.sh');
 
+		// Install ISPConfig cli command
+		if(is_file('/usr/local/bin/ispc')) unlink('/usr/local/bin/ispc');
+		chown($install_dir.'/server/cli/ispc', 'root');
+		chmod($install_dir.'/server/cli/ispc', 0700);
+		symlink($install_dir.'/server/cli/ispc', '/usr/local/bin/ispc');
+
 		// Make executable then unlink and symlink letsencrypt pre, post and renew hook scripts
 		chown($install_dir.'/server/scripts/letsencrypt_pre_hook.sh', 'root');
 		chown($install_dir.'/server/scripts/letsencrypt_post_hook.sh', 'root');
