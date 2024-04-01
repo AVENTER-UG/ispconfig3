@@ -99,7 +99,7 @@ class cli {
 
 			//* Stop the installation
 			if($input == 'quit') {
-				$this->swriteln($this->lng("Installation terminated by user.\n"));
+				$this->swriteln($this->lng("Command terminated by user.\n"));
 				die();
 			}
 
@@ -141,7 +141,7 @@ class cli {
 
 		//* Stop the installation
 		if($input == 'quit') {
-			$this->swriteln($this->lng("Installation terminated by user.\n"));
+			$this->swriteln($this->lng("Command terminated by user.\n"));
 			die();
 		}
 
