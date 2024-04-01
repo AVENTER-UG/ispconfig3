@@ -145,12 +145,12 @@ class plugins {
 		if($this->debug) $app->log('Raised action: '.$action_name, LOGLEVEL_DEBUG);
 
 		$result = '';
+		$state_out = 'ok';
 
 		if(is_array($actions)) {
 			foreach($actions as $action) {
 				$plugin_name = $action['plugin'];
 				$function_name = $action['function'];
-				$state_out = 'ok';
 				//* Call the processing function of the plugin
 				$app->log("Calling function '$function_name' from plugin '$plugin_name' raised by action '$action_name'.", LOGLEVEL_DEBUG);
 				$state = call_user_func(array($app->loaded_plugins[$plugin_name], $function_name), $action_name, $data);
