@@ -732,13 +732,6 @@ class page_action extends tform_actions {
 			}
 		}
 
-		// also delete a dsn-records with same selector
-		$sql = "SELECT * from dns_rr WHERE name ? AND data LIKE 'v=DKIM1%' AND " . $app->tform->getAuthSQL('r');
-		$rec = $app->db->queryAllRecords($sql, '._domainkey.'.$dataRecord['dkim_selector'].'.', $dataRecord['domain']);
-		if (is_array($rec))
-			foreach ($rec as $del)
-				$app->db->datalogDelete('dns_rr', 'id', $del['id']);
-
 		$new_rr['name'] = $dataRecord['dkim_selector'].'._domainkey.'.$dataRecord['domain'].'.';
 		$new_rr['type'] = 'TXT';
 		$new_rr['data'] = 'v=DKIM1; t=s; p='.str_replace(array('-----BEGIN PUBLIC KEY-----','-----END PUBLIC KEY-----',"\r","\n"), '', $this->dataRecord['dkim_public']);
