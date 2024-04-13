@@ -699,7 +699,7 @@ class page_action extends tform_actions {
 			if ( ($selector || $dkim_private || $dkim_active) && $dkim_active )
 				//* create a new record only if the dns-zone exists
 				if ( isset($soa) && !empty($soa) ) {
-					$this->update_dns($this->dataRecord, $soa);
+					$this->update_dns($this->dataRecord, $soa, $this->oldDataRecord);
 				}
 			if (! $dkim_active) {
 				// updated existing dmarc-record to policy 'none'
@@ -718,15 +718,17 @@ class page_action extends tform_actions {
 
 	}
 
-	private function update_dns($dataRecord, $new_rr) {
+	private function update_dns($dataRecord, $new_rr, $oldDataRecord = null) {
 		global $app, $conf;
 
-		// purge old rr-record(s)
-		$sql = "SELECT * FROM dns_rr WHERE name LIKE ? AND data LIKE 'v=DKIM1%' AND " . $app->tform->getAuthSQL('r') . " ORDER BY serial DESC";
-		$rec = $app->db->queryAllRecords($sql, '%._domainkey.'.$dataRecord['domain'].'.');
-		if(is_array($rec)) {
-			foreach($rec as $r) {
-				$app->db->datalogDelete('dns_rr', 'id', $r['id']);
+		// Purge old rr-record, incase the selector or domain changed.
+		if (!empty($oldDataRecord)) {
+			$sql = "SELECT * FROM dns_rr WHERE name LIKE ? AND data LIKE 'v=DKIM1%' AND " . $app->tform->getAuthSQL('r') . " ORDER BY serial DESC";
+			$rec = $app->db->queryAllRecords($sql, $oldDataRecord['dkim_selector'].'._domainkey.'.$oldDataRecord['domain'].'.');
+			if(is_array($rec)) {
+				foreach($rec as $r) {
+					$app->db->datalogDelete('dns_rr', 'id', $r['id']);
+				}
 			}
 		}
 
