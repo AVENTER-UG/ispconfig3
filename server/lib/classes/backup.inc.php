@@ -1313,8 +1313,8 @@ class backup
                         }
                     }
                 }
-                array_unique( $untracked_backup_files );
-                foreach ($untracked_backup_files as $f) {
+                $unique_untracked_backup_files = array_unique( $untracked_backup_files );
+                foreach ($unique_untracked_backup_files as $f) {
                     $backup_file = $backup_dir . '/web' . $domain_id . '/' . $f;
                     $app->log('Backup file ' . $backup_file . ' is not contained in database, deleting this file from disk', LOGLEVEL_DEBUG);
                     @unlink($backup_file);
