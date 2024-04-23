@@ -448,7 +448,7 @@ class backup
                 }
             }
         } else {
-            $app->log('Failed to restore web backup ' . $full_filename . ', backup mode "' . $backup_mode . '" not recognized.', LOGLEVEL_DEBUG);
+            $app->log('Failed to restore web backup ' . $filename . ', backup mode "' . $backup_mode . '" not recognized.', LOGLEVEL_DEBUG);
         }
         $app->system->web_folder_protection($web_root, true);
         return $result;
