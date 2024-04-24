@@ -2,7 +2,7 @@
                 <label class="col-sm-3 control-label"><em>*</em> {tmpl_var name='email_txt'}</label>
                 <div class="col-sm-9">
 				    <div class='input-group'>
-						<input type="text" id="email_local_part" name="email_local_part" value="{tmpl_var name='email_local_part'}" class="form-control" />
+						<input type="text" id="email_local_part" name="email_local_part" value="{tmpl_var name='email_local_part'}" class="form-control" onPaste="javascript: e = this; setTimeout(function(){if (/@/.test(e.value)) { parts = e.value.split('@'); $('#email_domain').val(parts.pop()); $('#email_domain').trigger('change'); e.value=parts.pop(); } }, 4);" onChange="javascript: if (/@/.test(this.value)) { parts = this.value.split('@'); $('#email_domain').val(parts.pop()); $('#email_domain').trigger('change'); this.value=parts.pop(); } "  />
 						<span class='input-group-addon'>@</span>
                         <div class='input-group-field'>
 							<select name="email_domain" id="email_domain" class="form-control" style="height:50px;min-width:170px;">{tmpl_var name='email_domain'}</select>
