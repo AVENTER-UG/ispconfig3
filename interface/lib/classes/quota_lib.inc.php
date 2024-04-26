@@ -248,7 +248,7 @@ class quota_lib {
 					$emails[$i]['last_access'] = $app->lng('never_accessed_txt');
 				}
 				else {
-					$emails[$i]['last_access'] = date($app->lng('conf_format_datetime'), $emails[$i]['last_access']);
+					$emails[$i]['last_access'] = date($app->lng('conf_format_dateshort'), $emails[$i]['last_access']);
 				}
 
 				$emails[$i]['name'] = $app->functions->htmlentities($emails[$i]['name']);

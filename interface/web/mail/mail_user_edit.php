@@ -138,7 +138,7 @@ class page_action extends tform_actions {
 
 		$app->tpl->setVar('mailbox_show_last_access', $mail_config['mailbox_show_last_access']);
 		if (!empty($this->dataRecord['last_access'])) {
-			$app->tpl->setVar("last_access", date($app->lng('conf_format_datetime'), $this->dataRecord['last_access']));
+			$app->tpl->setVar("last_access", date($app->lng('conf_format_dateshort'), $this->dataRecord['last_access']));
 		}
 		else {
 			$app->tpl->setVar("last_access", $app->lng('never_accessed_txt'));
