@@ -22,7 +22,6 @@ class dashlet_mailquota {
 		$tpl->setVar('mailbox_show_last_access', $mail_config['mailbox_show_last_access']);
 
 		$emails = $app->quota_lib->get_mailquota_data( ($_SESSION["s"]["user"]["typ"] != 'admin') ? $_SESSION['s']['user']['client_id'] : null);
-		//print_r($emails);
 
 		$has_mailquota = false;
 		if(is_array($emails) && !empty($emails)){
@@ -30,9 +29,6 @@ class dashlet_mailquota {
 				$email['email'] = $app->functions->idn_decode($email['email']);
 			}
 			unset($email);
-			// email username is quoted in quota.lib already, so no htmlentities here to prevent double encoding
-			//$emails = $app->functions->htmlentities($emails);
-			$email['last_access'] = date($app->lng('conf_format_datetime'), $email['last_access']);
 			$tpl->setloop('mailquota', $emails);
 			$has_mailquota = isset($emails[0]['used']);
 		}
@@ -40,14 +36,4 @@ class dashlet_mailquota {
 
 		return $tpl->grab();
 	}
-
 }
-
-
-
-
-
-
-
-
-?>
