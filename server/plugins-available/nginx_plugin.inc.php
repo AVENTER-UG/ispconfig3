@@ -1622,6 +1622,12 @@ class nginx_plugin {
 			$vhost_data['tls13_supported'] = "y";
 		}
 
+		// Nginx >= 1.25.0 uses a dedicated directive to enable HTTP/2 support
+		if(version_compare($app->system->getnginxversion(true), '1.25.0', '>=')) {
+			$vhost_data['http2_directive_compat_quirk'] = "y";
+
+		}
+
 		$tpl->setVar($vhost_data);
 
 		$server_alias = array();

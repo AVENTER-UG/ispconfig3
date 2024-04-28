@@ -17,7 +17,12 @@ server {
         listen [::]:<tmpl_var name='http_port'>;
 </tmpl_if>
 <tmpl_if name='ssl_enabled'>
+<tmpl_if name='http2_directive_compat_quirk' op='==' value='y'>
+        listen <tmpl_var name='ip_address'>:<tmpl_var name='https_port'> ssl;
+	http2 on;
+<tmpl_else>
         listen <tmpl_var name='ip_address'>:<tmpl_var name='https_port'> ssl http2;
+</tmpl_if>
 <tmpl_if name='use_proxy_protocol' op='==' value='y'>
 <tmpl_if name='proxy_protocol_https' op='>' value='0'>
         listen <tmpl_var name='ip_address'>:<tmpl_var name='proxy_protocol_https'> ssl http2 proxy_protocol;
