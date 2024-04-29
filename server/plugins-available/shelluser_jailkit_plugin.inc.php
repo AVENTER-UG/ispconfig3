@@ -542,7 +542,7 @@ class shelluser_jailkit_plugin {
 					$new_final_keys_arr[$key] = trim($val);
 				}
 			}
-			$final_keys = implode("\n", array_flip(array_flip($new_final_keys_arr)));
+			$final_keys = implode("\n", array_flip(array_flip($new_final_keys_arr))) . "\n";
 
 			// add the user's key
 			file_put_contents($sshkeys, $final_keys);
