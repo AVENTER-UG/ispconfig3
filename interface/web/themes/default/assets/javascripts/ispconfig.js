@@ -840,22 +840,6 @@ $(document).ready(function() {
 		//console.log("Mouseleave e-tooltip");
 	});
 
-	/*$(document).on("paste", '#email_local_part', function() {
-	//$(document).ready(function() {
-		//$('#email_local_part').on('paste', function() {
-			var e = this;
-			setTimeout(function() {
-				if (/@/.test(e.value)) {
-					var parts = e.value.split('@');
-					$('#email_domain').val(parts.pop());
-					$('#email_domain').trigger('change');
-					e.value = parts.pop();
-				}
-			}, 4);
-	});
-*/
-
-
 });
 
 
