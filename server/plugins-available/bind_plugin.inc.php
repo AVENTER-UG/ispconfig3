@@ -528,7 +528,7 @@ class bind_plugin {
 		global $app, $conf;
 
 		//* Get the data of the soa and call soa_update
-               //* In a singel server setup the record in dns_soa will already be gone ... so this will give an empty array.
+		//* In a single server setup the record in dns_soa will already be gone ... so this will give an empty array.
 		$tmp = $app->db->queryOneRecord("SELECT * FROM dns_soa WHERE id = ?", $data['old']['zone']);
 		$data["new"] = $tmp;
 		$data["old"] = $tmp;
