@@ -554,7 +554,7 @@ if($reconfigure_services_answer == 'yes' || $reconfigure_services_answer == 'sel
   }
 
 	if($conf['services']['firewall'] && $inst->reconfigure_app('Firewall', $reconfigure_services_answer)) {
-		if($conf['ufw']['installed'] == true) {
+		if(isset($conf['ufw']['installed']) && $conf['ufw']['installed'] == true) {
 			//* Configure Ubuntu Firewall
 			$conf['services']['firewall'] = true;
 			swriteln('Configuring Ubuntu Firewall');
