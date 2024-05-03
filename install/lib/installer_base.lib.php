@@ -2615,21 +2615,23 @@ class installer_base extends stdClass {
 
 		$row = $this->db->queryOneRecord('SELECT * FROM ?? WHERE server_id = ?', $conf["mysql"]["database"] . '.firewall', $conf['server_id']);
 
-		if(trim($row['tcp_port']) != '' || trim($row['udp_port']) != '') {
-			$tcp_public_services = trim(str_replace(',', ' ', $row['tcp_port']));
-			$udp_public_services = trim(str_replace(',', ' ', $row['udp_port']));
-		} else {
-			$tcp_public_services = '21 22 25 53 80 110 143 443 3306 8080 10000';
-			$udp_public_services = '53';
-		}
+		if (!empty($row)) {
+			if(trim($row['tcp_port']) != '' || trim($row['udp_port']) != '') {
+				$tcp_public_services = trim(str_replace(',', ' ', $row['tcp_port']));
+				$udp_public_services = trim(str_replace(',', ' ', $row['udp_port']));
+			} else {
+				$tcp_public_services = '21 22 25 53 80 110 143 443 3306 8080 10000';
+				$udp_public_services = '53';
+			}
 
-		if(!stristr($tcp_public_services, $conf['apache']['vhost_port'])) {
-			$tcp_public_services .= ' '.intval($conf['apache']['vhost_port']);
-			if($row['tcp_port'] != '') $this->db->query("UPDATE firewall SET tcp_port = tcp_port + ? WHERE server_id = ?", ',' . intval($conf['apache']['vhost_port']), $conf['server_id']);
-		}
+			if(!stristr($tcp_public_services, $conf['apache']['vhost_port'])) {
+				$tcp_public_services .= ' '.intval($conf['apache']['vhost_port']);
+				if($row['tcp_port'] != '') $this->db->query("UPDATE firewall SET tcp_port = tcp_port + ? WHERE server_id = ?", ',' . intval($conf['apache']['vhost_port']), $conf['server_id']);
+			}
 
-		$content = str_replace('{TCP_PUBLIC_SERVICES}', $tcp_public_services, $content);
-		$content = str_replace('{UDP_PUBLIC_SERVICES}', $udp_public_services, $content);
+			$content = str_replace('{TCP_PUBLIC_SERVICES}', $tcp_public_services, $content);
+			$content = str_replace('{UDP_PUBLIC_SERVICES}', $udp_public_services, $content);
+		}
 
 		wf('/etc/Bastille/bastille-firewall.cfg', $content);
 
