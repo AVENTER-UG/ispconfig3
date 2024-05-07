@@ -94,6 +94,7 @@ class cronjob_monitor_clamav_log extends cronjob {
 
 		/* Get the data of the log */
 		$data = $this->_tools->_getLogData($type);
+		if ($data == null) $data = "\n";
 
 		/* Get the data from the LAST log-Entry.
 		 * if there can be found:

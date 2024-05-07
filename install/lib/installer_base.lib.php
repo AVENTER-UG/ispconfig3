@@ -436,7 +436,7 @@ class installer_base extends stdClass {
 		$tpl_ini_array['fastcgi']['fastcgi_bin'] = $conf['fastcgi']['fastcgi_bin'];
 		$tpl_ini_array['server']['hostname'] = $conf['hostname'];
 		$tpl_ini_array['server']['ip_address'] = @gethostbyname($conf['hostname']);
-		$tpl_ini_array['server']['firewall'] = ($conf['ufw']['installed'] == true)?'ufw':'bastille';
+		$tpl_ini_array['server']['firewall'] = (@$conf['ufw']['installed'] == true)?'ufw':'bastille';
 		$tpl_ini_array['web']['website_basedir'] = $conf['web']['website_basedir'];
 		$tpl_ini_array['web']['website_path'] = $conf['web']['website_path'];
 		$tpl_ini_array['web']['website_symlinks'] = $conf['web']['website_symlinks'];
@@ -2615,21 +2615,23 @@ class installer_base extends stdClass {
 
 		$row = $this->db->queryOneRecord('SELECT * FROM ?? WHERE server_id = ?', $conf["mysql"]["database"] . '.firewall', $conf['server_id']);
 
-		if(trim($row['tcp_port']) != '' || trim($row['udp_port']) != '') {
-			$tcp_public_services = trim(str_replace(',', ' ', $row['tcp_port']));
-			$udp_public_services = trim(str_replace(',', ' ', $row['udp_port']));
-		} else {
-			$tcp_public_services = '21 22 25 53 80 110 143 443 3306 8080 10000';
-			$udp_public_services = '53';
-		}
+		if (!empty($row)) {
+			if(trim($row['tcp_port']) != '' || trim($row['udp_port']) != '') {
+				$tcp_public_services = trim(str_replace(',', ' ', $row['tcp_port']));
+				$udp_public_services = trim(str_replace(',', ' ', $row['udp_port']));
+			} else {
+				$tcp_public_services = '21 22 25 53 80 110 143 443 3306 8080 10000';
+				$udp_public_services = '53';
+			}
 
-		if(!stristr($tcp_public_services, $conf['apache']['vhost_port'])) {
-			$tcp_public_services .= ' '.intval($conf['apache']['vhost_port']);
-			if($row['tcp_port'] != '') $this->db->query("UPDATE firewall SET tcp_port = tcp_port + ? WHERE server_id = ?", ',' . intval($conf['apache']['vhost_port']), $conf['server_id']);
-		}
+			if(!stristr($tcp_public_services, $conf['apache']['vhost_port'])) {
+				$tcp_public_services .= ' '.intval($conf['apache']['vhost_port']);
+				if($row['tcp_port'] != '') $this->db->query("UPDATE firewall SET tcp_port = tcp_port + ? WHERE server_id = ?", ',' . intval($conf['apache']['vhost_port']), $conf['server_id']);
+			}
 
-		$content = str_replace('{TCP_PUBLIC_SERVICES}', $tcp_public_services, $content);
-		$content = str_replace('{UDP_PUBLIC_SERVICES}', $udp_public_services, $content);
+			$content = str_replace('{TCP_PUBLIC_SERVICES}', $tcp_public_services, $content);
+			$content = str_replace('{UDP_PUBLIC_SERVICES}', $udp_public_services, $content);
+		}
 
 		wf('/etc/Bastille/bastille-firewall.cfg', $content);
 
@@ -3822,6 +3824,12 @@ class installer_base extends stdClass {
 		chmod($install_dir.'/server/scripts/ispconfig_update.sh', 0700);
 		if(!is_link('/usr/local/bin/ispconfig_update_from_dev.sh')) symlink($install_dir.'/server/scripts/ispconfig_update.sh', '/usr/local/bin/ispconfig_update_from_dev.sh');
 		if(!is_link('/usr/local/bin/ispconfig_update.sh')) symlink($install_dir.'/server/scripts/ispconfig_update.sh', '/usr/local/bin/ispconfig_update.sh');
+
+		// Install ISPConfig cli command
+		if(is_file('/usr/local/bin/ispc')) unlink('/usr/local/bin/ispc');
+		chown($install_dir.'/server/cli/ispc', 'root');
+		chmod($install_dir.'/server/cli/ispc', 0700);
+		symlink($install_dir.'/server/cli/ispc', '/usr/local/bin/ispc');
 
 		// Make executable then unlink and symlink letsencrypt pre, post and renew hook scripts
 		chown($install_dir.'/server/scripts/letsencrypt_pre_hook.sh', 'root');

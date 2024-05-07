@@ -448,7 +448,7 @@ class backup
                 }
             }
         } else {
-            $app->log('Failed to restore web backup ' . $full_filename . ', backup mode "' . $backup_mode . '" not recognized.', LOGLEVEL_DEBUG);
+            $app->log('Failed to restore web backup ' . $filename . ', backup mode "' . $backup_mode . '" not recognized.', LOGLEVEL_DEBUG);
         }
         $app->system->web_folder_protection($web_root, true);
         return $result;
@@ -1497,9 +1497,9 @@ class backup
         foreach ($backup_excludes as $ex) {
             # pass through escapeshellarg if not already done
             if ( preg_match( "/^'.+'$/", $ex ) ) {
-                $excludes .= "${arg}${pre}${ex}${post} ";
+                $excludes .= "{$arg}{$pre}{$ex}{$post} ";
             } else {
-                $excludes .= "${arg}" . escapeshellarg("${pre}${ex}${post}") . " ";
+                $excludes .= "{$arg}" . escapeshellarg("{$pre}{$ex}{$post}") . " ";
             }
         }
 
@@ -1870,8 +1870,8 @@ class backup
             //* Remove old backups
             self::backups_garbage_collection($server_id, 'mysql', $domain_id);
             $prefix_list = array(
-                        "db_${db_name}_",
-                        "manual-db_${db_name}_",
+                        "db_{$db_name}_",
+                        "manual-db_{$db_name}_",
                     );
             self::clearBackups($server_id, $domain_id, intval($rec['backup_copies']), $db_backup_dir, $prefix_list);
         }

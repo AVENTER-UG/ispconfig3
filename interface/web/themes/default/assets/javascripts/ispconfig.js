@@ -841,3 +841,25 @@ $(document).ready(function() {
 	});
 
 });
+
+
+function processEmailAddressInput(e) {
+    setTimeout(function () {
+        if (/@/.test(e.value)) {
+            var parts = e.value.split('@');
+            $('#email_domain').val(parts.pop());
+            $('#email_domain').trigger('change');
+            e.value = parts.pop();
+        }
+    }, 4);
+};
+
+function updateEmailDomain(e) {
+    if (/@/.test(e.value)) {
+        var parts = e.value.split('@');
+        $('#email_domain').val(parts.pop());
+        $('#email_domain').trigger('change');
+        e.value = parts.pop();
+    }
+};
+
