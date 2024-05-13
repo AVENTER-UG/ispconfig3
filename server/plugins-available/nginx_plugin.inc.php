@@ -1627,6 +1627,7 @@ class nginx_plugin {
 
 
 		// Nginx >= 1.25.1 uses a dedicated directive to enable HTTP/2 support
+		// This is a quirk for Nginx legacy versions (or simply Nginx < 1.25.1) and restores the required http2 parameter in the listen directive
 		if(version_compare($app->system->getnginxversion(true), '1.25.1', '<')) {
 			$vhost_data['http2_directive_compat_quirk'] = " http2";
 		}
