@@ -396,6 +396,11 @@ server {
         ssl_certificate_key <tmpl_var name='ssl_key_file'>;
 </tmpl_if>
 
+<tmpl_if name='nginx_full_version' op='>' value='1.25.0' format='version'>
+
+	http2 on;
+</tmpl_if>
+
         server_name <tmpl_var name='rewrite_domain'>;
 
 <tmpl_if name='alias_seo_redirects2'>
