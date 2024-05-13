@@ -1322,6 +1322,7 @@ class nginx_plugin {
 			$ngx_conf_tpl->setVar('use_tcp', $use_tcp);
 			$ngx_conf_tpl->setVar('use_socket', $use_socket);
 			$ngx_conf_tpl->setVar('fpm_socket', $fpm_socket);
+
 			$ngx_conf_tpl->setVar($vhost_data);
 			$nginx_directives_new = $ngx_conf_tpl->grab();
 			if(is_file($ngx_conf_tpl_tmp_file)) unlink($ngx_conf_tpl_tmp_file);
