@@ -1337,7 +1337,7 @@ class nginx_plugin {
 			$trans = array(
 				'{DOCROOT}' => $vhost_data['web_document_root_www'],
 				'{DOCROOT_CLIENT}' => $vhost_data['web_document_root'],
-        '{DOMAIN}' => $vhost_data['domain'],
+				'{DOMAIN}' => $vhost_data['domain'],
 				'{FASTCGIPASS}' => 'fastcgi_pass '.($data['new']['php_fpm_use_socket'] == 'y'? 'unix:'.$fpm_socket : '127.0.0.1:'.$vhost_data['fpm_port']).';'
 			);
 			foreach($nginx_directive_lines as $nginx_directive_line){
