@@ -1624,8 +1624,6 @@ class nginx_plugin {
 			}
 		}
 
-
-
 		// Nginx >= 1.25.1 uses a dedicated directive to enable HTTP/2 support
 		// This is a quirk for Nginx legacy versions (or simply Nginx < 1.25.1) and restores the required http2 parameter in the listen directive
 		if(version_compare($app->system->getnginxversion(true), '1.25.1', '<')) {
@@ -1994,25 +1992,25 @@ class nginx_plugin {
 			$this->awstats_update($data, $web_config);
 		}
 
-                //* Create GoAccess configuration
-                if($data['new']['stats_type'] == 'goaccess' && ($data['new']['type'] == 'vhost' || $data['new']['type'] == 'vhostsubdomain' || $data['new']['type'] == 'vhostalias')) {
-                        $this->goaccess_update($data, $web_config);
-                }
+		//* Create GoAccess configuration
+		if($data['new']['stats_type'] == 'goaccess' && ($data['new']['type'] == 'vhost' || $data['new']['type'] == 'vhostsubdomain' || $data['new']['type'] == 'vhostalias')) {
+			$this->goaccess_update($data, $web_config);
+		}
 
-                //* Remove the AWstats configuration file
+		//* Remove the AWstats configuration file
 		if($data['old']['stats_type'] == 'awstats' && $data['new']['stats_type'] != 'awstats') {
 			$this->awstats_delete($data, $web_config);
-                }
+		}
 
 		//* Remove the GoAccess configuration file
 		if($data['old']['stats_type'] == 'goaccess' && $data['new']['stats_type'] != 'goaccess') {
 			$this->goaccess_delete($data, $web_config);
 		}
 
-                //* Remove the Webalizer configuration file
+		//* Remove the Webalizer configuration file
 		if($data['old']['stats_type'] == 'webalizer' && $data['new']['stats_type'] != 'webalizer') {
 			$this->webalizer_delete($data, $web_config);
-                }
+		}
 
 		//* Remove Stats-Folder when Statistics set to none
 		if($data['new']['stats_type'] == '' && ($data['new']['type'] == 'vhost' || $data['new']['type'] == 'vhostsubdomain' || $data['new']['type'] == 'vhostalias')) {
