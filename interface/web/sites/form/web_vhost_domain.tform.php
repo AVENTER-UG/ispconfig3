@@ -957,6 +957,12 @@ if($_SESSION["s"]["user"]["typ"] == 'admin'
 				'width'  => '3',
 				'maxlength' => '6'
 			),
+			'disable_symlinknotowner' => array (
+				'datatype' => 'VARCHAR',
+				'formtype' => 'CHECKBOX',
+				'default' => 'n',
+				'value'  => array(0 => 'n', 1 => 'y')
+			),
 			'php_open_basedir' => array (
 				'datatype' => 'VARCHAR',
 				'formtype' => 'TEXT',

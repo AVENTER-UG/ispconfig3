@@ -3,3 +3,5 @@ INSERT IGNORE INTO `dns_ssl_ca` (`id`, `sys_userid`, `sys_groupid`, `sys_perm_us
 
 -- 5374-mail-last-accessed-frontend
 ALTER TABLE `mail_user` ADD `last_access` int(11) NULL DEFAULT NULL after `disabledoveadm`;
+
+ALTER TABLE `web_domain` ADD `disable_symlinknotowner` enum('n','y') NOT NULL default 'n' AFTER `last_jailkit_hash`;

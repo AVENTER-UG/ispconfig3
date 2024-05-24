@@ -207,3 +207,6 @@ $wb['tooltip_jailkit_chroot_app_programs_txt'] = '如果为空，则使用来自
 $wb['delete_unused_jailkit_txt'] = '删除未使用的jailkit chroot';
 $wb['tooltip_delete_unused_jailkit_txt'] = '删除没有需要它的shell用户或cron作业的jailkit chroot环境。';
 $wb['ssl_options_not_for_le_txt'] = '您已为此网站启用Let\'s Encrypt证书。请注意，此页面上的所有选项仅适用于非Let\'s Encrypt证书。如果要切换到不同的证书，请记得在主选项卡上取消选中Let\'s Encrypt。';
+$wb['disable_symlinknotowner_txt'] = 'Deactivate symlinks restriction of the web space';
+$wb['tooltip_disable_symlinknotowner_txt'] = 'WARNING: This function deactivates the restriction SymLinksIfOwnerMatch (Apache) and disable_symlinks if_not_owner (Nginx).';
+

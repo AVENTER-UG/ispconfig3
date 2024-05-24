@@ -202,3 +202,5 @@ $wb['tooltip_jailkit_chroot_app_programs_txt'] = 'Wenn leer, verwende Jailkit Ch
 $wb['delete_unused_jailkit_txt'] = 'Lösche unbenutzten Jailkit Chroot';
 $wb['tooltip_delete_unused_jailkit_txt'] = 'Lösche die Jailkit-Chroot-Umgebung, wenn es keine Shell-Benutzer oder Cronjobs gibt, die sie benötigen.';
 $wb['ssl_options_not_for_le_txt'] = 'Sie haben Let\'s Encrypt-Zertifikate für diese Website aktiviert. Bitte beachten Sie, dass alle Optionen auf dieser Seite nur für Nicht-Let\'s Encrypt-Zertifikate gelten. Denken Sie daran, Let\'s Encrypt auf der Hauptregisterkarte zu deaktivieren, wenn Sie zu einem anderen Zertifikat wechseln möchten.';
+$wb['disable_symlinknotowner_txt'] = 'Deaktiviere Symlinks-Restriktion des Webspace';
+$wb['tooltip_disable_symlinknotowner_txt'] = 'WARNUNG: Diese Funktion deaktiviert die Restriktion SymLinksIfOwnerMatch (Apache) und disable_symlinks if_not_owner (Nginx).';
