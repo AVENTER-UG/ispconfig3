@@ -1,7 +1,7 @@
 <?php
 
 /*
-	Copyright (c) 2007-2011, Till Brehm, projektfarm Gmbh and Oliver Vogel www.muv.com
+	Copyright (c) 2007-2024, Till Brehm, projektfarm Gmbh and Oliver Vogel www.muv.com
 	All rights reserved.
 
 	Redistribution and use in source and binary forms, with or without modification,
@@ -87,6 +87,10 @@ class monitor_tools {
 				$mainver = $ver;
 			}
 			switch ($mainver){
+			case "24.04":
+				$relname = "(Noble Numbat)";
+				$distconfid = 'ubuntu2404';
+				break;
 			case "22.04":
 				$relname = "(Jammy Jellyfish)";
 				$distconfid = 'ubuntu2204';

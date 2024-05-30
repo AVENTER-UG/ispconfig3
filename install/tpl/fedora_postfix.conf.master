@@ -29,8 +29,9 @@ smtpd_client_restrictions = check_client_access proxy:mysql:{config_dir}/mysql-v
 smtpd_etrn_restrictions = permit_mynetworks, reject
 smtpd_data_restrictions = permit_mynetworks, reject_unauth_pipelining, reject_multi_recipient_bounce, permit
 smtpd_client_message_rate_limit = 100
-maildrop_destination_concurrency_limit = 1
-maildrop_destination_recipient_limit   = 1
+# Needed for courier pop3/imap only
+# maildrop_destination_concurrency_limit = 1
+# maildrop_destination_recipient_limit   = 1
 virtual_transport = maildrop
 header_checks = regexp:{config_dir}/header_checks
 mime_header_checks = regexp:{config_dir}/mime_header_checks
