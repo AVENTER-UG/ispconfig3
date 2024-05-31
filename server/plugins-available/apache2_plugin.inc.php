@@ -662,7 +662,7 @@ class apache2_plugin {
 					$app->log('Renaming existing directory in new docroot location. mv '.$data['new']['document_root'].' '.$data['new']['document_root'].'_bak_'.date('Y_m_d_H_i_s'), LOGLEVEL_DEBUG);
 				}
 
-				//* Unmount the old log directory bfore we move the log dir
+				//* Unmount the old log directory before we move the log dir
 				$app->system->exec_safe('umount -l ?', $data['old']['document_root'].'/log');
 
 				//* Create new base directory, if it does not exist yet

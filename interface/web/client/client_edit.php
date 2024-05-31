@@ -469,7 +469,7 @@ class page_action extends tform_actions {
 
 		// lock and cancel
         if(!isset($this->dataRecord['locked'])) $this->dataRecord['locked'] = 'n';
-        if(isset($conf['demo_mode']) && $conf['demo_mode'] != true && $this->dataRecord["locked"] != $this->oldDataRecord['locked']) 
+        if(isset($conf['demo_mode']) && $conf['demo_mode'] != true && $this->dataRecord["locked"] != $this->oldDataRecord['locked'])
 		{
 			$lock = $app->functions->func_client_lock($this->id,$this->dataRecord["locked"]);
         }
