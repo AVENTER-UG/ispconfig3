@@ -1322,6 +1322,7 @@ class nginx_plugin {
 			$ngx_conf_tpl->setVar('use_tcp', $use_tcp);
 			$ngx_conf_tpl->setVar('use_socket', $use_socket);
 			$ngx_conf_tpl->setVar('fpm_socket', $fpm_socket);
+
 			$ngx_conf_tpl->setVar($vhost_data);
 			$nginx_directives_new = $ngx_conf_tpl->grab();
 			if(is_file($ngx_conf_tpl_tmp_file)) unlink($ngx_conf_tpl_tmp_file);
@@ -1337,7 +1338,7 @@ class nginx_plugin {
 			$trans = array(
 				'{DOCROOT}' => $vhost_data['web_document_root_www'],
 				'{DOCROOT_CLIENT}' => $vhost_data['web_document_root'],
-        '{DOMAIN}' => $vhost_data['domain'],
+				'{DOMAIN}' => $vhost_data['domain'],
 				'{FASTCGIPASS}' => 'fastcgi_pass '.($data['new']['php_fpm_use_socket'] == 'y'? 'unix:'.$fpm_socket : '127.0.0.1:'.$vhost_data['fpm_port']).';'
 			);
 			foreach($nginx_directive_lines as $nginx_directive_line){
@@ -1613,16 +1614,27 @@ class nginx_plugin {
 		$vhost_data['logging'] = $web_config['logging'];
 
 		// Provide TLS 1.3 support if Nginx version is >= 1.13.0 and when it was linked against OpenSSL(>=1.1.1) at build time and when it was linked against OpenSSL(>=1.1.1) at runtime.
-		$nginx_openssl_build_ver = $app->system->exec_safe('nginx -V 2>&1 | grep \'built with OpenSSL\' | sed \'s/.*built\([a-zA-Z ]*\)OpenSSL \([0-9.]*\).*/\2/\'');
-		$nginx_openssl_running_ver = $app->system->exec_safe('nginx -V 2>&1 | grep \'running with OpenSSL\' | sed \'s/.*running\([a-zA-Z ]*\)OpenSSL \([0-9.]*\).*/\2/\'');
-		if(version_compare($app->system->getnginxversion(true), '1.13.0', '>=')
-			&& version_compare($nginx_openssl_build_ver, '1.1.1', '>=')
-			&& (empty($nginx_openssl_running_ver) || version_compare($nginx_openssl_running_ver, '1.1.1', '>='))) {
-			$app->log('Enable TLS 1.3 for: '.$domain, LOGLEVEL_DEBUG);
-			$vhost_data['tls13_supported'] = "y";
+		if($data['new']['ssl'] == 'y') {
+			$nginx_openssl_build_ver = $app->system->exec_safe('nginx -V 2>&1 | grep \'built with OpenSSL\' | sed \'s/.*built\([a-zA-Z ]*\)OpenSSL \([0-9.]*\).*/\2/\'');
+			$nginx_openssl_running_ver = $app->system->exec_safe('nginx -V 2>&1 | grep \'running with OpenSSL\' | sed \'s/.*running\([a-zA-Z ]*\)OpenSSL \([0-9.]*\).*/\2/\'');
+			if(version_compare($app->system->getnginxversion(true), '1.13.0', '>=')
+				&& version_compare($nginx_openssl_build_ver, '1.1.1', '>=')
+				&& (empty($nginx_openssl_running_ver) || version_compare($nginx_openssl_running_ver, '1.1.1', '>='))) {
+					$app->log('Enable TLS 1.3 for: '.$domain, LOGLEVEL_DEBUG);
+					$vhost_data['tls13_supported'] = "y";
+			}
+		}
+
+		// Nginx >= 1.25.1 uses a dedicated directive to enable HTTP/2 support
+		// This is a quirk for Nginx legacy versions (or simply Nginx < 1.25.1) and restores the required http2 parameter in the listen directive
+		if(version_compare($app->system->getnginxversion(true), '1.25.1', '<')) {
+			$vhost_data['http2_directive_compat_quirk'] = " http2";
 		}
 
 		$tpl->setVar($vhost_data);
+
+		$tpl->setVar('nginx_version', $app->system->getnginxversion());
+		$tpl->setVar('nginx_full_version', $app->system->getnginxversion(true));
 
 		$server_alias = array();
 
@@ -1981,25 +1993,25 @@ class nginx_plugin {
 			$this->awstats_update($data, $web_config);
 		}
 
-                //* Create GoAccess configuration
-                if($data['new']['stats_type'] == 'goaccess' && ($data['new']['type'] == 'vhost' || $data['new']['type'] == 'vhostsubdomain' || $data['new']['type'] == 'vhostalias')) {
-                        $this->goaccess_update($data, $web_config);
-                }
+		//* Create GoAccess configuration
+		if($data['new']['stats_type'] == 'goaccess' && ($data['new']['type'] == 'vhost' || $data['new']['type'] == 'vhostsubdomain' || $data['new']['type'] == 'vhostalias')) {
+			$this->goaccess_update($data, $web_config);
+		}
 
-                //* Remove the AWstats configuration file
+		//* Remove the AWstats configuration file
 		if($data['old']['stats_type'] == 'awstats' && $data['new']['stats_type'] != 'awstats') {
 			$this->awstats_delete($data, $web_config);
-                }
+		}
 
 		//* Remove the GoAccess configuration file
 		if($data['old']['stats_type'] == 'goaccess' && $data['new']['stats_type'] != 'goaccess') {
 			$this->goaccess_delete($data, $web_config);
 		}
 
-                //* Remove the Webalizer configuration file
+		//* Remove the Webalizer configuration file
 		if($data['old']['stats_type'] == 'webalizer' && $data['new']['stats_type'] != 'webalizer') {
 			$this->webalizer_delete($data, $web_config);
-                }
+		}
 
 		//* Remove Stats-Folder when Statistics set to none
 		if($data['new']['stats_type'] == '' && ($data['new']['type'] == 'vhost' || $data['new']['type'] == 'vhostsubdomain' || $data['new']['type'] == 'vhostalias')) {
@@ -2624,96 +2636,92 @@ class nginx_plugin {
 
 	//* Update the GoAccess configuration file
 	private function goaccess_update ($data, $web_config) {
-                global $app;
+		global $app;
 
-                $web_folder = $data['new']['web_folder'];
-                if($data['new']['type'] == 'vhost') $web_folder = 'web';
+		$web_folder = $data['new']['web_folder'];
+		if($data['new']['type'] == 'vhost') $web_folder = 'web';
 
-                $goaccess_conf_locs = array('/etc/goaccess.conf', '/etc/goaccess/goaccess.conf');
-                $count = 0;
+		$goaccess_conf_locs = array('/etc/goaccess.conf', '/etc/goaccess/goaccess.conf');
+		$count = 0;
 
-                foreach($goaccess_conf_locs as $goa_loc) {
-                        if(is_file($goa_loc) && (filesize($goa_loc) > 0)) {
-                                $goaccess_conf_main = $goa_loc;
-                                break;
-                        } else {
-                                $count++;
-                                if($count == 2) {
-                                        $app->log("No GoAccess base config found. Make sure that GoAccess is installed and that the goaccess.conf does exist in /etc or /etc/goaccess", LOGLEVEL_WARN);
-                                }
-                        }
-                }
+		foreach($goaccess_conf_locs as $goa_loc) {
+			if(is_file($goa_loc) && (filesize($goa_loc) > 0)) {
+				$goaccess_conf_main = $goa_loc;
+				break;
+			} else {
+				$count++;
+				if($count == 2) {
+					$app->log("No GoAccess base config found. Make sure that GoAccess is installed and that the goaccess.conf does exist in /etc or /etc/goaccess", LOGLEVEL_WARN);
+				}
+			}
+		}
 
-                if(!is_dir($data['new']['document_root'] . "/log/goaccess_db")) $app->system->mkdirpath($data['new']['document_root'] . "/log/goaccess_db");
+		if(!is_dir($data['new']['document_root'] . "/log/goaccess_db")) $app->system->mkdirpath($data['new']['document_root'] . "/log/goaccess_db");
 		$goaccess_conf = $data['new']['document_root'].'/log/goaccess.conf';
 
-                /*
-                In case that you use a different log format, you should use a custom goaccess.conf which you'll have to put into /usr/local/ispconfig/server/conf-custom/.
-                By default the originaly with GoAccess shipped goaccess.conf from /etc/ will be used along with the log-format value COMBINED.
-                */
+		/*
+		In case that you use a different log format, you should use a custom goaccess.conf which you'll have to put into /usr/local/ispconfig/server/conf-custom/.
+		By default the originaly with GoAccess shipped goaccess.conf from /etc/ will be used along with the log-format value COMBINED.
+		*/
 
-                if(file_exists("/usr/local/ispconfig/server/conf-custom/goaccess.conf.master")) {
-                        $app->system->copy("/usr/local/ispconfig/server/conf-custom/goaccess_index.php.master", $goaccess_conf);
+		if(file_exists("/usr/local/ispconfig/server/conf-custom/goaccess.conf.master")) {
+			$app->system->copy("/usr/local/ispconfig/server/conf-custom/goaccess_index.php.master", $goaccess_conf);
+		} elseif(!file_exists($goaccess_conf)) {
+			/*
+			By default the goaccess.conf should get copied by the webserver plugin but in case it wasn't, or it got deleted by accident we gonna copy it again to the destination dir.
+			Also there was no /usr/local/ispconfig/server/conf-custom/goaccess.conf.master, so we gonna use /etc/goaccess.conf as the base conf.
+			*/
 
-                } elseif(!file_exists($goaccess_conf)) {
+			$app->system->copy($goaccess_conf_main, $goaccess_conf);
+			$content = $app->system->file_get_contents($goaccess_conf, true);
+			$content = preg_replace('/^(#)?log-format COMBINED/m', "log-format COMBINED", $content);
+			$app->system->file_put_contents($goaccess_conf, $content, true);
+			unset($content);
+		}
 
-                        /*
-                         By default the goaccess.conf should get copied by the webserver plugin but in case it wasn't, or it got deleted by accident we gonna copy it again to the destination dir.
-                         Also there was no /usr/local/ispconfig/server/conf-custom/goaccess.conf.master, so we gonna use /etc/goaccess.conf as the base conf.
-                         */
+		if(file_exists($goaccess_conf)) {
+			$domain = $data['new']['domain'];
+			$content = $app->system->file_get_contents($goaccess_conf, true);
+			$content = preg_replace('/^(#)?html-report-title(.*)/m', "html-report-title $domain", $content);
+			$app->system->file_put_contents($goaccess_conf, $content, true);
+			unset($content);
+		}
 
-                        $app->system->copy($goaccess_conf_main, $goaccess_conf);
-                        $content = $app->system->file_get_contents($goaccess_conf, true);
-                        $content = preg_replace('/^(#)?log-format COMBINED/m', "log-format COMBINED", $content);
-                        $app->system->file_put_contents($goaccess_conf, $content, true);
-                        unset($content);
+		if(is_file($goaccess_conf) && (filesize($goaccess_conf) > 0)) {
+			$app->log('Created GoAccess config file: '.$goaccess_conf, LOGLEVEL_DEBUG);
+		}
 
-                }
-
-                if(file_exists($goaccess_conf)) {
-                        $domain = $data['new']['domain'];
-                        $content = $app->system->file_get_contents($goaccess_conf, true);
-                        $content = preg_replace('/^(#)?html-report-title(.*)/m', "html-report-title $domain", $content);
-                        $app->system->file_put_contents($goaccess_conf, $content, true);
-                        unset($content);
-
-                }
-
-                if(is_file($goaccess_conf) && (filesize($goaccess_conf) > 0)) {
-                        $app->log('Created GoAccess config file: '.$goaccess_conf, LOGLEVEL_DEBUG);
-                }
-
-                if(is_file($data['new']['document_root']."/" . $web_folder . "/stats/index.html")) $app->system->unlink($data['new']['document_root']."/" . $web_folder . "/stats/index.html");
-                if(file_exists("/usr/local/ispconfig/server/conf-custom/goaccess_index.php.master")) {
-                        $app->system->copy("/usr/local/ispconfig/server/conf-custom/goaccess_index.php.master", $data['new']['document_root']."/" . $web_folder . "/stats/index.php");
-                } else {
-                        $app->system->copy("/usr/local/ispconfig/server/conf/goaccess_index.php.master", $data['new']['document_root']."/" . $web_folder . "/stats/index.php");
+		if(is_file($data['new']['document_root']."/" . $web_folder . "/stats/index.html")) $app->system->unlink($data['new']['document_root']."/" . $web_folder . "/stats/index.html");
+		if(file_exists("/usr/local/ispconfig/server/conf-custom/goaccess_index.php.master")) {
+			$app->system->copy("/usr/local/ispconfig/server/conf-custom/goaccess_index.php.master", $data['new']['document_root']."/" . $web_folder . "/stats/index.php");
+		} else {
+			$app->system->copy("/usr/local/ispconfig/server/conf/goaccess_index.php.master", $data['new']['document_root']."/" . $web_folder . "/stats/index.php");
 		}
 	}
 
-        //* Delete the GoAccess configuration file
-        private function goaccess_delete ($data, $web_config) {
-                global $app;
+	//* Delete the GoAccess configuration file
+	private function goaccess_delete ($data, $web_config) {
+		global $app;
 
-                $goaccess_conf = $data['old']['document_root'] . "/log/goaccess.conf";
+		$goaccess_conf = $data['old']['document_root'] . "/log/goaccess.conf";
 
-                if ( @is_file($goaccess_conf) ) {
-                        $app->system->unlink($goaccess_conf);
-                        $app->log('Removed GoAccess config file: '.$goaccess_conf, LOGLEVEL_DEBUG);
-                }
-        }
+		if ( @is_file($goaccess_conf) ) {
+			$app->system->unlink($goaccess_conf);
+			$app->log('Removed GoAccess config file: '.$goaccess_conf, LOGLEVEL_DEBUG);
+			}
+	}
 
-        //* Delete the Webalizer configuration file
-        private function webalizer_delete ($data, $web_config) {
-                global $app;
+	//* Delete the Webalizer configuration file
+	private function webalizer_delete ($data, $web_config) {
+		global $app;
 
-                $webalizer_conf = $data['old']['document_root'] . "/log/webalizer.conf";
+		$webalizer_conf = $data['old']['document_root'] . "/log/webalizer.conf";
 
-                if ( @is_file($webalizer_conf) ) {
-                        $app->system->unlink($webalizer_conf);
-                        $app->log('Removed Webalizer config file: '.$webalizer_conf, LOGLEVEL_DEBUG);
-                }
-        }
+		if ( @is_file($webalizer_conf) ) {
+			$app->system->unlink($webalizer_conf);
+			$app->log('Removed Webalizer config file: '.$webalizer_conf, LOGLEVEL_DEBUG);
+		}
+	}
 
 	//* Update the awstats configuration file
 	private function awstats_update ($data, $web_config) {

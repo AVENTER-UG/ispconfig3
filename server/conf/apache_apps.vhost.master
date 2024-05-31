@@ -38,8 +38,8 @@
 
   <IfModule mod_headers.c>
     # ISPConfig 3.1 currently requires unsafe-line for both scripts and styles, as well as unsafe-eval
-    Header set Content-Security-Policy "default-src 'self' 'unsafe-inline' 'unsafe-eval'; img-src 'self' data:; object-src 'none'"
-    <tmpl_var name="ssl_comment">Header set Content-Security-Policy "default-src 'self' 'unsafe-inline' 'unsafe-eval'; img-src 'self' data:; object-src 'none'; upgrade-insecure-requests"
+    Header set Content-Security-Policy "default-src 'self' 'unsafe-inline' 'unsafe-eval'; img-src * data:; object-src 'none'"
+    <tmpl_var name="ssl_comment">Header set Content-Security-Policy "default-src 'self' 'unsafe-inline' 'unsafe-eval'; img-src 'self' data: *; object-src 'none'; upgrade-insecure-requests"
     Header set X-Content-Type-Options: nosniff
     Header set X-Frame-Options: SAMEORIGIN
     Header set X-XSS-Protection: "1; mode=block"

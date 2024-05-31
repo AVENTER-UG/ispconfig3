@@ -83,7 +83,10 @@ class app extends stdClass {
 				if we are in a multiserver setup
 			*/
 
-			if($conf['dbmaster_host'] != '' && ($conf['dbmaster_host'] != $conf['db_host'] || ($conf['dbmaster_host'] == $conf['db_host'] && $conf['dbmaster_database'] != $conf['db_database']))) {
+			if($conf['dbmaster_host'] != ''
+					&& ($conf['dbmaster_host'] != $conf['db_host']
+						|| ($conf['dbmaster_host'] == $conf['db_host']
+								&& ($conf['dbmaster_database'] != $conf['db_database'] || $conf['dbmaster_port'] != $conf['db_port'])))) {
 				try {
 					$this->dbmaster = new db($conf['dbmaster_host'], $conf['dbmaster_user'], $conf['dbmaster_password'], $conf['dbmaster_database'], $conf['dbmaster_port'], $conf['dbmaster_client_flags']);
 				} catch (Exception $e) {

@@ -1997,7 +1997,7 @@ class backup
             if ($success) {
                 $backup_username = ($global_config['backups_include_into_web_quota'] == 'y') ? $web_user : 'root';
                 $backup_group = ($global_config['backups_include_into_web_quota'] == 'y') ? $web_group : 'root';
-    
+
                 //Insert web backup record in database
                 $archive_size = self::getReposArchiveSize($backup_mode, $backup_repos_path, $web_backup_archive, $repos_password);
                 $password = $repos_password ? '*secret*' : '';
@@ -2286,7 +2286,7 @@ class backup
             }
         }
 
-        $sql = "SELECT DISTINCT d.*, db.server_id as `server_id` FROM web_database as db INNER JOIN web_domain as d ON (d.domain_id = db.parent_domain_id) WHERE db.server_id = ? AND db.active = 'y' AND d.backup_interval != 'none' AND d.backup_interval != ''";
+        $sql = "SELECT DISTINCT d.domain_id, db.backup_interval, db.server_id, db.parent_domain_id FROM web_database as db INNER JOIN web_domain as d ON (d.domain_id = db.parent_domain_id) WHERE db.server_id = ? AND db.active = 'y' AND db.backup_interval != 'none' AND db.backup_interval != ''";
         $databases = $app->dbmaster->queryAllRecords($sql, $server_id);
 
         foreach ($databases as $database) {
