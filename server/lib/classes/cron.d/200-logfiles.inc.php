@@ -227,9 +227,8 @@ class cronjob_logfiles extends cronjob {
 		//######################################################################################################
 
 		if ($app->running_on_masterserver()) {
+
 			/** 7 days */
-
-
 			$tstamp = time() - (60*60*24*7);
 
 			/*
@@ -266,10 +265,10 @@ class cronjob_logfiles extends cronjob {
 
 			/*
              * The sys_datalog is more difficult.
-             * 1) We have to keet ALL entries with
+             * 1) We have to keep ALL entries with
              *    server_id=0, because they depend on ALL servers (even if they are not
              *    actually in the system (and will be insered in 3 days or so).
-             * 2) We have to keey ALL entries which are not actually precessed by the
+             * 2) We have to keep ALL entries which are not actually precessed by the
              *    server never mind how old they are!
              * 3) We have to keep the entry with the highest autoinc-id, because mysql calculates the
              *    autoinc-id as "new value = max(row) +1" and does not store this in a separate table.
