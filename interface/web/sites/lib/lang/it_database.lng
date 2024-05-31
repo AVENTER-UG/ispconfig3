@@ -47,4 +47,9 @@ $wb['limit_database_quota_txt'] = 'Database quota';
 $wb['limit_database_quota_error_notint'] = 'La quota del database deve essere un numero positivo.';
 $wb['limit_database_quota_free_txt'] = 'Quota DB disponibile ';
 $wb['limit_database_quota_not_0_txt'] = 'La quota Database non può essere 0';
+$wb['no_backup_txt'] = 'Nessun backup';
+$wb['daily_backup_txt'] = 'Giornaliero';
+$wb['weekly_backup_txt'] = 'Settimanale';
+$wb['monthly_backup_txt'] = 'Mensile';
+$wb['backup_interval_txt'] = 'Intervallo di Backup';
 ?>
