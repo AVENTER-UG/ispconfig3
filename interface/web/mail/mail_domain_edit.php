@@ -332,7 +332,7 @@ class page_action extends tform_actions {
 		}
 
 		// Extract the dkim public key if not submitted.
-		if (!empty($this->dataRecord['dkim_private']) && empty( $this->dataRecord['dkim_public']) ) {
+		if (!empty($this->dataRecord['dkim_private']) && empty( $this->dataRecord['dkim_public']) && function_exists('openssl_pkey_get_details')) {
 			$this->dataRecord['dkim_public'] = openssl_pkey_get_details(openssl_pkey_get_private($this->dataRecord['dkim_private']))['key'];
 		}
 
