@@ -95,6 +95,17 @@ $form["tabs"]['database'] = array (
 				'mysql' => 'MySQL'
 			)
 		),
+		'backup_interval' => [
+			'datatype' => 'VARCHAR',
+			'formtype' => 'SELECT',
+			'default' => 'none',
+			'value'  => [
+				'none' => 'no_backup_txt',
+				'daily' => 'daily_backup_txt',
+				'weekly' => 'weekly_backup_txt',
+				'monthly' => 'monthly_backup_txt',
+			]
+		],
 		'database_name' => array (
 			'datatype' => 'VARCHAR',
 			'formtype' => 'TEXT',
