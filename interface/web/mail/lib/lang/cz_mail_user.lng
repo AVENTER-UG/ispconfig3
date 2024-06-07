@@ -75,3 +75,4 @@ $wb['tooltip_purge_trash_days_txt'] = '0 = neaktivní';
 $wb['purge_junk_days_txt'] = 'Vyčistit nevyžádanou poštu \"Junk\" automaticky po X dnech.';
 $wb['tooltip_purge_junk_days_txt'] = '0 = neaktivní';
 $wb['disablesmtp_txt'] = 'Zakázat SMTP (pouze odesílání)';
+$wb['used_txt'] = 'Used';
