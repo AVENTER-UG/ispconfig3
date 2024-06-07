@@ -236,8 +236,13 @@ class quota_lib {
 		}
 		//print_r($monitor_data);
 
-               if ($email) {
-                       return $monitor_data[$email];
+               if ($email !== null && !empty($email)) {
+				   if(isset($monitor_data[$email])) {
+					   return $monitor_data[$email];
+				   } else {
+					   return '';
+				   }
+                       
                }
 		// select all email accounts or email accounts belonging to client
 		$emails = $app->db->queryAllRecords("SELECT * FROM mail_user".(($clientid != null)? " WHERE sys_groupid = (SELECT default_group FROM sys_user WHERE client_id=?)" : '') . " ORDER BY email", $clientid);
