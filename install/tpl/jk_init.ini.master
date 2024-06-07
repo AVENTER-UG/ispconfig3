@@ -243,6 +243,11 @@ comment = php version 8.2
 paths = /usr/bin/php8.2, /usr/lib/php/8.2/, /usr/lib/php/20220829/, /usr/share/php/8.2/, /etc/php/8.2/cli/, /etc/php/8.2/mods-available/
 includesections = php_common
 
+[php8_3]
+comment = php version 8.3
+paths = /usr/bin/php8.3, /usr/lib/php/8.3/, /usr/lib/php/20230831/, /usr/share/php/8.3/, /etc/php/8.3/cli/, /etc/php/8.3/mods-available/
+includesections = php_common
+
 [imagemagick]
 comment = ImageMagick needed for php-imagemagick extension
 paths = /usr/share/ImageMagick-*, /etc/ImageMagick-*, /usr/lib/*/ImageMagick-*
