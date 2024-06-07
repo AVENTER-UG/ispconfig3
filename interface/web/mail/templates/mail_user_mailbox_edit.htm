@@ -17,7 +17,7 @@
                           </a>
                         </div>
                     </div>
-                    <tmpl_if name="mail_addresses">{tmpl_var name='mail_addresses_txt'}: <tmpl_loop name="mail_addresses">{tmpl_var name='source'}({tmpl_var name='type'})<tmpl_unless name="__LAST__">, </tmpl_unless></tmpl_loop></tmpl_if>
+                    <tmpl_if name="mail_addresses">{tmpl_var name='mail_addresses_txt'}: <tmpl_loop name="mail_addresses">{tmpl_var name='source'} ({tmpl_var name='type'})<tmpl_unless name="__LAST__">, </tmpl_unless></tmpl_loop></tmpl_if>
                 </div>
             </div>
             <tmpl_if name="enable_custom_login"><div class="form-group">
