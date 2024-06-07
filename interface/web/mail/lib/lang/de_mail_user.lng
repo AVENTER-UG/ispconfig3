@@ -78,3 +78,4 @@ $wb['imap_prefix_txt'] = 'IMAP-Präfix';
 $wb['tooltip_imap_prefix_txt'] = 'In den meisten Fällen sollte dies leer gelassen werden. Um eine nahtlose Migration von Altsystemen zu ermöglichen, können Sie ein Präfix, gefolgt vom Hierarchietrennzeichen, angeben, z. B: \'INBOX.\'';
 ?>
 
+$wb['mail_addresses_txt'] = 'Receives also mail for';

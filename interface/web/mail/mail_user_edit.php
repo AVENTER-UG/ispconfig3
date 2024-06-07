@@ -143,6 +143,12 @@ class page_action extends tform_actions {
 		$global_config = $app->getconf->get_global_config();
 		$app->tpl->setVar('show_delete_on_forms', $global_config['misc']['show_delete_on_forms']);
 
+		if($this->id > 0) {
+			# Get addresses for this account.
+			$addresses = $app->db->queryAllRecords("SELECT source, type FROM mail_forwarding WHERE destination = ? AND ".$app->tform->getAuthSQL('r'), $email);
+			$app->tpl->setLoop("mail_addresses", $addresses);
+		}
+
 		parent::onShowEnd();
 	}
 
