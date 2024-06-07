@@ -74,5 +74,6 @@ $wb['purge_trash_days_txt'] = '自动在 X 天后清空垃圾箱';
 $wb['tooltip_purge_trash_days_txt'] = '0 = 禁用';
 $wb['purge_junk_days_txt'] = '自动在 X 天后清空垃圾邮件';
 $wb['tooltip_purge_junk_days_txt'] = '0 = 禁用';
+$wb['used_txt'] = 'Used';
 $wb['mail_addresses_txt'] = 'Receives also mail for';
 ?>
