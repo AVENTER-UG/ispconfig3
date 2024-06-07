@@ -82,6 +82,7 @@ class cronjob_monitor_mail_queue extends cronjob {
 
 		/* Get the data from the mailq */
 		$data['output'] = shell_exec('mailq');
+		if ($data['output'] == null) $data['output'] = "";
 
 		/*
 		 *  The last line has more informations

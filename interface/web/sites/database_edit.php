@@ -306,19 +306,32 @@ class page_action extends tform_actions {
 		$global_config = $app->getconf->get_global_config('sites');
 		$dbname_prefix = $app->tools_sites->replacePrefix($global_config['dbname_prefix'], $this->dataRecord);
 
-		//* Prevent that the database name and charset is changed
-		$old_record = $app->tform->getDataRecord($this->id);
-		$dbname_prefix = $app->tools_sites->getPrefix($old_record['database_name_prefix'], $dbname_prefix);
-		$this->dataRecord['database_name_prefix'] = $dbname_prefix;
+		if($this->id > 0) {
+			//* Prevent that the database name and charset is changed
+			$old_record = $app->tform->getDataRecord($this->id);
+			$dbname_prefix = $app->tools_sites->getPrefix($old_record['database_name_prefix'], $dbname_prefix);
+			$this->dataRecord['database_name_prefix'] = $dbname_prefix;
 
-		//* Only admin can change the database name
-		if ($_SESSION["s"]["user"]["typ"] != 'admin') {
-			if($old_record["database_name"] != $dbname_prefix . $this->dataRecord["database_name"]) {
-				$app->tform->errorMessage .= $app->tform->wordbook["database_name_change_txt"].'<br />';
+			//* Only admin can change the database name
+			if ($_SESSION["s"]["user"]["typ"] != 'admin') {
+				if($old_record["database_name"] != $dbname_prefix . $this->dataRecord["database_name"]) {
+					$app->tform->errorMessage .= $app->tform->wordbook["database_name_change_txt"].'<br />';
+				}
 			}
-		}
-		if($old_record["database_charset"] != $this->dataRecord["database_charset"]) {
-			$app->tform->errorMessage .= $app->tform->wordbook["database_charset_change_txt"].'<br />';
+			if($old_record["database_charset"] != $this->dataRecord["database_charset"]) {
+				$app->tform->errorMessage .= $app->tform->wordbook["database_charset_change_txt"].'<br />';
+			}
+
+			//* Check if the server has been changed
+			// We do this only for the admin or reseller users, as normal clients can not change the server ID anyway
+			if($_SESSION["s"]["user"]["typ"] == 'admin' || $app->auth->has_clients($_SESSION['s']['user']['userid'])) {
+				if($old_record["server_id"] != $this->dataRecord["server_id"]) {
+					//* Add a error message and switch back to old server
+					$app->tform->errorMessage .= $app->lng('The Server can not be changed.');
+					$this->dataRecord["server_id"] = $rec['server_id'];
+				}
+			}
+			unset($old_record);
 		}
 
 		if(!$this->dataRecord['database_user_id']) {
@@ -328,16 +341,6 @@ class page_action extends tform_actions {
 		//* Database username and database name shall not be empty
 		if($this->dataRecord['database_name'] == '') $app->tform->errorMessage .= $app->tform->wordbook["database_name_error_empty"].'<br />';
 
-		//* Check if the server has been changed
-		// We do this only for the admin or reseller users, as normal clients can not change the server ID anyway
-		if($_SESSION["s"]["user"]["typ"] == 'admin' || $app->auth->has_clients($_SESSION['s']['user']['userid'])) {
-			if($old_record["server_id"] != $this->dataRecord["server_id"]) {
-				//* Add a error message and switch back to old server
-				$app->tform->errorMessage .= $app->lng('The Server can not be changed.');
-				$this->dataRecord["server_id"] = $rec['server_id'];
-			}
-		}
-		unset($old_record);
 
 		if(strlen($dbname_prefix . $this->dataRecord['database_name']) > 64) $app->tform->errorMessage .= str_replace('{db}', $dbname_prefix . $this->dataRecord['database_name'], $app->tform->wordbook["database_name_error_len"]).'<br />';
 
@@ -388,6 +391,16 @@ class page_action extends tform_actions {
 					}
 				}
 			}
+		} else {
+			if(!empty($global_config['default_remote_dbserver'])) {
+				// Add default remote_ips from Main Configuration.
+				$remote_ips = explode(",", $global_config['default_remote_dbserver']);
+
+				if($this->dataRecord['remote_access'] != 'y'){
+					$this->dataRecord['remote_ips'] = implode(',', $remote_ips);
+					$this->dataRecord['remote_access'] = 'y';
+				}
+			}
 		}
 
 		if ($app->tform->errorMessage == '') {
@@ -416,92 +429,7 @@ class page_action extends tform_actions {
 	function onBeforeInsert() {
 		global $app, $conf, $interfaceConf;
 
-		//* Site shell not be empty
-		if($this->dataRecord['parent_domain_id'] == 0) $app->tform->errorMessage .= $app->tform->lng("database_site_error_empty").'<br />';
-
-		//* Database username and database name shall not be empty
-		if($this->dataRecord['database_name'] == '') $app->tform->errorMessage .= $app->tform->wordbook["database_name_error_empty"].'<br />';
-
-		//* Get the database name and database user prefix
-		$app->uses('getconf,tools_sites');
-		$global_config = $app->getconf->get_global_config('sites');
-		$dbname_prefix = $app->tools_sites->replacePrefix($global_config['dbname_prefix'], $this->dataRecord);
-		$this->dataRecord['database_name_prefix'] = $dbname_prefix;
-
-		if(strlen($dbname_prefix . $this->dataRecord['database_name']) > 64) $app->tform->errorMessage .= str_replace('{db}', $dbname_prefix . $this->dataRecord['database_name'], $app->tform->wordbook["database_name_error_len"]).'<br />';
-
-		//* Check database name and user against blacklist
-		$dbname_blacklist = array($conf['db_database'], 'mysql');
-		if(in_array($dbname_prefix . $this->dataRecord['database_name'], $dbname_blacklist)) {
-			$app->tform->errorMessage .= $app->lng('Database name not allowed.').'<br />';
-		}
-
-		/* restrict the names */
-		/* crop user and db names if they are too long -> mysql: user: 16 chars / db: 64 chars */
-		if ($app->tform->errorMessage == ''){
-			$this->dataRecord['database_name'] = substr($dbname_prefix . $this->dataRecord['database_name'], 0, 64);
-		}
-
-		//* Check for duplicates
-		$tmp = $app->db->queryOneRecord("SELECT count(database_id) as dbnum FROM web_database WHERE database_name = ? AND server_id = ?", $this->dataRecord['database_name'], $this->dataRecord["server_id"]);
-		if($tmp['dbnum'] > 0) $app->tform->errorMessage .= $app->tform->lng('database_name_error_unique').'<br />';
-
-		// get the web server ip (parent domain)
-		$tmp = $app->db->queryOneRecord("SELECT server_id FROM web_domain WHERE domain_id = ?", $this->dataRecord['parent_domain_id']);
-		if($tmp['server_id'] && $tmp['server_id'] != $this->dataRecord['server_id']) {
-			// we need remote access rights for this server, so get it's ip address
-			$server_config = $app->getconf->get_server_config($tmp['server_id'], 'server');
-
-			// Add default remote_ips from Main Configuration.
-			if(empty($global_config['default_remote_dbserver'])) {
-				$remote_ips = array();
-			} else {
-				$remote_ips = explode(",", $global_config['default_remote_dbserver']);
-			}
-			
-			if (!in_array($server_config['ip_address'], $remote_ips)) { $remote_ips[] = $server_config['ip_address']; }
-
-			if($server_config['ip_address']!='') {
-				if($this->dataRecord['remote_access'] != 'y'){
-					$this->dataRecord['remote_ips'] = implode(',', $remote_ips);
-					$this->dataRecord['remote_access'] = 'y';
-				} else {
-					if($this->dataRecord['remote_ips'] != ''){
-						if(preg_match('/(^|,)' . preg_quote($server_config['ip_address'], '/') . '(,|$)/', $this->dataRecord['remote_ips']) == false) {
-							$this->dataRecord['remote_ips'] .= ',' . $server_config['ip_address'];
-						}
-						$tmp = preg_split('/\s*,\s*/', $this->dataRecord['remote_ips']);
-						$tmp = array_merge($tmp, $remote_ips);
-						$tmp = array_unique($tmp);
-						$this->dataRecord['remote_ips'] = implode(',', $tmp);
-						unset($tmp);
-					}
-				}
-			}
-		}
-
-		if ($app->tform->errorMessage == '') {
-			// force update of the used database user
-			if($this->dataRecord['database_user_id']) {
-				$user_old_rec = $app->db->queryOneRecord('SELECT * FROM `web_database_user` WHERE `database_user_id` = ?', $this->dataRecord['database_user_id']);
-				if($user_old_rec) {
-					$user_new_rec = $user_old_rec;
-					$user_new_rec['server_id'] = $this->dataRecord['server_id'];
-					$app->db->datalogSave('web_database_user', 'UPDATE', 'database_user_id', $this->dataRecord['database_user_id'], $user_old_rec, $user_new_rec);
-				}
-			}
-			if($this->dataRecord['database_ro_user_id']) {
-				$user_old_rec = $app->db->queryOneRecord('SELECT * FROM `web_database_user` WHERE `database_user_id` = ?', $this->dataRecord['database_ro_user_id']);
-				if($user_old_rec) {
-					$user_new_rec = $user_old_rec;
-					$user_new_rec['server_id'] = $this->dataRecord['server_id'];
-					$app->db->datalogSave('web_database_user', 'UPDATE', 'database_user_id', $this->dataRecord['database_ro_user_id'], $user_old_rec, $user_new_rec);
-				}
-			}
-		}
-
-
-		parent::onBeforeInsert();
+		$this->onBeforeUpdate();
 	}
 
 	function onInsertSave($sql) {

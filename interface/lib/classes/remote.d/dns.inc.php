@@ -218,10 +218,11 @@ class remoting_dns extends remoting {
 		if(!$this->checkPerm($session_id, 'dns_' . $rr_type . '_add')) {
 			throw new SoapFault('permission_denied', 'You do not have the permissions to access this function.');
 		}
+		$primary_id = $this->insertQuery('../dns/form/dns_' . $rr_type . '.tform.php', $client_id, $params);
 		if($update_serial) {
 			$this->increase_serial($session_id, $client_id, $params);
 		}
-		return $this->insertQuery('../dns/form/dns_' . $rr_type . '.tform.php', $client_id, $params);
+		return $primary_id;
 	}
 
 	//* Update a record

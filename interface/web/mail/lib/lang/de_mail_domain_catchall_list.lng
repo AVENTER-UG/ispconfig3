@@ -1,5 +1,5 @@
 <?php
-$wb['list_head_txt'] = 'E-Mail Catchall';
+$wb['list_head_txt'] = 'E-Mail-Catchall';
 $wb['active_txt'] = 'Aktiv';
 $wb['source_txt'] = 'Quelle';
 $wb['destination_txt'] = 'Zieladresse';

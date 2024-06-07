@@ -279,11 +279,33 @@ $inst->check_mysql_version();
 
 //* initialize the master DB, if we have a multiserver setup
 if($conf['mysql']['master_slave_setup'] == 'y') {
+	//** Get MySQL root credentials
+	$finished = false;
+	do {
+		$tmp_mysql_server_host = $inst->free_query('MySQL master server hostname', $conf['mysql']['master_host'],'mysql_master_hostname');
+		$tmp_mysql_server_port = $inst->free_query('MySQL master server port', $conf['mysql']['master_port'],'mysql_master_port');
+		$tmp_mysql_server_admin_user = $inst->free_query('MySQL master server root username', $conf['mysql']['master_admin_user'],'mysql_master_root_user');
+		$tmp_mysql_server_admin_password = $inst->free_query('MySQL master server root password', $conf['mysql']['master_admin_password'],'mysql_master_root_password');
+		$tmp_mysql_server_database = $inst->free_query('MySQL master server database name', $conf['mysql']['master_database'],'mysql_master_database');
+
+		//* Initialize the MySQL server connection
+		if(@mysqli_connect($tmp_mysql_server_host, $tmp_mysql_server_admin_user, $tmp_mysql_server_admin_password, $tmp_mysql_server_database, (int)$tmp_mysql_server_port)) {
+			$conf['mysql']['master_host'] = $tmp_mysql_server_host;
+			$conf['mysql']['master_port'] = $tmp_mysql_server_port;
+			$conf['mysql']['master_admin_user'] = $tmp_mysql_server_admin_user;
+			$conf['mysql']['master_admin_password'] = $tmp_mysql_server_admin_password;
+			$conf['mysql']['master_database'] = $tmp_mysql_server_database;
+			$finished = true;
+		} else {
+			swriteln($inst->lng('Unable to connect to mysql server').' '.mysqli_connect_error());
+		}
+	} while ($finished == false);
+	unset($finished);
 
 	// initialize the connection to the master database
 	$inst->dbmaster = new db();
 	if($inst->dbmaster->linkId) $inst->dbmaster->closeConn();
-	$inst->dbmaster->setDBData($conf['mysql']["master_host"], $conf['mysql']["master_ispconfig_user"], $conf['mysql']["master_ispconfig_password"], $conf['mysql']["master_port"]);
+	$inst->dbmaster->setDBData($conf['mysql']["master_host"], $conf['mysql']["master_admin_user"], $conf['mysql']["master_admin_password"], $conf['mysql']["master_port"]);
 	$inst->dbmaster->setDBName($conf['mysql']["master_database"]);
 } else {
 	$inst->dbmaster = $inst->db;
@@ -330,35 +352,6 @@ unset($tmp);
 $reconfigure_master_database_rights_answer = $inst->simple_query('Reconfigure Permissions in master database?', array('yes', 'no'), 'no','reconfigure_permissions_in_master_database');
 
 if($reconfigure_master_database_rights_answer == 'yes') {
-	//** Get MySQL root credentials, to upgrade the dbmaster connection.
-	$finished = false;
-	do {
-		$tmp_mysql_server_host = $inst->free_query('MySQL master server hostname', $conf['mysql']['master_host'],'mysql_master_hostname');
-		$tmp_mysql_server_port = $inst->free_query('MySQL master server port', $conf['mysql']['master_port'],'mysql_master_port');
-		$tmp_mysql_server_admin_user = $inst->free_query('MySQL master server root username', $conf['mysql']['master_admin_user'],'mysql_master_root_user');
-		$tmp_mysql_server_admin_password = $inst->free_query('MySQL master server root password', $conf['mysql']['master_admin_password'],'mysql_master_root_password');
-		$tmp_mysql_server_database = $inst->free_query('MySQL master server database name', $conf['mysql']['master_database'],'mysql_master_database');
-
-		//* Initialize the MySQL server connection
-		if(@mysqli_connect($tmp_mysql_server_host, $tmp_mysql_server_admin_user, $tmp_mysql_server_admin_password, $tmp_mysql_server_database, (int)$tmp_mysql_server_port)) {
-			$conf['mysql']['master_host'] = $tmp_mysql_server_host;
-			$conf['mysql']['master_port'] = $tmp_mysql_server_port;
-			$conf['mysql']['master_admin_user'] = $tmp_mysql_server_admin_user;
-			$conf['mysql']['master_admin_password'] = $tmp_mysql_server_admin_password;
-			$conf['mysql']['master_database'] = $tmp_mysql_server_database;
-			$finished = true;
-		} else {
-			swriteln($inst->lng('Unable to connect to mysql server').' '.mysqli_connect_error());
-		}
-	} while ($finished == false);
-	unset($finished);
-
-	// initialize the connection to the master database
-	$inst->dbmaster = new db();
-	if($inst->dbmaster->linkId) $inst->dbmaster->closeConn();
-	$inst->dbmaster->setDBData($conf['mysql']["master_host"], $conf['mysql']["master_admin_user"], $conf['mysql']["master_admin_password"], $conf['mysql']["master_port"]);
-	$inst->dbmaster->setDBName($conf['mysql']["master_database"]);
-
 	$inst->grant_master_database_rights();
 }
 //}
@@ -561,7 +554,7 @@ if($reconfigure_services_answer == 'yes' || $reconfigure_services_answer == 'sel
   }
 
 	if($conf['services']['firewall'] && $inst->reconfigure_app('Firewall', $reconfigure_services_answer)) {
-		if($conf['ufw']['installed'] == true) {
+		if(isset($conf['ufw']['installed']) && $conf['ufw']['installed'] == true) {
 			//* Configure Ubuntu Firewall
 			$conf['services']['firewall'] = true;
 			swriteln('Configuring Ubuntu Firewall');
@@ -698,7 +691,7 @@ if($reconfigure_services_answer == 'yes') {
 	}
 
 	if($conf['services']['firewall']) {
-		if($conf['ufw']['installed'] == true && isset($conf['ufw']['init_script']) && $conf['ufw']['init_script'] != '' && is_executable($conf['init_scripts'].'/'.$conf['ufw']['init_script']))     system($conf['init_scripts'].'/'.$conf['ufw']['init_script'].' restart &> /dev/null');
+		if(isset($conf['ufw']['installed']) && $conf['ufw']['installed'] == true && isset($conf['ufw']['init_script']) && $conf['ufw']['init_script'] != '' && is_executable($conf['init_scripts'].'/'.$conf['ufw']['init_script']))     system($conf['init_scripts'].'/'.$conf['ufw']['init_script'].' restart &> /dev/null');
 	}
 }
 

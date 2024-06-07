@@ -93,6 +93,7 @@ class page_action extends tform_actions {
 	function onAfterUpdate() {
 		$this->record_has_changed = false;
 		foreach($this->dataRecord as $key => $val) {
+            if ($key == 'policy_name') { continue; } // Don't trigger update of all spamfilter users if only policy_name is changed
 			if(isset($this->oldDataRecord[$key]) && @$this->oldDataRecord[$key] != $val) {
 				// Record has changed
 				$this->record_has_changed = true;

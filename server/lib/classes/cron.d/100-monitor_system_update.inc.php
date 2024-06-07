@@ -216,7 +216,7 @@ class cronjob_monitor_system_update extends cronjob {
 
 		//* Ensure that output is encoded so that it does not break the serialize
 		//$res['data']['output'] = htmlentities($res['data']['output']);
-		$res['data']['output'] = htmlentities($res['data']['output'], ENT_QUOTES, 'UTF-8');
+		$res['data']['output'] = $res['data']['output'] ? htmlentities($res['data']['output'], ENT_QUOTES, 'UTF-8') : null;
 
 		/*
 		 * Insert the data into the database

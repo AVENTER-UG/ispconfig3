@@ -581,7 +581,7 @@ class tform_actions {
 		$this->dataRecord = $record;
 
 		if(isset($app->tform->formDef['record_name_field'])) {
-			$app->tform->formDef['title'] = $app->lng($app->tform->formDef['title']) . ' ' . $this->dataRecord[$app->tform->formDef['record_name_field']];
+			$app->tform->formDef['title'] = $app->lng($app->tform->formDef['title']) . ' - ' . $this->dataRecord[$app->tform->formDef['record_name_field']];
 		}
 
 		// Userdaten umwandeln

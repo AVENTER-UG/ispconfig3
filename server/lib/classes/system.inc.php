@@ -2073,7 +2073,7 @@ class system{
 		}
 		*/
 		
-		if(!in_array($action,array('restart','reload','force-reload'))) {
+		if(!in_array($action,array('start','stop','restart','reload','force-reload'))) {
 			$app->log('Invalid init command action '.$action,LOGLEVEL_WARN);
 			return false;
 		}

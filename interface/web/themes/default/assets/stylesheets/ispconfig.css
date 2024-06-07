@@ -838,3 +838,20 @@ max-width: 1260px; }
 	#apache_directives, #nginx_directives, #proxy_directives {
 		font-family: Consolas, "Courier New", Courier, monospace;
 	}
+	.copy-to-clipboard-icon::after {
+		content: "\f0ea";
+		font-family: FontAwesome;
+		font-size:0.6em;
+		color:#6396b5;
+		vertical-align:top;
+		float:right;
+		cursor: copy;
+		position: absolute;
+		margin-left: 5px;
+	}
+	.copy-to-clipboard-icon-helper {
+		display: inline-block;
+		max-width: 90%;
+		text-overflow: ellipsis ;
+		overflow-x: hidden;
+	}

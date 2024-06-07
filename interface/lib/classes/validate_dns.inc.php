@@ -292,7 +292,7 @@ class validate_dns {
 		if($validator['allowempty'] != 'y') $validator['allowempty'] = 'n';
 		if($validator['allowempty'] == 'y' && $field_value == '') {
 			//* Do nothing
-		} elseif ($field_value == 'any') {
+		} elseif ($field_value == 'any' && $field_name != "also_notify") {
 			//* Do nothing
 		} else {
 			//* Check if its a IPv4 or IPv6 address/range

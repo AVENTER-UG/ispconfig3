@@ -383,7 +383,7 @@ class installer_dist extends installer_base {
 			if(is_file($config_dir.'/master.cf')){
 				copy($config_dir.'/master.cf', $config_dir.'/master.cf~2');
 			}
-			if(is_file($config_dir.'/master.cf~')){
+			if(is_file($config_dir.'/master.cf~2')){
 				chmod($config_dir.'/master.cf~2', 0400);
 			}
 			//* Configure master.cf and add a line for deliver

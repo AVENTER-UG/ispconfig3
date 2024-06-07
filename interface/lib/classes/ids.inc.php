@@ -49,11 +49,14 @@ class ids {
 		require_once(ISPC_CLASS_PATH.'/IDS/Report.php');
 		require_once(ISPC_CLASS_PATH.'/IDS/Event.php');
 		require_once(ISPC_CLASS_PATH.'/IDS/Converter.php');
+
+		$ispcookie = array();
+		$ispcookie['ISPCSESS'] = $_COOKIE['ISPCSESS'];
 		
 		$ids_request = array(
 			'GET' => $_GET,
 			'POST' => $_POST,
-			'COOKIE' => $_COOKIE
+			'COOKIE' => $ispcookie
 		);
 		
 		$ids_init = IDS\Init::init(ISPC_CLASS_PATH.'/IDS/Config/Config.ini.php');

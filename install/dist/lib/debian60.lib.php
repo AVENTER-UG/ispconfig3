@@ -61,7 +61,7 @@ class installer extends installer_base {
 			if(is_file($config_dir.'/master.cf')){
 				copy($config_dir.'/master.cf', $config_dir.'/master.cf~2');
 			}
-			if(is_file($config_dir.'/master.cf~')){
+			if(is_file($config_dir.'/master.cf~2')){
 				chmod($config_dir.'/master.cf~2', 0400);
 			}
 			//* Configure master.cf and add a line for deliver
@@ -207,14 +207,6 @@ class installer extends installer_base {
 		// Dovecot shall ignore mounts in website directory
 		if(is_installed('doveadm')) exec("doveadm mount add '/var/www/*' ignore > /dev/null 2> /dev/null");
 
-	}
-
-	public function configure_apache() {
-		global $conf;
-
-		if(file_exists('/etc/apache2/mods-available/fcgid.conf')) replaceLine('/etc/apache2/mods-available/fcgid.conf', 'MaxRequestLen', 'MaxRequestLen 15728640', 0, 1);
-
-		parent::configure_apache();
 	}
 
 	public function configure_fail2ban() {

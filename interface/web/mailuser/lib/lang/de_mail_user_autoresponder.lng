@@ -1,6 +1,6 @@
 <?php
 $wb['mailbox_autoresponder_txt'] = 'Autoresponder';
-$wb['autoresponder_subject'] = 'Out of office Antwort';
+$wb['autoresponder_subject'] = 'Out-of-Office Antwort';
 $wb['autoresponder_text_txt'] = 'Text';
 $wb['autoresponder_txt'] = 'Aktiv';
 $wb['autoresponder_start_date_txt'] = 'Start am';

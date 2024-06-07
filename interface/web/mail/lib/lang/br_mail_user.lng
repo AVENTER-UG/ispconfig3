@@ -75,3 +75,4 @@ $wb['tooltip_purge_trash_days_txt'] = '0 = desabilitado';
 $wb['purge_junk_days_txt'] = 'Esvazia pasta Junk automaticamente após N dias';
 $wb['tooltip_purge_junk_days_txt'] = '0 = desabilitado';
 $wb['used_txt'] = 'Used';
+$wb['mail_addresses_txt'] = 'Receives also mail for';

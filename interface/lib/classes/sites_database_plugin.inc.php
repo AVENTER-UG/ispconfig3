@@ -44,8 +44,7 @@ class sites_database_plugin {
 
 			//* The Database user shall be owned by the same group then the website
 			$sys_groupid = $app->functions->intval($web['sys_groupid']);
-			$backup_interval = $web['backup_interval'];
-			$backup_format_web = $web['backup_format_web'];
+			$backup_interval = $app->db->quote($form_page->dataRecord["backup_interval"]);
 			$backup_format_db = $web['backup_format_db'];
 			$backup_copies = $app->functions->intval($web['backup_copies']);
 

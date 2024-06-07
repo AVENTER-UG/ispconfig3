@@ -1,7 +1,7 @@
 <?php
-$wb['no_settings_txt'] = 'Es gibt keine Einstellmöglichkeiten für das Standard Design.';
+$wb['no_settings_txt'] = 'Es gibt keine Einstellmöglichkeiten für das Standarddesign.';
 $wb['btn_start_txt'] = 'Speichern';
 $wb['btn_cancel_txt'] = 'Zurück';
-$wb['list_head_txt'] = 'Standard Design Einstellungen';
-$wb['list_desc_txt'] = 'Spezielle Optionen des standard Designs ändern';
+$wb['list_head_txt'] = 'Standarddesign Einstellungen';
+$wb['list_desc_txt'] = 'Spezielle Optionen des Standarddesigns ändern';
 ?>
