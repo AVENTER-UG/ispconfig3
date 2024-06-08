@@ -53,6 +53,12 @@ class cronjob_mailbox_stats_hourly extends cronjob {
 	public function onRunJob() {
 		global $app, $conf;
 
+		// Skip if no last access info needs to be shown.
+		$mail_config = $app->getconf->get_global_config('mail');
+		if (!isset($mail_config['mailbox_show_last_access']) || $mail_config['mailbox_show_last_access'] != 'y') {
+			return;
+		}
+
 		$sql = "SELECT mailuser_id FROM mail_user WHERE server_id = ?";
 		$records = $app->db->queryAllRecords($sql, $conf['server_id']);
     if(count($records) > 0) {
