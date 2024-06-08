@@ -34,8 +34,10 @@ require_once '../../lib/app.inc.php';
 //* Check permissions for module
 $app->auth->check_module_permissions('mail');
 
+$app->uses('functions');
+
 $type = $_GET['type'];
-$domain_id = $_GET['domain_id'];
+$domain_id = $app->functions->idn_encode($_GET['domain_id']);
 
 if($type == 'create_dkim' && $domain_id != ''){
 	$dkim_public = $_GET['dkim_public'];
@@ -51,7 +53,7 @@ if($type == 'create_dkim' && $domain_id != ''){
 	unset($rec);
 	$mail_config = $app->getconf->get_server_config($server_id, 'mail');
 	$dkim_strength = $app->functions->intval($mail_config['dkim_strength']);
-	if ($dkim_strength=='') $dkim_strength = 2048;
+	if ($dkim_strength == '' || $dkim_strength == 0 ) $dkim_strength = 2048;
 
 	$rnd_val = $dkim_strength * 10;
 	$app->system->exec_safe('openssl rand -out ../../temp/random-data.bin '.$rnd_val.' 2> /dev/null');

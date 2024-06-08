@@ -64,6 +64,8 @@ if (isset($_POST['client_group_id'])) {
 	$sys_groupid = $_SESSION["s"]["user"]["default_group"];
 }
 $domain = (isset($_POST['domain'])&&!empty($_POST['domain']))?$_POST['domain']:NULL;
+$settings = $app->getconf->get_global_config('dns');
+$external_slave_servers = $settings['dns_external_slave_fqdn'];
 
 // get the correct server_id
 if (isset($_POST['server_id'])) {
@@ -73,11 +75,11 @@ if (isset($_POST['server_id'])) {
 	$server_id = $app->functions->intval($_POST['server_id_value']);
 	$post_server_id = true;
 } else {
-	$settings = $app->getconf->get_global_config('dns');
 	$server_id = $app->functions->intval($settings['default_dnsserver']);
 	$post_server_id = false;
 }
 
+$ignore_ns_records = (isset($_POST['ignore_ns_records']))?$app->functions->intval($_POST['ignore_ns_records']):0;
 
 // Load the templates
 $records = $app->db->queryAllRecords("SELECT * FROM dns_template WHERE visible = 'Y'");
@@ -190,16 +192,17 @@ if ($settings['use_domain_module'] == 'y') {
 		/* We have domains in the list, so create the drop-down-list */
 		foreach( $domains as $domain) {
 			$domain_select .= "<option value=" . $domain['domain_id'] ;
-			if ($domain['domain'] == $_POST['domain']) {
+			if ($domain['domain_id'] == $_POST['domain']) {
 				$domain_select .= " selected";
+				$selected_domain = $domain['domain'];
 			}
 			$domain_select .= ">" . $app->functions->idn_decode($domain['domain']) . ".</option>\r\n";
 		}
 	}
 	$app->tpl->setVar("domain_option", $domain_select);
 	/* check if the selected domain can be used! */
-	if ($domain) {
-		$domain_check = $app->tools_sites->checkDomainModuleDomain($domain);
+	if ($selected_domain) {
+		$domain_check = $app->tools_sites->checkDomainModuleDomain($selected_domain);
 		if(!$domain_check) {
 			// invalid domain selected
 			$domain = NULL;
@@ -207,6 +210,7 @@ if ($settings['use_domain_module'] == 'y') {
 			$domain = $domain_check;
 		}
 	}
+	$domain = $selected_domain;
 }
 
 $lng_file = 'lib/lang/'.$app->functions->check_language($_SESSION['s']['language']).'_dns_import.lng';
@@ -261,6 +265,13 @@ if(isset($_FILES['file']['name']) && is_uploaded_file($_FILES['file']['tmp_name'
 			$servers[$i]['server_name'] .= ".";
 		}
 	}
+	if (!empty($external_slave_servers)) {
+		$external_servers = preg_split('/[\s,]+/', $external_slave_servers);
+		foreach($external_servers as $e) {
+			$servers[]['server_name'] = rtrim($e, '.') . '.';
+		}
+	}
+
 	$lines = file($_FILES['file']['tmp_name']);
 
 	// Remove empty lines, comments, whitespace, tabs, etc.
@@ -322,7 +333,7 @@ if(isset($_FILES['file']['name']) && is_uploaded_file($_FILES['file']['tmp_name'
 	$owner = $name;
 	$r = 0;
 	$dns_rr = array();
-	$add_default_ns = TRUE;
+	$ns_record_included = FALSE;
 	$found_soa = FALSE;
 	foreach($lines as $line){
 
@@ -570,7 +581,12 @@ if(isset($_FILES['file']['name']) && is_uploaded_file($_FILES['file']['tmp_name'
 			$dns_rr[$r]['type'] = strtoupper($resource_type);
 
 			if($dns_rr[$r]['type'] == 'NS' && fqdn_name( $dns_rr[$r]['name'], $soa['name'] ) == $soa['name']){
-				$add_default_ns = FALSE;
+				if ($ignore_ns_records) {
+					unset($dns_rr[$r]);
+					continue;
+				} else {
+					$ns_record_included = TRUE;
+				}
 			}
 
 			$dns_rr[$r]['ttl'] = $app->functions->intval($dns_rr[$r]['ttl']);
@@ -601,7 +617,7 @@ if(isset($_FILES['file']['name']) && is_uploaded_file($_FILES['file']['tmp_name'
 		$i++;
 	}
 
-	if ( $add_default_ns ) {
+	if ( $ignore_ns_records || !$ns_record_included ) {
 		foreach ($servers as $server){
 			$dns_rr[$r]['name'] = $soa['name'];
 			$dns_rr[$r]['type'] = 'NS';
@@ -661,7 +677,7 @@ $error[] = print_r( $soa, true );
 			"expire" => $soa['expire'],
 			"minimum" => $soa['minimum'],
 			"ttl" => $soa['ttl'],
-			"active" => 'Y',
+			"active" => 'N', // Activated later when all DNS records are added.
 			"xfer" => $xfer
 		);
 		$dns_soa_id = $app->db->datalogInsert('dns_soa', $insert_data, 'id');
@@ -693,6 +709,9 @@ $error[] = print_r( $soa, true );
 				);
 				$dns_rr_id = $app->db->datalogInsert('dns_rr', $insert_data, 'id');
 			}
+
+			// Activate the DNS zone.
+			$app->db->datalogUpdate('dns_soa', array('active' => 'Y'), 'id', $dns_soa_id);
 
 			$msg[] = $wb['zone_file_successfully_imported_txt'];
 		} elseif (is_array($dns_rr)) {

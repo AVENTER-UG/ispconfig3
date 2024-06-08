@@ -85,7 +85,7 @@ function get_distname() {
 				}
 				
 				$distname = 'Ubuntu';
-				$distid = 'debian40';
+				$distid = 'debian60';
 				$distbaseid = 'debian';
 
 				preg_match("/.*VERSION=\"(.*)\".*/ui", $os_release, $ver);
@@ -98,6 +98,10 @@ function get_distname() {
 				$mainver = current($mainver).'.'.next($mainver);
 			}
 			switch ($mainver){
+			case "24.04":
+				$relname = "(Noble Numbat)";
+				$distconfid = 'ubuntu2404';
+				break;
 			case "22.04":
 				$relname = "(Jammy Jellyfish)";
 				$distconfid = 'ubuntu2204';
@@ -270,7 +274,7 @@ function get_distname() {
 			$distname = 'Debian';
 			$distver = 'Unknown';
 			$distid = 'debian60';
-			$distconfid = 'debian100';
+			$distconfid = 'debian120';
 			$distbaseid = 'debian';
 			swriteln("Operating System: Debian or compatible, unknown version.\n");
 		}

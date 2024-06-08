@@ -399,7 +399,7 @@ class installer extends installer_base
 			if(is_file($config_dir.'/master.cf')){
 				copy($config_dir.'/master.cf', $config_dir.'/master.cf~2');
 			}
-			if(is_file($config_dir.'/master.cf~')){
+			if(is_file($config_dir.'/master.cf~2')){
 				chmod($config_dir.'/master.cf~2', 0400);
 			}
 			//* Configure master.cf and add a line for deliver
@@ -942,7 +942,8 @@ class installer extends installer_base
 				caselog($command.' &> /dev/null 2> /dev/null', __FILE__, __LINE__, "EXECUTED: $command", "Failed to execute the command $command");
 			}
 
-			$command = 'adduser '.$conf['apache']['user'].' '.$apps_vhost_group;
+			//$command = 'adduser '.$conf['apache']['user'].' '.$apps_vhost_group;
+      $command = 'usermod -a -G '.$apps_vhost_group.' '.$conf['apache']['user'];
 			caselog($command.' &> /dev/null', __FILE__, __LINE__, "EXECUTED: $command", "Failed to execute the command $command");
 
 			if(!@is_dir($install_dir)){
@@ -1002,7 +1003,8 @@ class installer extends installer_base
 			if(!is_user($apps_vhost_user)) caselog($command.' &> /dev/null 2> /dev/null', __FILE__, __LINE__, "EXECUTED: $command", "Failed to execute the command $command");
 
 
-			$command = 'adduser '.$conf['nginx']['user'].' '.$apps_vhost_group;
+			//$command = 'adduser '.$conf['nginx']['user'].' '.$apps_vhost_group;
+      $command = 'usermod -a -G '.$apps_vhost_group.' '.$conf['nginx']['user'];
 			caselog($command.' &> /dev/null', __FILE__, __LINE__, "EXECUTED: $command", "Failed to execute the command $command");
 
 			if(!@is_dir($install_dir)){
@@ -1362,18 +1364,18 @@ class installer extends installer_base
 		// and must be fixed as this will allow the apache user to read the ispconfig files.
 		// Later this must run as own apache server or via suexec!
 		if($conf['apache']['installed'] == true){
-			$command = 'adduser '.$conf['apache']['user'].' ispconfig';
+			$command = 'usermod -a -G ispconfig '.$conf['apache']['user'];
 			caselog($command.' &> /dev/null', __FILE__, __LINE__, "EXECUTED: $command", "Failed to execute the command $command");
 			if(is_group('ispapps')){
-				$command = 'adduser '.$conf['apache']['user'].' ispapps';
+        $command = 'usermod -a -G ispapps '.$conf['apache']['user'];
 				caselog($command.' &> /dev/null', __FILE__, __LINE__, "EXECUTED: $command", "Failed to execute the command $command");
 			}
 		}
 		if($conf['nginx']['installed'] == true){
-			$command = 'adduser '.$conf['nginx']['user'].' ispconfig';
+      $command = 'usermod -a -G ispconfig '.$conf['nginx']['user'];
 			caselog($command.' &> /dev/null', __FILE__, __LINE__, "EXECUTED: $command", "Failed to execute the command $command");
 			if(is_group('ispapps')){
-				$command = 'adduser '.$conf['nginx']['user'].' ispapps';
+        $command = 'usermod -a -G ispapps '.$conf['nginx']['user'];
 				caselog($command.' &> /dev/null', __FILE__, __LINE__, "EXECUTED: $command", "Failed to execute the command $command");
 			}
 		}
@@ -1509,6 +1511,12 @@ class installer extends installer_base
 		if(!is_link('/usr/local/bin/ispconfig_update_from_dev.sh')) symlink($install_dir.'/server/scripts/ispconfig_update.sh', '/usr/local/bin/ispconfig_update_from_dev.sh');
 		if(!is_link('/usr/local/bin/ispconfig_update.sh')) symlink($install_dir.'/server/scripts/ispconfig_update.sh', '/usr/local/bin/ispconfig_update.sh');
 
+		// Install ISPConfig cli command
+		if(is_file('/usr/local/bin/ispc')) unlink('/usr/local/bin/ispc');
+		chown($install_dir.'/server/cli/ispc', 'root');
+		chmod($install_dir.'/server/cli/ispc', 0700);
+		symlink($install_dir.'/server/cli/ispc', '/usr/local/bin/ispc');
+
 		// Make executable then unlink and symlink letsencrypt pre, post and renew hook scripts
 		chown($install_dir.'/server/scripts/letsencrypt_pre_hook.sh', 'root');
 		chown($install_dir.'/server/scripts/letsencrypt_post_hook.sh', 'root');
@@ -1597,3 +1605,4 @@ class installer extends installer_base
 }
 
 ?>
+

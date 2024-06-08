@@ -1,6 +1,6 @@
 <?php
 $wb['domain_txt'] = 'Domain';
-$wb['destination_txt'] = 'Ziel E-Mail';
+$wb['destination_txt'] = 'Ziel-E-Mail';
 $wb['active_txt'] = 'Aktiv';
 $wb['domain_error_unique'] = 'Es besteht bereits ein Catchall Eintrag für diese Domain.';
 $wb['no_domain_perm'] = 'Sie haben keine Berechtigung für diese Domain.';
@@ -10,4 +10,4 @@ $wb['source_txt'] = 'Quelle';
 $wb['destination_error_isemail'] = 'Das Ziel ist keine gültige E-Mail Adresse.';
 $wb['greylisting_txt'] = 'Aktiviere Greylisting';
 $wb['send_as_txt'] = 'Senden als';
-$wb['send_as_exp'] = 'Allow destination to send from email addresses in this domain';
+$wb['send_as_exp'] = 'Erlaube dem Ziel, von E-Mail-Adressen in dieser Domäne zu senden.';

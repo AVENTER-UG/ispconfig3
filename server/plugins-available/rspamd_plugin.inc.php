@@ -282,74 +282,76 @@ class rspamd_plugin {
 				$app->system->mkdirpath($this->users_config_dir);
 			}
 
-			if((!$this->isValidEmail($app->functions->idn_encode($email_address))) || !isset($data['new']['policy_id']) || intval($data['new']['policy_id']) == 0 && $type == 'spamfilter_user') {
-				if(is_file($settings_file)) {
-					unlink($settings_file);
-				}
-			} else {
-
-				$app->load('tpl');
-
-				$tpl = new tpl();
-				if (file_exists($conf['rootpath']."/conf-custom/install/rspamd_users.inc.conf.master")) {
-					$tpl->newTemplate($conf['rootpath']."/conf-custom/install/rspamd_users.inc.conf.master");
-				} else {
-					$tpl->newTemplate("rspamd_users.inc.conf.master");
-				}
-
-				$tpl->setVar('record_identifier', 'ispc_' . $type . '_' . $entry_id);
-				$tpl->setVar('priority', $settings_priority);
-
-				if($type === 'spamfilter_user') {
-					if($data[$use_data]['local'] === 'Y') {
-						$tpl->setVar('to_email', $app->functions->idn_encode($email_address));
-					} else {
-						$tpl->setVar('from_email', $app->functions->idn_encode($email_address));
+			if ($type == 'spamfilter_user'){
+				if((!$this->isValidEmail($app->functions->idn_encode($email_address))) || !isset($data['new']['policy_id']) || intval($data['new']['policy_id']) == 0) {
+					if(is_file($settings_file)) {
+						unlink($settings_file);
 					}
-					// unneded? $spamfilter appears unused
-					$spamfilter = $data[$use_data];
 				} else {
-					$tpl->setVar('to_email', $app->functions->idn_encode($email_address));
 
-					// need to get matching spamfilter user if any
-					// unneded? $spamfilter appears unused
-					$spamfilter = $app->db->queryOneRecord('SELECT * FROM spamfilter_users WHERE `email` = ?', $email_address);
-				}
+					$app->load('tpl');
 
-				if(!isset($policy['rspamd_spam_tag_level'])) {
-					$policy['rspamd_spam_tag_level'] = 6.0;
-				}
-				if(!isset($policy['rspamd_spam_tag_method'])) {
-					$policy['rspamd_spam_tag_method'] = 'add_header';
-				}
-				if(!isset($policy['rspamd_spam_kill_level'])) {
-					$policy['rspamd_spam_kill_level'] = 15.0;
-				}
-				if(!isset($policy['rspamd_virus_kill_level'])) {
-					$policy['rspamd_virus_kill_level'] = floatval($policy['rspamd_spam_kill_level']) + 1000;
-				}
+					$tpl = new tpl();
+					if (file_exists($conf['rootpath']."/conf-custom/install/rspamd_users.inc.conf.master")) {
+						$tpl->newTemplate($conf['rootpath']."/conf-custom/install/rspamd_users.inc.conf.master");
+					} else {
+						$tpl->newTemplate("rspamd_users.inc.conf.master");
+					}
 
-				$tpl->setVar('rspamd_spam_tag_level', floatval($policy['rspamd_spam_tag_level']));
-				$tpl->setVar('rspamd_spam_tag_method', $policy['rspamd_spam_tag_method']);
-				$tpl->setVar('rspamd_spam_kill_level', floatval($policy['rspamd_spam_kill_level']));
-				$tpl->setVar('rspamd_virus_kill_level', floatval($policy['rspamd_spam_kill_level']) + 1000);
+					$tpl->setVar('record_identifier', 'ispc_' . $type . '_' . $entry_id);
+					$tpl->setVar('priority', $settings_priority);
 
-				if(isset($policy['spam_lover']) && $policy['spam_lover'] == 'Y') {
-					$tpl->setVar('spam_lover', true);
+					if($type === 'spamfilter_user') {
+						if($data[$use_data]['local'] === 'Y') {
+							$tpl->setVar('to_email', $app->functions->idn_encode($email_address));
+						} else {
+							$tpl->setVar('from_email', $app->functions->idn_encode($email_address));
+						}
+						// unneded? $spamfilter appears unused
+						$spamfilter = $data[$use_data];
+					} else {
+						$tpl->setVar('to_email', $app->functions->idn_encode($email_address));
+
+						// need to get matching spamfilter user if any
+						// unneded? $spamfilter appears unused
+						$spamfilter = $app->db->queryOneRecord('SELECT * FROM spamfilter_users WHERE `email` = ?', $email_address);
+					}
+
+					if(!isset($policy['rspamd_spam_tag_level'])) {
+						$policy['rspamd_spam_tag_level'] = 6.0;
+					}
+					if(!isset($policy['rspamd_spam_tag_method'])) {
+						$policy['rspamd_spam_tag_method'] = 'add_header';
+					}
+					if(!isset($policy['rspamd_spam_kill_level'])) {
+						$policy['rspamd_spam_kill_level'] = 15.0;
+					}
+					if(!isset($policy['rspamd_virus_kill_level'])) {
+						$policy['rspamd_virus_kill_level'] = floatval($policy['rspamd_spam_kill_level']) + 1000;
+					}
+
+					$tpl->setVar('rspamd_spam_tag_level', floatval($policy['rspamd_spam_tag_level']));
+					$tpl->setVar('rspamd_spam_tag_method', $policy['rspamd_spam_tag_method']);
+					$tpl->setVar('rspamd_spam_kill_level', floatval($policy['rspamd_spam_kill_level']));
+					$tpl->setVar('rspamd_virus_kill_level', floatval($policy['rspamd_spam_kill_level']) + 1000);
+
+					if(isset($policy['spam_lover']) && $policy['spam_lover'] == 'Y') {
+						$tpl->setVar('spam_lover', true);
+					}
+					if(isset($policy['virus_lover']) && $policy['virus_lover'] == 'Y') {
+						$tpl->setVar('virus_lover', true);
+					}
+
+					$tpl->setVar('greylisting', $greylisting);
+
+					if(isset($policy['rspamd_spam_greylisting_level'])) {
+						$tpl->setVar('greylisting_level', floatval($policy['rspamd_spam_greylisting_level']));
+					} else {
+						$tpl->setVar('greylisting_level', 0.1);
+					}
+
+					$app->system->file_put_contents($settings_file, $tpl->grab());
 				}
-				if(isset($policy['virus_lover']) && $policy['virus_lover'] == 'Y') {
-					$tpl->setVar('virus_lover', true);
-				}
-
-				$tpl->setVar('greylisting', $greylisting);
-
-				if(isset($policy['rspamd_spam_greylisting_level'])) {
-					$tpl->setVar('greylisting_level', floatval($policy['rspamd_spam_greylisting_level']));
-				} else {
-					$tpl->setVar('greylisting_level', 0.1);
-				}
-
-				$app->system->file_put_contents($settings_file, $tpl->grab());
 			}
 		}
 

@@ -268,7 +268,7 @@ class dns_wizard
                 "expire" => $expire,
                 "minimum" => $minimum,
                 "ttl" => $ttl,
-                "active" => 'Y',
+                "active" => 'N', // Activated later when all DNS records are added.
                 "xfer" => $xfer,
                 "also_notify" => $also_notify,
                 "update_acl" => $update_acl,
@@ -300,6 +300,9 @@ class dns_wizard
                     $dns_rr_id = $app->db->datalogInsert('dns_rr', $insert_data, 'id');
                 }
             }
+
+            // Activate the DNS zone.
+            $app->db->datalogUpdate('dns_soa', array('active' => 'Y'), 'id', $dns_soa_id);
 
             return 'ok';
 

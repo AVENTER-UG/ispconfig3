@@ -47,3 +47,9 @@ $wb['limit_database_quota_txt'] = 'Cota do Banco de Dados';
 $wb['limit_database_quota_error_notint'] = 'A cota do Banco de Dados deve ser um número.';
 $wb['limit_database_quota_free_txt'] = 'Cota do Banco de Dados disponível';
 $wb['limit_database_quota_not_0_txt'] = 'Database quota can not be 0';
+$wb['no_backup_txt'] = 'Sem backup';
+$wb['daily_backup_txt'] = 'Diário';
+$wb['weekly_backup_txt'] = 'Semanal';
+$wb['monthly_backup_txt'] = 'Mensal';
+$wb['backup_interval_txt'] = 'Intervalo entre backups';
+?>

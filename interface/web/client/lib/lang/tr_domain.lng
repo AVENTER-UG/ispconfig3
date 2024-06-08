@@ -3,4 +3,5 @@ $wb['domain_error_empty'] = 'Etki alanı boş olamaz';
 $wb['domain_error_unique'] = 'Aynı etki alanı zaten var';
 $wb['domain_error_regex'] = 'Bu etki alanına izin verilmiyor';
 $wb['Domain'] = 'Etki Alanı';
+$wb['domain_txt'] = 'Domain';
 ?>

@@ -44,9 +44,9 @@ class server_services_plugin {
 
 	var $web_plugins = array('cron_plugin', 'cron_jailkit_plugin', 'ftpuser_base_plugin', 'shelluser_base_plugin', 'shelluser_jailkit_plugin', 'webserver_plugin');
 	var $apache_plugins = array('apache2_plugin');
-	var $nginx_plugins = array('nginx_plugin', 'nginx_reverseproxy_plugin');
+	var $nginx_plugins = array('nginx_plugin');
 
-	var $bind_plugins = array('bind_dlz_plugin', 'bind_plugin');
+	var $bind_plugins = array('bind_plugin');
 	var $powerdns_plugins = array('powerdns_plugin');
 
 	var $db_plugins = array('mysql_clientdb_plugin');

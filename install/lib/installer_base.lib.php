@@ -436,7 +436,7 @@ class installer_base extends stdClass {
 		$tpl_ini_array['fastcgi']['fastcgi_bin'] = $conf['fastcgi']['fastcgi_bin'];
 		$tpl_ini_array['server']['hostname'] = $conf['hostname'];
 		$tpl_ini_array['server']['ip_address'] = @gethostbyname($conf['hostname']);
-		$tpl_ini_array['server']['firewall'] = ($conf['ufw']['installed'] == true)?'ufw':'bastille';
+		$tpl_ini_array['server']['firewall'] = (@$conf['ufw']['installed'] == true)?'ufw':'bastille';
 		$tpl_ini_array['web']['website_basedir'] = $conf['web']['website_basedir'];
 		$tpl_ini_array['web']['website_path'] = $conf['web']['website_path'];
 		$tpl_ini_array['web']['website_symlinks'] = $conf['web']['website_symlinks'];
@@ -916,7 +916,7 @@ class installer_base extends stdClass {
 
 		if (is_dir($config_dir)) {
 			if(is_file($config_dir.'/'.$jk_init)) copy($config_dir.'/'.$jk_init, $config_dir.'/'.$jk_init.'~');
-			if(is_file($config_dir.'/'.$jk_chrootsh.'.master')) copy($config_dir.'/'.$jk_chrootsh.'.master', $config_dir.'/'.$jk_chrootsh.'~');
+			if(is_file($config_dir.'/'.$jk_chrootsh)) copy($config_dir.'/'.$jk_chrootsh, $config_dir.'/'.$jk_chrootsh.'~');
 
 			if(is_file($conf['ispconfig_install_dir'].'/server/conf-custom/install/'.$jk_init.'.master')) {
 				copy($conf['ispconfig_install_dir'].'/server/conf-custom/install/'.$jk_init.'.master', $config_dir.'/'.$jk_init);
@@ -1353,7 +1353,7 @@ class installer_base extends stdClass {
 			$change_maildrop_flags = @(preg_match("/$quoted_regex/", $configfile))?false:true;
 		}
 		if ($change_maildrop_flags) {
-			//* Change maildrop service in posfix master.cf
+			//* Change maildrop service in postfix master.cf
 			if(is_file($config_dir.'/master.cf')) {
 				copy($config_dir.'/master.cf', $config_dir.'/master.cf~');
 			}
@@ -1362,8 +1362,8 @@ class installer_base extends stdClass {
  			}
 			$configfile = $config_dir.'/master.cf';
 			$content = rf($configfile);
-			$content =	str_replace('flags=DRhu user=vmail argv=/usr/bin/maildrop -d ${recipient}',
-						'flags=DRhu user='.$cf['vmail_username'].' argv=/usr/bin/maildrop -d '.$cf['vmail_username'].' ${extension} ${recipient} ${user} ${nexthop} ${sender}',
+			$content =	preg_replace('/flags=(DRX?hu) user=vmail argv=\/usr\/bin\/maildrop -d \${recipient}/',
+						'flags=$1 user='.$cf['vmail_username'].' argv=/usr/bin/maildrop -d '.$cf['vmail_username'].' \${extension} \${recipient} \${user} \${nexthop} \${sender}',
 						$content);
 			wf($configfile, $content);
 		}
@@ -1539,7 +1539,7 @@ class installer_base extends stdClass {
 			if(is_file($config_dir.'/master.cf')){
 				copy($config_dir.'/master.cf', $config_dir.'/master.cf~2');
 			}
-			if(is_file($config_dir.'/master.cf~')){
+			if(is_file($config_dir.'/master.cf~2')){
 				chmod($config_dir.'/master.cf~2', 0400);
 			}
 			//* Configure master.cf and add a line for deliver
@@ -2049,7 +2049,7 @@ class installer_base extends stdClass {
 			rename("/etc/rspamd/local.d/greylist.conf", "/etc/rspamd/local.d/greylist.old");
 		}
 
-		exec('chmod a+r /etc/rspamd/local.d/* /etc/rspamd/local.d/maps.d/* /etc/rspamd/override.d/*');
+		exec('chmod a+r,-x+X /etc/rspamd/local.d/* /etc/rspamd/local.d/maps.d/* /etc/rspamd/override.d/*');
 		# protect passwords in these files
 		exec('chgrp _rspamd /etc/rspamd/local.d/redis.conf /etc/rspamd/local.d/classifier-bayes.conf');
 		exec('chmod 640 /etc/rspamd/local.d/redis.conf /etc/rspamd/local.d/classifier-bayes.conf');
@@ -2060,8 +2060,10 @@ class installer_base extends stdClass {
 		}
 
 		# unneccesary, since this was done above?
-		$command = 'usermod -a -G amavis _rspamd';
-		caselog($command.' &> /dev/null', __FILE__, __LINE__, "EXECUTED: $command", "Failed to execute the command $command");
+		if(is_user('_rspamd') && is_group('amavis')) {
+			$command = 'usermod -a -G amavis _rspamd';
+			caselog($command.' &> /dev/null', __FILE__, __LINE__, "EXECUTED: $command", "Failed to execute the command $command");
+		}
 
 		if(strpos(rf('/etc/rspamd/rspamd.conf'), '.include "$LOCAL_CONFDIR/local.d/users.conf"') === false){
 			af('/etc/rspamd/rspamd.conf', '.include "$LOCAL_CONFDIR/local.d/users.conf"');
@@ -2096,6 +2098,18 @@ class installer_base extends stdClass {
 		$tpl->setVar('rspamd_password', $rspamd_password);
 		wf('/etc/rspamd/local.d/worker-controller.inc', $tpl->grab());
 		chmod('/etc/rspamd/local.d/worker-controller.inc', 0644);
+
+		// rspamd.local.lua
+		if(file_exists($conf['ispconfig_install_dir']."/server/conf-custom/install/rspamd.local.lua.master")) {
+			exec('cp '.$conf['ispconfig_install_dir']."/server/conf-custom/install/rspamd.local.lua.master /etc/rspamd/rspamd.local.lua");
+		} else {
+			exec("cp tpl/rspamd.local.lua.master /etc/rspamd/rspamd.local.lua");
+		}
+		if(file_exists('/etc/rspamd/rspamd.local.lua')) {
+			exec('chgrp _rspamd /etc/rspamd/rspamd.local.lua');
+			exec('chmod 640 /etc/rspamd/rspamd.local.lua');
+		}
+
 	}
 
 	public function configure_spamassassin() {
@@ -2394,13 +2408,17 @@ class installer_base extends stdClass {
 			replaceLine('/etc/apache2/ports.conf', 'Listen 443', 'Listen 443', 1);
 
 			// Comment out the namevirtualhost lines, as they were added by ispconfig in ispconfig.conf file again
-			replaceLine('/etc/apache2/ports.conf', 'NameVirtualHost *:80', '# NameVirtualHost *:80', 1);
-			replaceLine('/etc/apache2/ports.conf', 'NameVirtualHost *:443', '# NameVirtualHost *:443', 1);
+			replaceLine('/etc/apache2/ports.conf', 'NameVirtualHost *:80', '# NameVirtualHost *:80', 1, 0);
+			replaceLine('/etc/apache2/ports.conf', 'NameVirtualHost *:443', '# NameVirtualHost *:443', 1, 0);
 		}
 
 		if(is_file('/etc/apache2/mods-available/fcgid.conf')) {
 			// add or modify the parameters for fcgid.conf
-			replaceLine('/etc/apache2/mods-available/fcgid.conf','MaxRequestLen','MaxRequestLen 15728640',1);
+			if(hasLine('/etc/apache2/mods-available/fcgid.conf','MaxRequestLen')) {
+				replaceLine('/etc/apache2/mods-available/fcgid.conf','MaxRequestLen','  MaxRequestLen 15728640',1);
+			} else {
+				preg_replace('/^(.*\n)(.*)$/sU', '$1  MaxRequestLen 15728640\n$2', '/etc/apache2/mods-available/fcgid.conf');
+			}
 		}
 
 		if(is_file('/etc/apache2/apache.conf')) {
@@ -2597,21 +2615,23 @@ class installer_base extends stdClass {
 
 		$row = $this->db->queryOneRecord('SELECT * FROM ?? WHERE server_id = ?', $conf["mysql"]["database"] . '.firewall', $conf['server_id']);
 
-		if(trim($row['tcp_port']) != '' || trim($row['udp_port']) != '') {
-			$tcp_public_services = trim(str_replace(',', ' ', $row['tcp_port']));
-			$udp_public_services = trim(str_replace(',', ' ', $row['udp_port']));
-		} else {
-			$tcp_public_services = '21 22 25 53 80 110 143 443 3306 8080 10000';
-			$udp_public_services = '53';
-		}
+		if (!empty($row)) {
+			if(trim($row['tcp_port']) != '' || trim($row['udp_port']) != '') {
+				$tcp_public_services = trim(str_replace(',', ' ', $row['tcp_port']));
+				$udp_public_services = trim(str_replace(',', ' ', $row['udp_port']));
+			} else {
+				$tcp_public_services = '21 22 25 53 80 110 143 443 3306 8080 10000';
+				$udp_public_services = '53';
+			}
 
-		if(!stristr($tcp_public_services, $conf['apache']['vhost_port'])) {
-			$tcp_public_services .= ' '.intval($conf['apache']['vhost_port']);
-			if($row['tcp_port'] != '') $this->db->query("UPDATE firewall SET tcp_port = tcp_port + ? WHERE server_id = ?", ',' . intval($conf['apache']['vhost_port']), $conf['server_id']);
-		}
+			if(!stristr($tcp_public_services, $conf['apache']['vhost_port'])) {
+				$tcp_public_services .= ' '.intval($conf['apache']['vhost_port']);
+				if($row['tcp_port'] != '') $this->db->query("UPDATE firewall SET tcp_port = tcp_port + ? WHERE server_id = ?", ',' . intval($conf['apache']['vhost_port']), $conf['server_id']);
+			}
 
-		$content = str_replace('{TCP_PUBLIC_SERVICES}', $tcp_public_services, $content);
-		$content = str_replace('{UDP_PUBLIC_SERVICES}', $udp_public_services, $content);
+			$content = str_replace('{TCP_PUBLIC_SERVICES}', $tcp_public_services, $content);
+			$content = str_replace('{UDP_PUBLIC_SERVICES}', $udp_public_services, $content);
+		}
 
 		wf('/etc/Bastille/bastille-firewall.cfg', $content);
 
@@ -2682,7 +2702,7 @@ class installer_base extends stdClass {
 
 			//$command = 'adduser '.$conf['apache']['user'].' '.$apps_vhost_group;
 			$command = 'usermod -a -G '.$apps_vhost_group.' '.$conf['apache']['user'];
-			caselog($command.' &> /dev/null', __FILE__, __LINE__, "EXECUTED: $command", "Failed to execute the command $command");
+			caselog($command.' &> /dev/null 2>&1', __FILE__, __LINE__, "EXECUTED: $command", "Failed to execute the command $command");
 
 			if(!@is_dir($install_dir)){
 				mkdir($install_dir, 0755, true);
@@ -2774,7 +2794,7 @@ class installer_base extends stdClass {
 
 			//$command = 'adduser '.$conf['nginx']['user'].' '.$apps_vhost_group;
 			$command = 'usermod -a -G '.$apps_vhost_group.' '.$conf['nginx']['user'];
-			caselog($command.' &> /dev/null', __FILE__, __LINE__, "EXECUTED: $command", "Failed to execute the command $command");
+			caselog($command.' &> /dev/null 2>&1', __FILE__, __LINE__, "EXECUTED: $command", "Failed to execute the command $command");
 
 			if(!@is_dir($install_dir)){
 				mkdir($install_dir, 0755, true);
@@ -2982,7 +3002,7 @@ class installer_base extends stdClass {
 			$dnsa=dns_get_record($hostname, DNS_A);
 			if($dnsa) {
 				foreach ($dnsa as $rec) {
-					$dns_ips[] = $rec['ip'];
+					if(is_array($rec) && isset($rec['ip'])) $dns_ips[] = $rec['ip'];
 				}
 			}
 		}
@@ -2990,7 +3010,7 @@ class installer_base extends stdClass {
 			$dnsaaaa=dns_get_record($hostname, DNS_AAAA);
 			if($dnsaaaa) {
 				foreach ($dnsaaaa as $rec) {
-					$dns_ips[] = $rec['ip'];
+					if(is_array($rec) && isset($rec['ip'])) $dns_ips[] = $rec['ip'];
 				}
 			}
 		}
@@ -3044,6 +3064,8 @@ class installer_base extends stdClass {
 			$crt_subject = exec("openssl x509 -in ".escapeshellarg($ssl_crt_file)." -inform PEM -noout -subject");
 			$crt_issuer = exec("openssl x509 -in ".escapeshellarg($ssl_crt_file)." -inform PEM -noout -issuer");
 		}
+
+		$issued_successfully = false;
 
 		if ((@file_exists($ssl_crt_file) && ($crt_subject == $crt_issuer)) || (!@is_dir($acme_cert_dir) || !@file_exists($check_acme_file) || !@file_exists($ssl_crt_file) || md5_file($check_acme_file) != md5_file($ssl_crt_file)) && $ip_address_match == true) {
 
@@ -3142,8 +3164,6 @@ class installer_base extends stdClass {
 					system($this->getinitcommand($conf[$server]['init_script'], 'restart').' &> /dev/null');
 				}
 			}
-
-			$issued_successfully = false;
 
 			// Backup existing ispserver ssl files
 			//
@@ -3654,19 +3674,31 @@ class installer_base extends stdClass {
 		// and must be fixed as this will allow the apache user to read the ispconfig files.
 		// Later this must run as own apache server or via suexec!
 		if($conf['apache']['installed'] == true){
-			$command = 'adduser '.$conf['apache']['user'].' ispconfig';
-			caselog($command.' &> /dev/null', __FILE__, __LINE__, "EXECUTED: $command", "Failed to execute the command $command");
-			if(is_group('ispapps')){
-				$command = 'adduser '.$conf['apache']['user'].' ispapps';
+			$ispc_groupinfo = posix_getgrnam('ispconfig');
+			if(!in_array($conf['apache']['user'],$ispc_groupinfo['members'])) {
+				$command = 'adduser '.$conf['apache']['user'].' ispconfig';
 				caselog($command.' &> /dev/null', __FILE__, __LINE__, "EXECUTED: $command", "Failed to execute the command $command");
+			}
+			if(is_group('ispapps')){
+				$ispapps_groupinfo = posix_getgrnam('ispapps');
+				if(!in_array($conf['apache']['user'],$ispapps_groupinfo['members'])) {
+					$command = 'adduser '.$conf['apache']['user'].' ispapps';
+					caselog($command.' &> /dev/null', __FILE__, __LINE__, "EXECUTED: $command", "Failed to execute the command $command");
+				}
 			}
 		}
 		if($conf['nginx']['installed'] == true){
-			$command = 'adduser '.$conf['nginx']['user'].' ispconfig';
-			caselog($command.' &> /dev/null', __FILE__, __LINE__, "EXECUTED: $command", "Failed to execute the command $command");
-			if(is_group('ispapps')){
-				$command = 'adduser '.$conf['nginx']['user'].' ispapps';
+			$ispc_groupinfo = posix_getgrnam('ispconfig');
+			if(!in_array($conf['nginx']['user'],$ispc_groupinfo['members'])) {
+				$command = 'adduser '.$conf['nginx']['user'].' ispconfig';
 				caselog($command.' &> /dev/null', __FILE__, __LINE__, "EXECUTED: $command", "Failed to execute the command $command");
+			}
+			if(is_group('ispapps')){
+				$ispapps_groupinfo = posix_getgrnam('ispapps');
+				if(!in_array($conf['nginx']['user'],$ispapps_groupinfo['members'])) {
+					$command = 'adduser '.$conf['nginx']['user'].' ispapps';
+					caselog($command.' &> /dev/null', __FILE__, __LINE__, "EXECUTED: $command", "Failed to execute the command $command");
+				}
 			}
 		}
 
@@ -3793,6 +3825,12 @@ class installer_base extends stdClass {
 		if(!is_link('/usr/local/bin/ispconfig_update_from_dev.sh')) symlink($install_dir.'/server/scripts/ispconfig_update.sh', '/usr/local/bin/ispconfig_update_from_dev.sh');
 		if(!is_link('/usr/local/bin/ispconfig_update.sh')) symlink($install_dir.'/server/scripts/ispconfig_update.sh', '/usr/local/bin/ispconfig_update.sh');
 
+		// Install ISPConfig cli command
+		if(is_file('/usr/local/bin/ispc')) unlink('/usr/local/bin/ispc');
+		chown($install_dir.'/server/cli/ispc', 'root');
+		chmod($install_dir.'/server/cli/ispc', 0700);
+		symlink($install_dir.'/server/cli/ispc', '/usr/local/bin/ispc');
+
 		// Make executable then unlink and symlink letsencrypt pre, post and renew hook scripts
 		chown($install_dir.'/server/scripts/letsencrypt_pre_hook.sh', 'root');
 		chown($install_dir.'/server/scripts/letsencrypt_post_hook.sh', 'root');
@@ -3909,7 +3947,7 @@ class installer_base extends stdClass {
 		$install_dir = $conf['ispconfig_install_dir'];
 
 		//* Root Crontab
-		exec('crontab -u root -l > crontab.txt');
+		exec('crontab -u root -l > crontab.txt 2>/dev/null');
 		$existing_root_cron_jobs = file('crontab.txt');
 
 		// remove existing ispconfig cronjobs, in case the syntax has changed
@@ -3938,7 +3976,7 @@ class installer_base extends stdClass {
 		//* Getmail crontab
 		if(is_user('getmail')) {
 			$cf = $conf['getmail'];
-			exec('crontab -u getmail -l > crontab.txt');
+			exec('crontab -u getmail -l > crontab.txt 2>/dev/null');
 			$existing_cron_jobs = file('crontab.txt');
 
 			$cron_jobs = array(
