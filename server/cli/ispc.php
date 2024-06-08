@@ -41,7 +41,7 @@ $app->load('cli');
 
 //* Check input
 $module = $argv[1];
-if($module == '-h' || $module == '--help') $module = 'help';
+if(empty($module) || $module == '-h' || $module == '--help') $module = 'help';
 if(!preg_match("/[a-z0-9]{3,20}/",$module)) die("Invalid commandline option\n");
 //* Check if cli module exists and run it
 if(is_file('modules/'.$module.'.inc.php')) {
