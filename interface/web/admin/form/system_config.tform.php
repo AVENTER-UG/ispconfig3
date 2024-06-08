@@ -306,7 +306,7 @@ $form["tabs"]['mail'] = array (
 		'mailbox_show_last_access' => array (
 			'datatype' => 'VARCHAR',
 			'formtype' => 'CHECKBOX',
-			'default'  => 'y',
+			'default'  => 'n',
 			'value'    => array(0 => 'n', 1 => 'y')
 		),
 		'mailboxlist_webmail_link' => array (
