@@ -128,9 +128,9 @@ class remoting_lib extends tform_base {
 		} else {
 			$user = $app->db->queryOneRecord("SELECT * FROM sys_user WHERE client_id = ?", $this->client_id);
 			if(empty($user)) {
-                throw new SoapFault('invalid_client_id', 'Invalid client_id '.$this->client_id);
-			    return false;
-            }
+				throw new SoapFault('invalid_client_id', 'Invalid client_id '.$this->client_id);
+				return false;
+			}
 			$this->sys_username         = $user['username'];
 			$this->sys_userid            = $user['userid'];
 			$this->sys_default_group     = $user['default_group'];
