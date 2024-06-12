@@ -46,6 +46,9 @@ if (is_file($conf['temppath'] . $conf['fs_div'] . '.ispconfig_lock')) {
 // Set Lockfile
 @file_put_contents($conf['temppath'] . $conf['fs_div'] . '.ispconfig_lock', getmypid());
 
+// Set debug log level if --debug argument is passed to the script
+if(isset($argv[1]) && $argv[1] == '--debug') $conf['log_priority'] = 0;
+
 if($conf['log_priority'] <= LOGLEVEL_DEBUG) print 'Set Lock: ' . $conf['temppath'] . $conf['fs_div'] . '.ispconfig_lock' . "\n";
 
 require SCRIPT_PATH."/lib/app.inc.php";
@@ -82,7 +85,11 @@ if ($app->dbmaster->testConnection()) {
 	$conf['serverconfig'] = $app->ini_parser->parse_ini_string(stripslashes($server_db_record['config']));
 
 	// Set the loglevel
-	$conf['log_priority'] = intval($conf['serverconfig']['server']['loglevel']);
+    if(isset($argv[1]) && $argv[1] == '--debug') {
+        $conf['log_priority'] = 0;
+    } else {
+	    $conf['log_priority'] = intval($conf['serverconfig']['server']['loglevel']);
+    }
 
 	// Set level from which admin should be notified by email
 	if(!isset($conf['serverconfig']['server']['admin_notify_events']) || $conf['serverconfig']['server']['admin_notify_events'] == '') $conf['serverconfig']['server']['admin_notify_events'] = 3;
