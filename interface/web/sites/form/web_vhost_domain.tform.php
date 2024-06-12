@@ -682,7 +682,6 @@ if ($backup_available) {
 			'xz',
 			'unxz',
 			'7z',
-			'rar',
 		);
 		foreach ($compressors_list as $compressor) {
 			if (!$app->system->is_installed($compressor)) {
@@ -740,7 +739,6 @@ if ($backup_available) {
 					'tar_7z_lzma' => 'backup_format_tar_7z_lzma_txt',
 					'tar_7z_ppmd' => 'backup_format_tar_7z_ppmd_txt',
 					'tar_7z_bzip2' => 'backup_format_tar_7z_bzip2_txt',
-					'rar' => 'backup_format_rar_txt',
 				)
 			),
 			'backup_format_db' => array (
@@ -757,7 +755,6 @@ if ($backup_available) {
 					'7z_lzma' => 'backup_format_7z_lzma_txt',
 					'7z_ppmd' => 'backup_format_7z_ppmd_txt',
 					'7z_bzip2' => 'backup_format_7z_bzip2_txt',
-					'rar' => 'backup_format_rar_txt',
 				)
 			),
 			'backup_encrypt' => array (
