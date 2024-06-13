@@ -61,7 +61,9 @@
                 <tbody>
                 <tmpl_loop name="records">
                     <tr>
-                        <td class="copy-to-clipboard"><a class="copy-to-clipboard-icon-helper" href="#" data-load-content="mail/mail_user_edit.php?id={tmpl_var name='id'}" data-toggle="tooltip" data-placement="bottom" title="{tmpl_var name='email'}">{tmpl_var name="email"}</a></td>
+                        <td class="copy-to-clipboard">
+                           <a class="copy-to-clipboard-icon-helper" href="#" data-load-content="mail/mail_user_edit.php?id={tmpl_var name='id'}" data-toggle="tooltip" data-placement="bottom" title="<tmpl_if name="mailbox_show_last_access" op="==" value="y"><tmpl_if name="last_access">{tmpl_var name='last_accessed_txt'}: {tmpl_var name='last_access'} </tmpl_if></tmpl_if>">{tmpl_var name="email"}</a>
+                        </td>
                         <tmpl_if name="enable_custom_login"><td><a href="#" data-load-content="mail/mail_user_edit.php?id={tmpl_var name='id'}">{tmpl_var name="login"}</a></td></tmpl_if>
                         <td><a href="#" data-load-content="mail/mail_user_edit.php?id={tmpl_var name='id'}">{tmpl_var name="name"}</a></td>
                         <td><a href="#" data-load-content="mail/mail_user_edit.php?id={tmpl_var name='id'}">{tmpl_var name="autoresponder"}</a></td>

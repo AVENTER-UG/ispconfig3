@@ -14,10 +14,14 @@ class dashlet_mailquota {
 		$wb = array();
 		$lng_file = 'lib/lang/'.$_SESSION['s']['language'].'_dashlet_mailquota.lng';
 		if(is_file($lng_file)) include $lng_file;
+               $wb['last_accessed_txt'] = $app->lng('last_accessed_txt');
 		$tpl->setVar($wb);
 
+		$app->uses('getconf');
+		$mail_config = $app->getconf->get_global_config('mail');
+		$tpl->setVar('mailbox_show_last_access', $mail_config['mailbox_show_last_access']);
+
 		$emails = $app->quota_lib->get_mailquota_data( ($_SESSION["s"]["user"]["typ"] != 'admin') ? $_SESSION['s']['user']['client_id'] : null);
-		//print_r($emails);
 
 		$has_mailquota = false;
 		if(is_array($emails) && !empty($emails)){
@@ -25,8 +29,6 @@ class dashlet_mailquota {
 				$email['email'] = $app->functions->idn_decode($email['email']);
 			}
 			unset($email);
-			// email username is quoted in quota.lib already, so no htmlentities here to prevent double encoding
-			//$emails = $app->functions->htmlentities($emails);
 			$tpl->setloop('mailquota', $emails);
 			$has_mailquota = isset($emails[0]['used']);
 		}
@@ -34,14 +36,4 @@ class dashlet_mailquota {
 
 		return $tpl->grab();
 	}
-
 }
-
-
-
-
-
-
-
-
-?>

@@ -1097,6 +1097,7 @@ CREATE TABLE `mail_user` (
   `disablelda` enum('n','y') NOT NULL default 'n',
   `disablelmtp` enum('n','y') NOT NULL default 'n',
   `disabledoveadm` enum('n','y') NOT NULL default 'n',
+  `last_access` int(11) NULL DEFAULT NULL,
   `disablequota-status` enum('n','y') NOT NULL default 'n',
   `disableindexer-worker` enum('n','y') NOT NULL default 'n',
   `last_quota_notification` date NULL default NULL,

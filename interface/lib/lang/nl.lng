@@ -186,4 +186,6 @@ $wb['datalog_status_u_dns_template'] = 'Update DNS template';
 $wb['datalog_status_d_dns_template'] = 'Delete DNS template';
 $wb['datalog_status_i_sys_group'] = 'Create new client group';
 $wb['datalog_status_u_sys_ini'] = 'Update main config';
+$wb['last_accessed_txt'] = 'Laatst gebruikt';
+$wb['never_accessed_txt'] = 'Niet of onbekend';
 ?>

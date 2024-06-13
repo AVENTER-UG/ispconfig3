@@ -133,5 +133,13 @@ $liste["item"][] = array( 'field'  => "disablepop3",
 	'suffix' => "",
 	'width'  => "",
 	'value'  => array('n' => $app->lng('yes_txt'), 'y' => $app->lng('no_txt')));
+$liste["item"][] = array( 'field'  => "last_access",
+       'datatype' => "DATE",
+       'formtype' => "TEXT",
+       'op'  => "=",
+       'prefix' => "",
+       'suffix' => "",
+       'width'  => "",
+       'value'  => "");
 
 ?>
