@@ -190,13 +190,13 @@ if ($settings['use_domain_module'] == 'y') {
 	$domain_select = "<option value=''></option>\r\n";
 	if(is_array($domains) && sizeof($domains) > 0) {
 		/* We have domains in the list, so create the drop-down-list */
-		foreach( $domains as $domain) {
-			$domain_select .= "<option value=" . $domain['domain_id'] ;
-			if ($domain['domain_id'] == $_POST['domain']) {
+		foreach( $domains as $d) {
+			$domain_select .= "<option value=" . $d['domain_id'] ;
+			if ($d['domain_id'] == $_POST['domain']) {
 				$domain_select .= " selected";
-				$selected_domain = $domain['domain'];
+				$selected_domain = $d['domain'];
 			}
-			$domain_select .= ">" . $app->functions->idn_decode($domain['domain']) . ".</option>\r\n";
+			$domain_select .= ">" . $app->functions->idn_decode($d['domain']) . ".</option>\r\n";
 		}
 	}
 	$app->tpl->setVar("domain_option", $domain_select);
