@@ -241,7 +241,7 @@ class bind_plugin {
         } elseif (isset($data['old']['origin'])) {
             $domain = substr($data['old']['origin'], 0, strlen($data['old']['origin'])-1);
         } else {
-            //* We have not domain
+            //* We have no domain
             $app->log('DNSSEC Delete: Unable to find domain', LOGLEVEL_WARN);
             return;
         }
