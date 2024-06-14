@@ -2671,12 +2671,14 @@ class nginx_plugin {
 			By default the goaccess.conf should get copied by the webserver plugin but in case it wasn't, or it got deleted by accident we gonna copy it again to the destination dir.
 			Also there was no /usr/local/ispconfig/server/conf-custom/goaccess.conf.master, so we gonna use /etc/goaccess.conf as the base conf.
 			*/
-
-			$app->system->copy($goaccess_conf_main, $goaccess_conf);
-			$content = $app->system->file_get_contents($goaccess_conf, true);
-			$content = preg_replace('/^(#)?log-format COMBINED/m', "log-format COMBINED", $content);
-			$app->system->file_put_contents($goaccess_conf, $content, true);
-			unset($content);
+            $goaccess_conf_main = '/etc/goaccess.conf';
+            if(file_exists($goaccess_conf_main)) {
+			    $app->system->copy($goaccess_conf_main, $goaccess_conf);
+			    $content = $app->system->file_get_contents($goaccess_conf, true);
+			    $content = preg_replace('/^(#)?log-format COMBINED/m', "log-format COMBINED", $content);
+			    $app->system->file_put_contents($goaccess_conf, $content, true);
+			    unset($content);
+            }
 		}
 
 		if(file_exists($goaccess_conf)) {

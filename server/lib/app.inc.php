@@ -1,5 +1,5 @@
 <?php
-/**
+/*
 Copyright (c) 2007-2022, Till Brehm, projektfarm Gmbh
 All rights reserved.
 
@@ -324,7 +324,7 @@ class app extends stdClass {
 
 		// Send an email to the administrator if the current priority demands it.
 		if(isset($conf['admin_notify_priority']) && $priority >= $conf['admin_notify_priority'] && $conf['admin_mail'] != '') {
-			if($conf['hostname'] != 'localhost' && $conf['hostname'] != '') {
+			if(isset($conf['hostname']) && $conf['hostname'] != 'localhost' && $conf['hostname'] != '') {
 				$hostname = $conf['hostname'];
 			} else {
 				$hostname = exec('hostname -f');

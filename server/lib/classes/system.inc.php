@@ -925,13 +925,18 @@ class system{
 	}
 
 	function unlink($filename) {
-		if(file_exists($filename) || is_link($filename)) {
+		if(!empty($filename) && file_exists($filename) || is_link($filename)) {
 			return unlink($filename);
 		}
 	}
 
 	function copy($file1, $file2) {
-		return copy($file1, $file2);
+        if(!empty($file1) && !empty($file2)) {
+            return copy($file1, $file2);
+        } else {
+            return false;
+        }
+		
 	}
 
 	function move($file1, $file2) {
@@ -942,6 +947,7 @@ class system{
         }
 
 	function rmdir($path, $recursive=false) {
+        global $app;
 		// Disallow operating on root directory
 		if(realpath($path) == '/') {
 			$app->log("rmdir: afraid I might delete root: $path", LOGLEVEL_WARN);
@@ -1117,7 +1123,7 @@ class system{
 	function check_free_space($path, $limit = 0, &$free_space = 0) {
 		$path = rtrim($path, '/');
 
-		/**
+		/*
 		* Make sure that we have only existing directories in the path.
 
 		* Given a file name instead of a directory, the behaviour of the disk_free_space
@@ -1125,7 +1131,7 @@ class system{
         */
 		while(!is_dir($path) && $path != '/') $path = realpath(dirname($path));
 
-		$free_space = disk_free_space($out);
+		$free_space = disk_free_space($path);
 
 		if (!$free_space) {
 			$free_space = 0;

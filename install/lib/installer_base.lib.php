@@ -3333,7 +3333,7 @@ class installer_base extends stdClass {
 		}
 
 		// If the LE SSL certs for this hostname exists
-		if(!is_dir($acme_cert_dir) || !file_exists($check_acme_file) || !$issued_successfully) {
+		if(!is_dir($acme_cert_dir) || !file_exists($check_acme_file) || !isset($issued_successfully) || !$issued_successfully) {
 			if(!$issued_successfully) {
 				swriteln('Could not issue letsencrypt certificate, falling back to self-signed.');
 			} else {

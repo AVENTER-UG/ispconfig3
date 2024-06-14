@@ -730,7 +730,7 @@ class page_action extends tform_actions {
 		$soaDomain = $domain . '.';
 		$soa = null;
 		while ((!isset($soa) && (substr_count($soaDomain,'.') > 1))) {
-			$soa = $app->db->queryOneRecord("SELECT id AS zone, sys_userid, sys_groupid, sys_perm_user, sys_perm_group, sys_perm_other, server_id, ttl, serial FROM dns_soa WHERE active = 'Y' AND origin = ?", $soaDomain);
+			$soa = $app->db->queryOneRecord("SELECT `id` AS `zone`, `sys_userid`, `sys_groupid`, `sys_perm_user`, `sys_perm_group`, `sys_perm_other`, `server_id`, `ttl`, `serial` FROM `dns_soa` WHERE `active` = 'Y' AND `origin` = ?", $soaDomain);
 			$soaDomain = preg_replace("/^[^\.]+\./","",$soaDomain);
 		}
 		return $soa;
