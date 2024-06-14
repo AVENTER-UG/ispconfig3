@@ -848,7 +848,7 @@ class apache2_plugin {
 
 		// Get the client ID
 		$client = $app->dbmaster->queryOneRecord('SELECT client_id FROM sys_group WHERE sys_group.groupid = ?', $data['new']['sys_groupid']);
-		$client_id = intval($client['client_id']);
+		$client_id = (!empty($client))?intval($client['client_id']):0;
 		unset($client);
 
 		// Remove old symlinks, if site is renamed

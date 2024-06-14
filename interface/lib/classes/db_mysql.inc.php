@@ -668,7 +668,7 @@ class db
 			$clientdb_user     = ($conf['db_user']) ? $conf['db_user'] : NULL;
 			$clientdb_password = ($conf['db_password']) ? $conf['db_password'] : NULL;
 			$clientdb_port     = ((int)$conf['db_port']) ? (int)$conf['db_port'] : NULL;
-			$clientdb_flags    = ($conf['db_flags'] !== NULL) ? $conf['db_flags'] : NULL;
+			$clientdb_flags    = (isset($conf['db_flags']) && $conf['db_flags'] !== NULL) ? $conf['db_flags'] : NULL;
 
 			require_once 'lib/mysql_clientdb.conf';
 
