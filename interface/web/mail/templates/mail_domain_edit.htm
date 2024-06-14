@@ -129,7 +129,7 @@
               </div>
 
               <div class="form-group">
-                <label for="dns_record" class="col-sm-3 control-label">{tmpl_var name='dkim_dns_txt'}</label>
+                <label for="dns_record" class="col-sm-3 control-label">{tmpl_var name='dkim_dns_txt'}<tmpl_if name='dkim_auto_dns'> <span class="fa fa-link" aria-hidden="false" title="{tmpl_var name='dkim_auto_dns'}"</span></tmpl_if></label>
                 <div class="col-sm-9"><textarea class="form-control" name="dns_record" id="dns_record" rows='10' cols='30' readonly>{tmpl_var name='dns_record'}</textarea></div>
               </div>
 

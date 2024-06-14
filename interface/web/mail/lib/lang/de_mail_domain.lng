@@ -23,3 +23,4 @@ $wb['error_not_allowed_server_id'] = 'Der gewählte Server ist für dieses Konto
 $wb['relayhost_txt'] = 'Relayhost';
 $wb['relayhost_user_txt'] = 'Relayhost-Benutzer';
 $wb['relayhost_password_txt'] = 'Relayhost-Passwort';
+$wb['dkim_auto_dns_txt'] = 'Managed zone, dns updated automatically';
