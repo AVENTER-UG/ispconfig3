@@ -673,9 +673,17 @@ class page_action extends tform_actions {
 			$app->tpl->setVar('fixed_folder', 'y');
 			if($this->_vhostdomain_type == 'domain') {
 				$app->tpl->setVar("server_id_value", $this->dataRecord["server_id"], true);
-				$app->tpl->setVar("document_root", $this->dataRecord["document_root"], true);
-			}
-			else $app->tpl->setVar('server_id_value', $parent_domain['server_id']);
+                if(isset($this->dataRecord["document_root"])) {
+                    $app->tpl->setVar("document_root", $this->dataRecord["document_root"], true);
+                } else {
+                    $tmp = $app->tform->getDataRecord($this->id);
+                    $app->tpl->setVar("document_root", $tmp["document_root"], true);
+                    unset($tmp);
+                }
+				
+			} else {
+                $app->tpl->setVar('server_id_value', $parent_domain['server_id']);
+            } 
 		} else {
 			$app->tpl->setVar("edit_disabled", 0);
 			$app->tpl->setVar('fixed_folder', 'n');
