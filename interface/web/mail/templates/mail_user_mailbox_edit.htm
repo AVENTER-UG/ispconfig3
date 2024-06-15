@@ -6,7 +6,7 @@
                 <label class="col-sm-3 control-label"><em>*</em> {tmpl_var name='email_txt'}</label>
                 <div class="col-sm-9">
 				    <div class='input-group'>
-                                               <input type="text" id="email_local_part" name="email_local_part" value="{tmpl_var name='email_local_part'}" class="form-control" onPaste="javascript: e = this; setTimeout(function(){if (/@/.test(e.value)) { parts = e.value.split('@'); $('#email_domain').val(parts.pop()); $('#email_domain').trigger('change'); e.value=parts.pop(); } }, 4);" onChange="javascript: if (/@/.test(this.value)) { parts = this.value.split('@'); $('#email_domain').val(parts.pop()); $('#email_domain').trigger('change'); this.value=parts.pop(); } " />
+                        <input type="text" id="email_local_part" name="email_local_part" value="{tmpl_var name='email_local_part'}" class="form-control" onpaste="processEmailAddressInput(this)" onchange="updateEmailDomain(this)" />
 						<span class='input-group-addon'>@</span>
                         <div class='input-group-field'>
 							<select name="email_domain" id="email_domain" class="form-control" style="height:50px;min-width:170px;">{tmpl_var name='email_domain'}</select>
@@ -17,7 +17,8 @@
                           </a>
                         </div>
                     </div>
-				</div>
+                    <tmpl_if name="mail_addresses">{tmpl_var name='mail_addresses_txt'}: <tmpl_loop name="mail_addresses">{tmpl_var name='source'} ({tmpl_var name='type'})<tmpl_unless name="__LAST__">, </tmpl_unless></tmpl_loop></tmpl_if>
+                </div>
             </div>
             <tmpl_if name="enable_custom_login"><div class="form-group">
                     <label for="login" class="col-sm-3 control-label">{tmpl_var name='login_txt'}</label>
@@ -44,7 +45,10 @@
             <div class="form-group">
                 <label for="repeat_password" class="col-sm-3 control-label">{tmpl_var name='repeat_password_txt'}</label>
                 <div class="col-sm-9">
-	                <input type="password" name="repeat_password" id="repeat_password" value="" title="{tmpl_var name='password_click_to_set_txt'}" class="form-control" autocomplete="off" onkeyup="checkPassMatch('password','repeat_password');" /></div></div>
+                       <input type="password" name="repeat_password" id="repeat_password" value="" title="{tmpl_var name='password_click_to_set_txt'}" class="form-control" autocomplete="off" onkeyup="checkPassMatch('password','repeat_password');" />
+                       <tmpl_if name="mailbox_show_last_access" op="==" value="y"><tmpl_if name="id">{tmpl_var name='last_accessed_txt'}: {tmpl_var name='last_access'}</tmpl_if></tmpl_if>
+                </div>
+            </div>
             <div class="form-group">
 				<div class="col-sm-offset-3 col-sm-9">
 					<div id="confirmpasswordError" style="display:none;" class="confirmpassworderror">{tmpl_var name='password_mismatch_txt'}</div>
@@ -53,7 +57,16 @@
 			</div>
             <div class="form-group">
                 <label for="quota" class="col-sm-3 control-label">{tmpl_var name='quota_txt'}</label>
-                <div class="col-sm-9"><div class="input-group"><input type="text" name="quota" id="quota" value="{tmpl_var name='quota'}" class="form-control" aria-describedby="quota-desc" /><span class="input-group-addon" id="quota-desc">MB</span></div></div>
+                <div class="col-sm-9"><div class="input-group"><input type="text" name="quota" id="quota" value="{tmpl_var name='quota'}" class="form-control" aria-describedby="quota-desc" /><span class="input-group-addon" id="quota-desc">MB</span></div>
+
+                {tmpl_if name="quota" op="!=" value="0"}
+                <div class='progress'>
+                    <div class='progress-bar-striped progress-bar progress-bar-{tmpl_if name="used_percentage" op="<" value="50"}success{tmpl_elseif name="used_percentage" op="<" value="75"}warning{tmpl_else}danger{/tmpl_if}' role='progressbar' aria-valuemin='0' aria-valuemax='100' aria-valuenow='{tmpl_var name="used_percentage"}' style='width:{tmpl_var name="used_percentage"}%'><span>{tmpl_var name='used_txt'}: {tmpl_var name='used'} / {tmpl_var name="used_percentage"}%</span>
+                    <span class='sr-only'>{tmpl_var name='used'} {tmpl_var name='of_txt'} {tmpl_var name='quota'}</span>
+                    </div>
+                 </div>
+                {tmpl_else}{tmpl_var name='used_txt'}: {tmpl_var name='used'}{/tmpl_if}
+              </div>
             </div>
             <div class="form-group">
                 <label for="name" class="col-sm-3 control-label">{tmpl_var name='cc_txt'}</label>

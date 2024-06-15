@@ -1,9 +1,9 @@
 <?php
-$wb['mail_relay_domain_title'] = 'Email relay domain';
-$wb['tab_relay_domain_title'] = 'Relay domain';
+$wb['mail_relay_domain_title'] = 'E-Mail-Relay-Domain';
+$wb['tab_relay_domain_title'] = 'Relay-Domain';
 $wb['server_id_txt'] = 'Server';
 $wb['active_txt'] = 'Aktiv';
 $wb['domain_txt'] = 'Domain';
-$wb['domain_error_regex'] = 'Domain Name ist nicht gültig.';
+$wb['domain_error_regex'] = 'Domainname ist nicht gültig.';
 $wb['domain_error_empty'] = 'Domain ist leer.';
-$wb['domain_error_unique'] = 'This Domain already exists as a mail relay domain on this server.';
+$wb['domain_error_unique'] = 'Diese Domain existiert bereits als Mail-Relay-Domain auf diesem Server.';

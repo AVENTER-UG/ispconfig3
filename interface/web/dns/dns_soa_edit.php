@@ -79,16 +79,6 @@ class page_action extends tform_actions {
 		parent::onShowNew();
 	}
 
-	function onShowEdit() {
-		global $app, $conf;
-
-		parent::onShowEdit();
-
-		if(isset($this->dataRecord)) {
-			$app->tform->formDef['title'] = $app->lng('DNS Zone') . ' ' . $this->dataRecord['origin'];
-		}
-	}
-
 	function onShowEnd() {
 		global $app, $conf;
 
@@ -236,6 +226,14 @@ class page_action extends tform_actions {
 				$app->tpl->setVar("config_error_tstamp", date($app->lng('conf_format_datetime'), $datalog['tstamp']));
 			}
 		}
+
+               $csrf_token = $app->auth->csrf_token_get('dns_soa_del');
+               $app->tpl->setVar('_csrf_id', $csrf_token['csrf_id']);
+               $app->tpl->setVar('_csrf_key', $csrf_token['csrf_key']);
+
+               $global_config = $app->getconf->get_global_config();
+               $app->tpl->setVar('show_delete_on_forms', $global_config['misc']['show_delete_on_forms']);
+
 
 	} else {
 		$app->tpl->setVar("edit_disabled", 0);

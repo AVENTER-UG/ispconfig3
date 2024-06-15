@@ -34,6 +34,7 @@ class cron_jailkit_plugin {
 	//* $plugin_name and $class_name have to be the same then the name of this class
 	var $plugin_name = 'cron_jailkit_plugin';
 	var $class_name = 'cron_jailkit_plugin';
+	var $parent_domain = array();
 
 	//* This function is called during ispconfig installation to determine
 	//  if a symlink shall be created for this plugin.
@@ -228,7 +229,7 @@ class cron_jailkit_plugin {
 
 	function _setup_jailkit_chroot()
 	{
-		global $app;
+		global $app, $conf;
 
 		if (isset($this->jailkit_config) && isset($this->jailkit_config['jailkit_hardlinks'])) {
 			if ($this->jailkit_config['jailkit_hardlinks'] == 'yes') {
@@ -292,7 +293,7 @@ class cron_jailkit_plugin {
 			$programs = $this->jailkit_config['jailkit_chroot_app_programs'] . ' '
 				  . $this->jailkit_config['jailkit_chroot_cron_programs'];
 
-			if ($update_hash == $parent_domain['last_jailkit_hash']) {
+			if ($update_hash == $this->parent_domain['last_jailkit_hash']) {
 				return;
 			}
 

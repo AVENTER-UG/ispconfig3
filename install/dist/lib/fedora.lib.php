@@ -144,7 +144,7 @@ class installer_dist extends installer_base {
 			if(is_file($config_dir.'/master.cf')){
 				copy($config_dir.'/master.cf', $config_dir.'/master.cf~2');
 			}
-			if(is_file($config_dir.'/master.cf~')){
+			if(is_file($config_dir.'/master.cf~2')){
 				chmod($config_dir.'/master.cf~2', 0400);
 			}
 			//* Configure master.cf and add a line for deliver
@@ -1075,6 +1075,12 @@ class installer_dist extends installer_base {
 		exec('chmod 700 /usr/local/ispconfig/server/scripts/ispconfig_update.sh');
 		if(!is_link('/usr/local/bin/ispconfig_update_from_dev.sh')) exec('ln -s /usr/local/ispconfig/server/scripts/ispconfig_update.sh /usr/local/bin/ispconfig_update_from_dev.sh');
 		if(!is_link('/usr/local/bin/ispconfig_update.sh')) exec('ln -s /usr/local/ispconfig/server/scripts/ispconfig_update.sh /usr/local/bin/ispconfig_update.sh');
+
+		// Install ISPConfig cli command
+		if(is_file('/usr/local/bin/ispc')) unlink('/usr/local/bin/ispc');
+		chown($install_dir.'/server/cli/ispc', 'root');
+		chmod($install_dir.'/server/cli/ispc', 0700);
+		symlink($install_dir.'/server/cli/ispc', '/usr/local/bin/ispc');
 
 		// set the fast cgi starter script to executable
 		// exec('chmod 755 '.$install_dir.'/interface/bin/php-fcgi');

@@ -41,6 +41,7 @@
 $form["title"]   = "Client";
 $form["description"]    = "";
 $form["name"]   = "client";
+$form["record_name_field"] = "username";
 $form["action"]  = "client_edit.php";
 $form["db_table"] = "client";
 $form["db_table_idx"] = "client_id";
@@ -230,6 +231,9 @@ $form["tabs"]['address'] = array (
 		'language' => array (
 			'datatype' => 'VARCHAR',
 			'formtype' => 'SELECT',
+			'validators' => array ( 0 => array ( 'type' => 'NOTEMPTY',
+					'errmsg'=> 'language_error_empty'),
+			),
 			'default' => $conf["language"],
 			'value'  => $language_list,
 			'separator' => '',

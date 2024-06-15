@@ -43,7 +43,7 @@ $conf['init_scripts'] = '/etc/init.d';
 $conf['runlevel'] = '/etc';
 $conf['shells'] = '/etc/shells';
 $conf['pam'] = '/etc/pam.d';
-$conf['default_php'] = "8.1";
+$conf['default_php'] = "8.2";
 
 //* Services provided by this server, this selection will be overridden by the expert mode
 $conf['services']['mail'] = true;
@@ -85,8 +85,8 @@ $conf['apache']['version'] = '2.4';
 $conf['apache']['vhost_conf_dir'] = '/etc/apache2/sites-available';
 $conf['apache']['vhost_conf_enabled_dir'] = '/etc/apache2/sites-enabled';
 $conf['apache']['vhost_port'] = '8080';
-$conf['apache']['php_ini_path_apache'] = '/etc/php/7.4/apache2/php.ini';
-$conf['apache']['php_ini_path_cgi'] = '/etc/php/7.4/cgi/php.ini';
+$conf['apache']['php_ini_path_apache'] = '/etc/php/8.2/apache2/php.ini';
+$conf['apache']['php_ini_path_cgi'] = '/etc/php/8.2/cgi/php.ini';
 
 //* Website base settings
 $conf['web']['website_basedir'] = '/var/www';
@@ -101,7 +101,7 @@ $conf['web']['apps_vhost_user'] = 'ispapps';
 $conf['web']['apps_vhost_group'] = 'ispapps';
 
 //* Fastcgi
-$conf['fastcgi']['fastcgi_phpini_path'] = '/etc/php/7.4/cgi/';
+$conf['fastcgi']['fastcgi_phpini_path'] = '/etc/php/8.2/cgi/';
 $conf['fastcgi']['fastcgi_starter_path'] = '/var/www/php-fcgi-scripts/[system_user]/';
 $conf['fastcgi']['fastcgi_bin'] = '/usr/bin/php-cgi';
 
@@ -212,11 +212,11 @@ $conf['nginx']['vhost_conf_enabled_dir'] = '/etc/nginx/sites-enabled';
 $conf['nginx']['init_script'] = 'nginx';
 $conf['nginx']['vhost_port'] = '8080';
 $conf['nginx']['cgi_socket'] = '/var/run/fcgiwrap.socket';
-$conf['nginx']['php_fpm_init_script'] = 'php7.4-fpm';
-$conf['nginx']['php_fpm_ini_path'] = '/etc/php/7.4/fpm/php.ini';
-$conf['nginx']['php_fpm_pool_dir'] = '/etc/php/7.4/fpm/pool.d';
+$conf['nginx']['php_fpm_init_script'] = 'php8.2-fpm';
+$conf['nginx']['php_fpm_ini_path'] = '/etc/php/8.2/fpm/php.ini';
+$conf['nginx']['php_fpm_pool_dir'] = '/etc/php/8.2/fpm/pool.d';
 $conf['nginx']['php_fpm_start_port'] = 9010;
-$conf['nginx']['php_fpm_socket_dir'] = '/var/lib/php7.4-fpm';
+$conf['nginx']['php_fpm_socket_dir'] = '/var/lib/php8.2-fpm';
 
 //* OpenVZ
 $conf['openvz']['installed'] = false;

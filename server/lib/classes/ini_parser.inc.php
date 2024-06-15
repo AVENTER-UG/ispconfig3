@@ -41,7 +41,7 @@ class ini_parser{
 			if($line != '') {
 				if(preg_match("/^\[([\w\d_]+)\]$/", $line, $matches)) {
 					$section = strtolower($matches[1]);
-				} elseif(preg_match("/^([\w\d_]+)=(.*)$/", $line, $matches) && $section != null) {
+				} elseif(preg_match("/^([\w\d_]+)=(.*)$/", $line, $matches) && isset($section) && $section != null) {
 					$item = trim($matches[1]);
 					$this->config[$section][$item] = trim($matches[2]);
 				}

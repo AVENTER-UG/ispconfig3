@@ -76,4 +76,6 @@ $wb['purge_junk_days_txt'] = 'Purge Junk automatically after X days';
 $wb['tooltip_purge_junk_days_txt'] = '0 = disabled';
 $wb['imap_prefix_txt'] = 'IMAP prefix';
 $wb['tooltip_imap_prefix_txt'] = 'In most cases this should be left empty.  To allow seamless per-mailbox migration of legacy systems you can specify a prefix followed by the hierarchy separator. e.g.: \'INBOX.\'';
-?>
+$wb['used_txt'] = 'Gebruikt';
+$wb['used_txt'] = 'Used';
+$wb['mail_addresses_txt'] = 'Receives also mail for';

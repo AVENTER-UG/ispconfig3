@@ -79,7 +79,7 @@ class system_config_dns_ca_plugin {
 				if(is_array($caa) && is_array($soa)) {
 					$records = array();
 					$records[] = $domain.'.';;
-					if($subdomain != '' && $subdomain != 'www') $records[] = $subdomain.'.'.$domain;
+					if($subdomain != '' && $subdomain != 'www' && $subdomain != 'none') $records[] = $subdomain.'.'.$domain;
 					foreach($records as $record) {
 						$new_rr = $app->db->queryOneRecord("SELECT * FROM dns_rr WHERE name = ?", $soa['origin']);
 						unset($new_rr['id']);

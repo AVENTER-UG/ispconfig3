@@ -1,7 +1,7 @@
 <?php
 
 /*
-	Copyright (c) 2007-2011, Till Brehm, projektfarm Gmbh and Oliver Vogel www.muv.com
+	Copyright (c) 2007-2024, Till Brehm, projektfarm Gmbh and Oliver Vogel www.muv.com
 	All rights reserved.
 
 	Redistribution and use in source and binary forms, with or without modification,
@@ -87,6 +87,10 @@ class monitor_tools {
 				$mainver = $ver;
 			}
 			switch ($mainver){
+			case "24.04":
+				$relname = "(Noble Numbat)";
+				$distconfid = 'ubuntu2404';
+				break;
 			case "22.04":
 				$relname = "(Jammy Jellyfish)";
 				$distconfid = 'ubuntu2204';
@@ -229,6 +233,12 @@ class monitor_tools {
 			$distname = 'Debian';
 			$distver = 'Bullseye';
 			$distconfid = 'debian110';
+			$distid = 'debian60';
+			$distbaseid = 'debian';
+		} elseif(substr(trim(file_get_contents('/etc/debian_version')),0,2) == '12') {
+			$distname = 'Debian';
+			$distver = 'Bookworm';
+			$distconfid = 'debian120';
 			$distid = 'debian60';
 			$distbaseid = 'debian';
 		} elseif(strstr(trim(file_get_contents('/etc/debian_version')), '/sid')) {
@@ -671,14 +681,14 @@ class monitor_tools {
 				$log = 'Logfile path error.';
 			} else {
 				if (is_readable($logfile)) {
-					$log = $this->_getOutputFromExecCommand('tail -n '.intval($max_lines).' ' . escapeshellarg($logfile));
+					$log = $this->_getOutputFromExecCommand('tail -n '.intval($max_lines).' ' . escapeshellarg($logfile), $max_lines);
 				} else {
 					$log = 'Unable to read ' . $logfile;
 				}
 			}
 		} else {
 			if($journalmatch != ''){
-				$log = $this->_getOutputFromExecCommand('journalctl -n '.intval($max_lines).' --no-pager ' . escapeshellcmd($journalmatch));
+				$log = $this->_getOutputFromExecCommand('journalctl -n '.intval($max_lines).' --no-pager ' . escapeshellcmd($journalmatch), $max_lines);
 			}else{
 				$log = 'Unable to read logfile';
 			}
@@ -688,7 +698,7 @@ class monitor_tools {
 		return $log;
 	}
 
-	private function _getOutputFromExecCommand ($command) {
+	private function _getOutputFromExecCommand ($command, $max4k = 1000) {
 		$log = '';
 		$fd = popen($command, 'r');
 		if ($fd) {
@@ -696,7 +706,7 @@ class monitor_tools {
 			while (!feof($fd)) {
 				$log .= fgets($fd, 4096);
 				$n++;
-				if ($n > 1000)
+				if ($n > $max4k)
 					break;
 			}
 			fclose($fd);

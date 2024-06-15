@@ -41,6 +41,7 @@
 $form["title"]    = "Database";
 $form["description"]  = "";
 $form["name"]    = "database";
+$form["record_name_field"] = "database_name";
 $form["action"]   = "database_edit.php";
 $form["db_table"]  = "web_database";
 $form["db_table_idx"] = "database_id";
@@ -94,6 +95,17 @@ $form["tabs"]['database'] = array (
 				'mysql' => 'MySQL'
 			)
 		),
+		'backup_interval' => [
+			'datatype' => 'VARCHAR',
+			'formtype' => 'SELECT',
+			'default' => 'none',
+			'value'  => [
+				'none' => 'no_backup_txt',
+				'daily' => 'daily_backup_txt',
+				'weekly' => 'weekly_backup_txt',
+				'monthly' => 'monthly_backup_txt',
+			]
+		],
 		'database_name' => array (
 			'datatype' => 'VARCHAR',
 			'formtype' => 'TEXT',

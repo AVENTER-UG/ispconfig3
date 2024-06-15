@@ -24,19 +24,20 @@ class list_action extends listform_actions {
 		global $app, $conf;
 
 		$app->uses('getconf');
-		$global_config = $app->getconf->get_global_config('mail');
+		$mail_config = $app->getconf->get_global_config('mail');
 
-		if($global_config['mailboxlist_webmail_link'] == 'y') {
+		if($mail_config['mailboxlist_webmail_link'] == 'y') {
 			$app->tpl->setVar('mailboxlist_webmail_link', 1);
 		} else {
 			$app->tpl->setVar('mailboxlist_webmail_link', 0);
 		}
 
-		if($global_config["enable_custom_login"] == "y") {
+		if($mail_config["enable_custom_login"] == "y") {
 			$app->tpl->setVar("enable_custom_login", 1);
 		} else {
 			$app->tpl->setVar("enable_custom_login", 0);
 		}
+		$app->tpl->setVar('mailbox_show_last_access', $mail_config['mailbox_show_last_access']);
 
 		parent::onShow();
 	}

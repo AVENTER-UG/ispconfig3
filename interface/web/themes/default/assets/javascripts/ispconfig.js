@@ -112,7 +112,7 @@ var ISPConfig = {
 					else return escapeMarkup(o.text);
 				}
 			}).on('change', function(e) {
-				if ($("#pageForm .table #Filter").length > 0) {
+				if ($("#pageForm .table #Filter").length > 0 && ! $(this).hasClass("disableChangeEvent")) {
 					$("#pageForm .table #Filter").trigger('click');
 				}
 			});
@@ -599,7 +599,7 @@ var ISPConfig = {
 
 $(document).on("change", function(event) {
 	var elName = event.target.localName;
-	if ($("#pageForm .table #Filter").length > 0 && elName == 'select') {
+	if ($("#pageForm .table #Filter").length > 0 && elName == 'select' && ! $(event.target).hasClass("disableChangeEvent") ) {
 		event.preventDefault();
 		$("#pageForm .table #Filter").trigger('click');
 	}
@@ -813,4 +813,53 @@ $(document).ready(function() {
 		}
 		return iCaretPos;
 	};
+
+	//copy to clipboard
+	$(document).on('click', '.copy-to-clipboard', function() {
+		var $copyElement = $(this).children();
+		var temp = $("<input>");
+		$("body").append(temp);
+		temp.val($copyElement.text()).select();
+		//execCommand is Deprecated - but there is no alternative (2023)
+		document.execCommand("copy");
+		temp.remove();
+	} );
+
+	//display copy-to-clipboard icon
+	let lastCopyToClipboardIcon;
+	$(document).on("mouseenter", '.copy-to-clipboard', function() {
+		$(lastCopyToClipboardIcon).removeClass("copy-to-clipboard-icon"); //Clean up old icons - sometimes mouse is too fast to trigger mouseleave
+		$(this).addClass("copy-to-clipboard-icon");
+		lastCopyToClipboardIcon = $(this);
+		//console.log("Mouseenter e-tooltip");
+	});
+
+	//hide copy-to-clipboard icon
+	$(document).on("mouseleave", '.copy-to-clipboard', function() {
+		$(this).removeClass("copy-to-clipboard-icon");
+		//console.log("Mouseleave e-tooltip");
+	});
+
 });
+
+
+function processEmailAddressInput(e) {
+    setTimeout(function () {
+        if (/@/.test(e.value)) {
+            var parts = e.value.split('@');
+            $('#email_domain').val(parts.pop());
+            $('#email_domain').trigger('change');
+            e.value = parts.pop();
+        }
+    }, 4);
+};
+
+function updateEmailDomain(e) {
+    if (/@/.test(e.value)) {
+        var parts = e.value.split('@');
+        $('#email_domain').val(parts.pop());
+        $('#email_domain').trigger('change');
+        e.value = parts.pop();
+    }
+};
+

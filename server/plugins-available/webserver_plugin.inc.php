@@ -324,23 +324,23 @@ class webserver_plugin {
 		}
 
 		$check_files = array();
-		if ($old['php_ini_path_apache'] != $new['php_ini_path_apache']) {
+		if (isset($new['php_ini_path_apache']) && $old['php_ini_path_apache'] != $new['php_ini_path_apache']) {
 			$check_files[] = array('file' => $new['php_ini_path_apache'],
 				'mode' => 'mod',
 				'php_version' => 0);
 		}
 
-		if ($old['fastcgi_phpini_path'] != $new['fastcgi_phpini_path']) {
+		if (isset($new['fastcgi_phpini_path']) && $old['fastcgi_phpini_path'] != $new['fastcgi_phpini_path']) {
 			$check_files[] = array('file' => $new['fastcgi_phpini_path'],
 				'mode' => 'fast-cgi',
 				'php_version' => 0);
 		}
-		if ($old['php_ini_path_cgi'] != $new['php_ini_path_cgi']) {
+		if (isset($new['php_ini_path_cgi']) && $old['php_ini_path_cgi'] != $new['php_ini_path_cgi']) {
 			$check_files[] = array('file' => $new['php_ini_path_cgi'],
 				'mode' => 'fast-cgi',
 				'php_version' => 0);
 		}
-		if ($old['php_fpm_ini_path'] != $new['php_fpm_ini_path']) {
+		if (isset($new['php_fpm_ini_path']) && $old['php_fpm_ini_path'] != $new['php_fpm_ini_path']) {
 			$check_files[] = array('file' => $web_config['php_fpm_ini_path'],
 				'mode' => 'php-fpm',
 				'php_version' => 0);

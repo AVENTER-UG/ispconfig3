@@ -23,3 +23,4 @@ $wb['error_not_allowed_server_id'] = 'Chosen server is not allowed for this acco
 $wb['relayhost_txt'] = 'Relayhost';
 $wb['relayhost_user_txt'] = 'Relayhost User';
 $wb['relayhost_password_txt'] = 'Relayhost Password';
+$wb['dkim_auto_dns_txt'] = 'Beheerde zone, dns update automatisch';

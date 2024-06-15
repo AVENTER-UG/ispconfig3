@@ -101,7 +101,7 @@ class nginx_plugin {
 		// load the server configuration options
 		$app->uses('getconf');
 		$web_config = $app->getconf->get_server_config($conf['server_id'], 'web');
-		if ($web_config['CA_path']!='' && !file_exists($web_config['CA_path'].'/openssl.cnf'))
+		if (isset($web_config['CA_path']) && $web_config['CA_path'] != '' && !file_exists($web_config['CA_path'].'/openssl.cnf'))
 			$app->log("CA path error, file does not exist:".$web_config['CA_path'].'/openssl.cnf', LOGLEVEL_ERROR);
 
 		//* Only vhosts can have a ssl cert
@@ -561,7 +561,7 @@ class nginx_plugin {
 		if(!is_dir($data['new']['document_root'].'/ssl')) $app->system->mkdirpath($data['new']['document_root'].'/ssl');
 		if(!is_dir($data['new']['document_root'].'/cgi-bin')) $app->system->mkdirpath($data['new']['document_root'].'/cgi-bin');
 		if(!is_dir($data['new']['document_root'].'/tmp')) $app->system->mkdirpath($data['new']['document_root'].'/tmp');
-		if(!is_dir($data['new']['document_root'].'/backup')) $app->system->mkdirpath($data['new']['document_root'].'/backup');
+		if(!is_dir($data['new']['document_root'].'/backup')) $app->system->mkdirpath($data['new']['document_root'].'/backup', 0755, $username, $groupname);
 
 		if(!is_dir($data['new']['document_root'].'/.ssh')) {
 			$app->system->mkdirpath($data['new']['document_root'].'/.ssh');
@@ -693,7 +693,7 @@ class nginx_plugin {
 
 		// Get the client ID
 		$client = $app->dbmaster->queryOneRecord('SELECT client_id FROM sys_group WHERE sys_group.groupid = ?', $data['new']['sys_groupid']);
-		$client_id = intval($client['client_id']);
+		$client_id = (is_array($client)) ? intval($client['client_id']) : 0;
 		unset($client);
 
 		// Remove old symlinks, if site is renamed
@@ -1277,7 +1277,7 @@ class nginx_plugin {
 		}
 
 		// folder_directive_snippets
-		if(trim($data['new']['folder_directive_snippets']) != ''){
+		if(isset($data['new']['folder_directive_snippets']) && !is_null($data['new']['folder_directive_snippets']) && trim($data['new']['folder_directive_snippets']) != ''){
 			$data['new']['folder_directive_snippets'] = trim($data['new']['folder_directive_snippets']);
 			$data['new']['folder_directive_snippets'] = str_replace("\r\n", "\n", $data['new']['folder_directive_snippets']);
 			$data['new']['folder_directive_snippets'] = str_replace("\r", "\n", $data['new']['folder_directive_snippets']);
@@ -1322,6 +1322,7 @@ class nginx_plugin {
 			$ngx_conf_tpl->setVar('use_tcp', $use_tcp);
 			$ngx_conf_tpl->setVar('use_socket', $use_socket);
 			$ngx_conf_tpl->setVar('fpm_socket', $fpm_socket);
+
 			$ngx_conf_tpl->setVar($vhost_data);
 			$nginx_directives_new = $ngx_conf_tpl->grab();
 			if(is_file($ngx_conf_tpl_tmp_file)) unlink($ngx_conf_tpl_tmp_file);
@@ -1337,7 +1338,7 @@ class nginx_plugin {
 			$trans = array(
 				'{DOCROOT}' => $vhost_data['web_document_root_www'],
 				'{DOCROOT_CLIENT}' => $vhost_data['web_document_root'],
-        '{DOMAIN}' => $vhost_data['domain'],
+				'{DOMAIN}' => $vhost_data['domain'],
 				'{FASTCGIPASS}' => 'fastcgi_pass '.($data['new']['php_fpm_use_socket'] == 'y'? 'unix:'.$fpm_socket : '127.0.0.1:'.$vhost_data['fpm_port']).';'
 			);
 			foreach($nginx_directive_lines as $nginx_directive_line){
@@ -1613,21 +1614,32 @@ class nginx_plugin {
 		$vhost_data['logging'] = $web_config['logging'];
 
 		// Provide TLS 1.3 support if Nginx version is >= 1.13.0 and when it was linked against OpenSSL(>=1.1.1) at build time and when it was linked against OpenSSL(>=1.1.1) at runtime.
-		$nginx_openssl_build_ver = $app->system->exec_safe('nginx -V 2>&1 | grep \'built with OpenSSL\' | sed \'s/.*built\([a-zA-Z ]*\)OpenSSL \([0-9.]*\).*/\2/\'');
-		$nginx_openssl_running_ver = $app->system->exec_safe('nginx -V 2>&1 | grep \'running with OpenSSL\' | sed \'s/.*running\([a-zA-Z ]*\)OpenSSL \([0-9.]*\).*/\2/\'');
-		if(version_compare($app->system->getnginxversion(true), '1.13.0', '>=')
-			&& version_compare($nginx_openssl_build_ver, '1.1.1', '>=')
-			&& (empty($nginx_openssl_running_ver) || version_compare($nginx_openssl_running_ver, '1.1.1', '>='))) {
-			$app->log('Enable TLS 1.3 for: '.$domain, LOGLEVEL_DEBUG);
-			$vhost_data['tls13_supported'] = "y";
+		if($data['new']['ssl'] == 'y') {
+			$nginx_openssl_build_ver = $app->system->exec_safe('nginx -V 2>&1 | grep \'built with OpenSSL\' | sed \'s/.*built\([a-zA-Z ]*\)OpenSSL \([0-9.]*\).*/\2/\'');
+			$nginx_openssl_running_ver = $app->system->exec_safe('nginx -V 2>&1 | grep \'running with OpenSSL\' | sed \'s/.*running\([a-zA-Z ]*\)OpenSSL \([0-9.]*\).*/\2/\'');
+			if(version_compare($app->system->getnginxversion(true), '1.13.0', '>=')
+				&& version_compare($nginx_openssl_build_ver, '1.1.1', '>=')
+				&& (empty($nginx_openssl_running_ver) || version_compare($nginx_openssl_running_ver, '1.1.1', '>='))) {
+					$app->log('Enable TLS 1.3 for: '.$domain, LOGLEVEL_DEBUG);
+					$vhost_data['tls13_supported'] = "y";
+			}
+		}
+
+		// Nginx >= 1.25.1 uses a dedicated directive to enable HTTP/2 support
+		// This is a quirk for Nginx legacy versions (or simply Nginx < 1.25.1) and restores the required http2 parameter in the listen directive
+		if(version_compare($app->system->getnginxversion(true), '1.25.1', '<')) {
+			$vhost_data['http2_directive_compat_quirk'] = " http2";
 		}
 
 		$tpl->setVar($vhost_data);
 
+		$tpl->setVar('nginx_version', $app->system->getnginxversion());
+		$tpl->setVar('nginx_full_version', $app->system->getnginxversion(true));
+
 		$server_alias = array();
 
 		// get autoalias
-		$auto_alias = $web_config['website_autoalias'];
+		$auto_alias = (isset($web_config['website_autoalias']))?$web_config['website_autoalias']:'';
 		if($auto_alias != '') {
 			// get the client username
 			$client = $app->db->queryOneRecord("SELECT `username` FROM `client` WHERE `client_id` = ?", $client_id);
@@ -1968,7 +1980,7 @@ class nginx_plugin {
 
 		// create password file for stats directory
 		if(!is_file($data['new']['document_root'].'/' . $stats_web_folder . '/stats/.htpasswd_stats') || $data['new']['stats_password'] != $data['old']['stats_password']) {
-			if(trim($data['new']['stats_password']) != '') {
+			if(isset($data['new']['stats_password']) && !is_null($data['new']['stats_password']) && trim($data['new']['stats_password']) != '') {
 				$htp_file = 'admin:'.trim($data['new']['stats_password']);
 				$app->system->file_put_contents($data['new']['document_root'].'/' . $stats_web_folder . '/stats/.htpasswd_stats', $htp_file);
 				$app->system->chmod($data['new']['document_root'].'/' . $stats_web_folder . '/stats/.htpasswd_stats', 0755);
@@ -1981,25 +1993,25 @@ class nginx_plugin {
 			$this->awstats_update($data, $web_config);
 		}
 
-                //* Create GoAccess configuration
-                if($data['new']['stats_type'] == 'goaccess' && ($data['new']['type'] == 'vhost' || $data['new']['type'] == 'vhostsubdomain' || $data['new']['type'] == 'vhostalias')) {
-                        $this->goaccess_update($data, $web_config);
-                }
+		//* Create GoAccess configuration
+		if($data['new']['stats_type'] == 'goaccess' && ($data['new']['type'] == 'vhost' || $data['new']['type'] == 'vhostsubdomain' || $data['new']['type'] == 'vhostalias')) {
+			$this->goaccess_update($data, $web_config);
+		}
 
-                //* Remove the AWstats configuration file
+		//* Remove the AWstats configuration file
 		if($data['old']['stats_type'] == 'awstats' && $data['new']['stats_type'] != 'awstats') {
 			$this->awstats_delete($data, $web_config);
-                }
+		}
 
 		//* Remove the GoAccess configuration file
 		if($data['old']['stats_type'] == 'goaccess' && $data['new']['stats_type'] != 'goaccess') {
 			$this->goaccess_delete($data, $web_config);
 		}
 
-                //* Remove the Webalizer configuration file
+		//* Remove the Webalizer configuration file
 		if($data['old']['stats_type'] == 'webalizer' && $data['new']['stats_type'] != 'webalizer') {
 			$this->webalizer_delete($data, $web_config);
-                }
+		}
 
 		//* Remove Stats-Folder when Statistics set to none
 		if($data['new']['stats_type'] == '' && ($data['new']['type'] == 'vhost' || $data['new']['type'] == 'vhostsubdomain' || $data['new']['type'] == 'vhostalias')) {
@@ -2624,96 +2636,94 @@ class nginx_plugin {
 
 	//* Update the GoAccess configuration file
 	private function goaccess_update ($data, $web_config) {
-                global $app;
+		global $app;
 
-                $web_folder = $data['new']['web_folder'];
-                if($data['new']['type'] == 'vhost') $web_folder = 'web';
+		$web_folder = $data['new']['web_folder'];
+		if($data['new']['type'] == 'vhost') $web_folder = 'web';
 
-                $goaccess_conf_locs = array('/etc/goaccess.conf', '/etc/goaccess/goaccess.conf');
-                $count = 0;
+		$goaccess_conf_locs = array('/etc/goaccess.conf', '/etc/goaccess/goaccess.conf');
+		$count = 0;
 
-                foreach($goaccess_conf_locs as $goa_loc) {
-                        if(is_file($goa_loc) && (filesize($goa_loc) > 0)) {
-                                $goaccess_conf_main = $goa_loc;
-                                break;
-                        } else {
-                                $count++;
-                                if($count == 2) {
-                                        $app->log("No GoAccess base config found. Make sure that GoAccess is installed and that the goaccess.conf does exist in /etc or /etc/goaccess", LOGLEVEL_WARN);
-                                }
-                        }
-                }
+		foreach($goaccess_conf_locs as $goa_loc) {
+			if(is_file($goa_loc) && (filesize($goa_loc) > 0)) {
+				$goaccess_conf_main = $goa_loc;
+				break;
+			} else {
+				$count++;
+				if($count == 2) {
+					$app->log("No GoAccess base config found. Make sure that GoAccess is installed and that the goaccess.conf does exist in /etc or /etc/goaccess", LOGLEVEL_WARN);
+				}
+			}
+		}
 
-                if(!is_dir($data['new']['document_root'] . "/log/goaccess_db")) $app->system->mkdirpath($data['new']['document_root'] . "/log/goaccess_db");
+		if(!is_dir($data['new']['document_root'] . "/log/goaccess_db")) $app->system->mkdirpath($data['new']['document_root'] . "/log/goaccess_db");
 		$goaccess_conf = $data['new']['document_root'].'/log/goaccess.conf';
 
-                /*
-                In case that you use a different log format, you should use a custom goaccess.conf which you'll have to put into /usr/local/ispconfig/server/conf-custom/.
-                By default the originaly with GoAccess shipped goaccess.conf from /etc/ will be used along with the log-format value COMBINED.
-                */
+		/*
+		In case that you use a different log format, you should use a custom goaccess.conf which you'll have to put into /usr/local/ispconfig/server/conf-custom/.
+		By default the originaly with GoAccess shipped goaccess.conf from /etc/ will be used along with the log-format value COMBINED.
+		*/
 
-                if(file_exists("/usr/local/ispconfig/server/conf-custom/goaccess.conf.master")) {
-                        $app->system->copy("/usr/local/ispconfig/server/conf-custom/goaccess_index.php.master", $goaccess_conf);
+		if(file_exists("/usr/local/ispconfig/server/conf-custom/goaccess.conf.master")) {
+			$app->system->copy("/usr/local/ispconfig/server/conf-custom/goaccess_index.php.master", $goaccess_conf);
+		} elseif(!file_exists($goaccess_conf)) {
+			/*
+			By default the goaccess.conf should get copied by the webserver plugin but in case it wasn't, or it got deleted by accident we gonna copy it again to the destination dir.
+			Also there was no /usr/local/ispconfig/server/conf-custom/goaccess.conf.master, so we gonna use /etc/goaccess.conf as the base conf.
+			*/
+            $goaccess_conf_main = '/etc/goaccess.conf';
+            if(file_exists($goaccess_conf_main)) {
+			    $app->system->copy($goaccess_conf_main, $goaccess_conf);
+			    $content = $app->system->file_get_contents($goaccess_conf, true);
+			    $content = preg_replace('/^(#)?log-format COMBINED/m', "log-format COMBINED", $content);
+			    $app->system->file_put_contents($goaccess_conf, $content, true);
+			    unset($content);
+            }
+		}
 
-                } elseif(!file_exists($goaccess_conf)) {
+		if(file_exists($goaccess_conf)) {
+			$domain = $data['new']['domain'];
+			$content = $app->system->file_get_contents($goaccess_conf, true);
+			$content = preg_replace('/^(#)?html-report-title(.*)/m', "html-report-title $domain", $content);
+			$app->system->file_put_contents($goaccess_conf, $content, true);
+			unset($content);
+		}
 
-                        /*
-                         By default the goaccess.conf should get copied by the webserver plugin but in case it wasn't, or it got deleted by accident we gonna copy it again to the destination dir.
-                         Also there was no /usr/local/ispconfig/server/conf-custom/goaccess.conf.master, so we gonna use /etc/goaccess.conf as the base conf.
-                         */
+		if(is_file($goaccess_conf) && (filesize($goaccess_conf) > 0)) {
+			$app->log('Created GoAccess config file: '.$goaccess_conf, LOGLEVEL_DEBUG);
+		}
 
-                        $app->system->copy($goaccess_conf_main, $goaccess_conf);
-                        $content = $app->system->file_get_contents($goaccess_conf, true);
-                        $content = preg_replace('/^(#)?log-format COMBINED/m', "log-format COMBINED", $content);
-                        $app->system->file_put_contents($goaccess_conf, $content, true);
-                        unset($content);
-
-                }
-
-                if(file_exists($goaccess_conf)) {
-                        $domain = $data['new']['domain'];
-                        $content = $app->system->file_get_contents($goaccess_conf, true);
-                        $content = preg_replace('/^(#)?html-report-title(.*)/m', "html-report-title $domain", $content);
-                        $app->system->file_put_contents($goaccess_conf, $content, true);
-                        unset($content);
-
-                }
-
-                if(is_file($goaccess_conf) && (filesize($goaccess_conf) > 0)) {
-                        $app->log('Created GoAccess config file: '.$goaccess_conf, LOGLEVEL_DEBUG);
-                }
-
-                if(is_file($data['new']['document_root']."/" . $web_folder . "/stats/index.html")) $app->system->unlink($data['new']['document_root']."/" . $web_folder . "/stats/index.html");
-                if(file_exists("/usr/local/ispconfig/server/conf-custom/goaccess_index.php.master")) {
-                        $app->system->copy("/usr/local/ispconfig/server/conf-custom/goaccess_index.php.master", $data['new']['document_root']."/" . $web_folder . "/stats/index.php");
-                } else {
-                        $app->system->copy("/usr/local/ispconfig/server/conf/goaccess_index.php.master", $data['new']['document_root']."/" . $web_folder . "/stats/index.php");
+		if(is_file($data['new']['document_root']."/" . $web_folder . "/stats/index.html")) $app->system->unlink($data['new']['document_root']."/" . $web_folder . "/stats/index.html");
+		if(file_exists("/usr/local/ispconfig/server/conf-custom/goaccess_index.php.master")) {
+			$app->system->copy("/usr/local/ispconfig/server/conf-custom/goaccess_index.php.master", $data['new']['document_root']."/" . $web_folder . "/stats/index.php");
+		} else {
+			$app->system->copy("/usr/local/ispconfig/server/conf/goaccess_index.php.master", $data['new']['document_root']."/" . $web_folder . "/stats/index.php");
 		}
 	}
 
-        //* Delete the GoAccess configuration file
-        private function goaccess_delete ($data, $web_config) {
-                global $app;
+	//* Delete the GoAccess configuration file
+	private function goaccess_delete ($data, $web_config) {
+		global $app;
 
-                $goaccess_conf = $data['old']['document_root'] . "/log/goaccess.conf";
+		$goaccess_conf = $data['old']['document_root'] . "/log/goaccess.conf";
 
-                if ( @is_file($goaccess_conf) ) {
-                        $app->system->unlink($goaccess_conf);
-                        $app->log('Removed GoAccess config file: '.$goaccess_conf, LOGLEVEL_DEBUG);
-                }
-        }
+		if ( @is_file($goaccess_conf) ) {
+			$app->system->unlink($goaccess_conf);
+			$app->log('Removed GoAccess config file: '.$goaccess_conf, LOGLEVEL_DEBUG);
+			}
+	}
 
-        //* Delete the Webalizer configuration file
-        private function webalizer_delete ($data, $web_config) {
-                global $app;
+	//* Delete the Webalizer configuration file
+	private function webalizer_delete ($data, $web_config) {
+		global $app;
 
-                $webalizer_conf = $data['old']['document_root'] . "/log/webalizer.conf";
+		$webalizer_conf = $data['old']['document_root'] . "/log/webalizer.conf";
 
-                if ( @is_file($webalizer_conf) ) {
-                        $app->system->unlink($webalizer_conf);
-                        $app->log('Removed Webalizer config file: '.$webalizer_conf, LOGLEVEL_DEBUG);
-                }
-        }
+		if ( @is_file($webalizer_conf) ) {
+			$app->system->unlink($webalizer_conf);
+			$app->log('Removed Webalizer config file: '.$webalizer_conf, LOGLEVEL_DEBUG);
+		}
+	}
 
 	//* Update the awstats configuration file
 	private function awstats_update ($data, $web_config) {
@@ -2880,6 +2890,7 @@ class nginx_plugin {
 
 		$app->uses("getconf");
 		$web_config = $app->getconf->get_server_config($conf["server_id"], 'web');
+		$php_fpm_reload_mode = ($web_config['php_fpm_reload_mode'] == 'reload')?'reload':'restart';
 
 		// HHVM => PHP-FPM-Fallback
 		if($data['new']['php'] != 'php-fpm' && $data['new']['php'] != 'hhvm'){
@@ -2889,9 +2900,9 @@ class nginx_plugin {
 			}
 			if($data['old']['php'] != 'no'){
 				if(!$default_php_fpm){
-					$app->services->restartService('php-fpm', 'reload:'.$custom_php_fpm_init_script);
+					$app->services->restartService('php-fpm', $php_fpm_reload_mode.':'.$custom_php_fpm_init_script);
 				} else {
-					$app->services->restartService('php-fpm', 'reload:'.$conf['init_scripts'].'/'.$web_config['php_fpm_init_script']);
+					$app->services->restartService('php-fpm', $php_fpm_reload_mode.':'.$conf['init_scripts'].'/'.$web_config['php_fpm_init_script']);
 				}
 			}
 			return;
@@ -2961,7 +2972,7 @@ class nginx_plugin {
 
 		// Custom php.ini settings
 		$final_php_ini_settings = array();
-		$custom_php_ini_settings = trim($data['new']['custom_php_ini']);
+		$custom_php_ini_settings = (isset($data['new']['custom_php_ini']) && !is_null($data['new']['custom_php_ini'])) ? trim($data['new']['custom_php_ini']) : '';
 
 		if(intval($data['new']['directive_snippets_id']) > 0){
 			$snippet = $app->db->queryOneRecord("SELECT * FROM directive_snippets WHERE directive_snippets_id = ? AND type = 'nginx' AND active = 'y' AND customer_viewable = 'y'", intval($data['new']['directive_snippets_id']));
@@ -3039,7 +3050,7 @@ class nginx_plugin {
 			if ( @is_file($default_pool_dir.$pool_name.'.conf') ) {
 				$app->system->unlink($default_pool_dir.$pool_name.'.conf');
 				$app->log('Removed PHP-FPM config file: '.$default_pool_dir.$pool_name.'.conf', LOGLEVEL_DEBUG);
-				$app->services->restartService('php-fpm', 'reload:'.$conf['init_scripts'].'/'.$web_config['php_fpm_init_script']);
+				$app->services->restartService('php-fpm', $php_fpm_reload_mode.':'.$conf['init_scripts'].'/'.$web_config['php_fpm_init_script']);
 			}
 		}
 		$php_versions = $app->db->queryAllRecords("SELECT * FROM server_php WHERE php_fpm_init_script != '' AND php_fpm_ini_dir != '' AND php_fpm_pool_dir != '' AND server_id = ?", $conf["server_id"]);
@@ -3051,7 +3062,7 @@ class nginx_plugin {
 					if ( @is_file($php_version['php_fpm_pool_dir'].$pool_name.'.conf') ) {
 						$app->system->unlink($php_version['php_fpm_pool_dir'].$pool_name.'.conf');
 						$app->log('Removed PHP-FPM config file: '.$php_version['php_fpm_pool_dir'].$pool_name.'.conf', LOGLEVEL_DEBUG);
-						$app->services->restartService('php-fpm', 'reload:'.$php_version['php_fpm_init_script']);
+						$app->services->restartService('php-fpm', $php_fpm_reload_mode.':'.$php_version['php_fpm_init_script']);
 					}
 				}
 			}
@@ -3059,9 +3070,9 @@ class nginx_plugin {
 		// Reload current PHP-FPM after all others
 		sleep(1);
 		if(!$default_php_fpm){
-			$app->services->restartService('php-fpm', 'reload:'.$custom_php_fpm_init_script);
+			$app->services->restartService('php-fpm', $php_fpm_reload_mode.':'.$custom_php_fpm_init_script);
 		} else {
-			$app->services->restartService('php-fpm', 'reload:'.$conf['init_scripts'].'/'.$web_config['php_fpm_init_script']);
+			$app->services->restartService('php-fpm', $php_fpm_reload_mode.':'.$conf['init_scripts'].'/'.$web_config['php_fpm_init_script']);
 		}
 	}
 
@@ -3104,7 +3115,7 @@ class nginx_plugin {
 			if ( @is_file($default_pool_dir.$pool_name.'.conf') ) {
 				$app->system->unlink($default_pool_dir.$pool_name.'.conf');
 				$app->log('Removed PHP-FPM config file: '.$default_pool_dir.$pool_name.'.conf', LOGLEVEL_DEBUG);
-				$app->services->restartService('php-fpm', 'reload:'.$conf['init_scripts'].'/'.$web_config['php_fpm_init_script']);
+				$app->services->restartService('php-fpm', $php_fpm_reload_mode.':'.$conf['init_scripts'].'/'.$web_config['php_fpm_init_script']);
 			}
 		}
 		$php_versions = $app->db->queryAllRecords("SELECT * FROM server_php WHERE php_fpm_init_script != '' AND php_fpm_ini_dir != '' AND php_fpm_pool_dir != '' AND server_id = ?", $data['old']['server_id']);
@@ -3116,7 +3127,7 @@ class nginx_plugin {
 					if ( @is_file($php_version['php_fpm_pool_dir'].$pool_name.'.conf') ) {
 						$app->system->unlink($php_version['php_fpm_pool_dir'].$pool_name.'.conf');
 						$app->log('Removed PHP-FPM config file: '.$php_version['php_fpm_pool_dir'].$pool_name.'.conf', LOGLEVEL_DEBUG);
-						$app->services->restartService('php-fpm', 'reload:'.$php_version['php_fpm_init_script']);
+						$app->services->restartService('php-fpm', $php_fpm_reload_mode.':'.$php_version['php_fpm_init_script']);
 					}
 				}
 			}
@@ -3125,9 +3136,9 @@ class nginx_plugin {
 		// Reload current PHP-FPM after all others
 		sleep(1);
 		if(!$default_php_fpm){
-			$app->services->restartService('php-fpm', 'reload:'.$custom_php_fpm_init_script);
+			$app->services->restartService('php-fpm', $php_fpm_reload_mode.':'.$custom_php_fpm_init_script);
 		} else {
-			$app->services->restartService('php-fpm', 'reload:'.$conf['init_scripts'].'/'.$web_config['php_fpm_init_script']);
+			$app->services->restartService('php-fpm', $php_fpm_reload_mode.':'.$conf['init_scripts'].'/'.$web_config['php_fpm_init_script']);
 		}
 	}
 

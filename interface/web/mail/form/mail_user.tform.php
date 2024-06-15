@@ -51,6 +51,7 @@ if(!$app->auth->is_admin()) {
 $form["title"]    = "Mailbox";
 $form["description"]  = "";
 $form["name"]    = "mail_user";
+$form["record_name_field"] = "email";
 $form["action"]   = "mail_user_edit.php";
 $form["db_table"]  = "mail_user";
 $form["db_table_idx"] = "mailuser_id";

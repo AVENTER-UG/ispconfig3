@@ -83,6 +83,12 @@ $wb['global_tabchange_discard_txt'] = 'You have unsaved changes in this tab. Cha
 
 $wb['datalog_changes_txt'] = 'The following changes are not yet populated to all servers:';
 $wb['datalog_changes_end_txt'] = 'Storing updates can take up to one minute. Please be patient.';
+$wb['datalog_status_i_client'] = 'Create new client';
+$wb['datalog_status_u_client'] = 'Update client';
+$wb['datalog_status_d_client'] = 'Delete client';
+$wb['datalog_status_i_domain'] = 'Create new domain';
+$wb['datalog_status_u_domain'] = 'Update domain';
+$wb['datalog_status_d_domain'] = 'Delete domain';
 $wb['datalog_status_i_web_database'] = 'Create new database';
 $wb['datalog_status_u_web_database'] = 'Update database';
 $wb['datalog_status_d_web_database'] = 'Delete database';
@@ -175,4 +181,12 @@ $wb['server_id_0_error_txt'] = 'Please select a valid Server. Server ID must be 
 $wb['datalog_changes_close_txt'] = 'Close';
 $wb['non_admin_error'] = 'Requires administrator level permissions';
 $wb['copy_to_clipboard_txt'] = 'Copy to clipboard';
+$wb['datalog_status_d_web_backup'] = 'Delete website backup';
+$wb['datalog_status_i_dns_template'] = 'Create DNS template';
+$wb['datalog_status_u_dns_template'] = 'Update DNS template';
+$wb['datalog_status_d_dns_template'] = 'Delete DNS template';
+$wb['datalog_status_i_sys_group'] = 'Create new client group';
+$wb['datalog_status_u_sys_ini'] = 'Update main config';
+$wb['last_accessed_txt'] = 'Last accessed';
+$wb['never_accessed_txt'] = 'Never or unknown';
 ?>

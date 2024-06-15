@@ -193,7 +193,7 @@ class quota_lib {
 		return $traffic_data;
 	}
 
-	public function get_mailquota_data($clientid = null, $readable = true) {
+       public function get_mailquota_data($clientid = null, $readable = true, $email = null) {
 		global $app;
 
 		$tmp_rec =  $app->db->queryAllRecords("SELECT data from monitor_data WHERE type = 'email_quota' ORDER BY created DESC");
@@ -211,6 +211,14 @@ class quota_lib {
 		}
 		//print_r($monitor_data);
 
+               if ($email !== null && !empty($email)) {
+				   if(isset($monitor_data[$email])) {
+					   return $monitor_data[$email];
+				   } else {
+					   return '';
+				   }
+                       
+               }
 		// select all email accounts or email accounts belonging to client
 		$q = "SELECT * FROM mail_user WHERE";
 		$q .= $app->tform->getAuthSQL('r', '', '', $app->functions->clientid_to_groups_list($clientid));
@@ -221,6 +229,13 @@ class quota_lib {
 		if(is_array($emails) && !empty($emails)) {
 			for($i=0;$i<sizeof($emails);$i++){
 				$email = $emails[$i]['email'];
+
+				if (empty($emails[$i]['last_access'])) {
+					$emails[$i]['last_access'] = $app->lng('never_accessed_txt');
+				}
+				else {
+					$emails[$i]['last_access'] = date($app->lng('conf_format_dateshort'), $emails[$i]['last_access']);
+				}
 
 				$emails[$i]['name'] = $app->functions->htmlentities($emails[$i]['name']);
 				$emails[$i]['used'] = isset($monitor_data[$email]['used']) ? $monitor_data[$email]['used'] : array(1 => 0);

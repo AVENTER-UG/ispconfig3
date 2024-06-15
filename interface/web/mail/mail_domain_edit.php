@@ -259,6 +259,13 @@ class page_action extends tform_actions {
 		$app->tpl->setVar('dkim_public', $rec['dkim_public'], true);
 		if (!empty($rec['dkim_public'])) $app->tpl->setVar('dns_record', $dns_record, true);
 
+		if($this->id > 0) {
+			$soa = $this->find_soa_domain($this->dataRecord['domain']);
+			if ( !empty($soa) ) {
+				$app->tpl->setVar('dkim_auto_dns', $app->tform->lng('dkim_auto_dns_txt'), true);
+			}
+		}
+
 		$csrf_token = $app->auth->csrf_token_get('mail_domain_del');
 		$app->tpl->setVar('_csrf_id', $csrf_token['csrf_id']);
 		$app->tpl->setVar('_csrf_key', $csrf_token['csrf_key']);
@@ -331,6 +338,11 @@ class page_action extends tform_actions {
 			$this->dataRecord["domain"] = strtolower($this->dataRecord["domain"]);
 		}
 
+		// Extract the dkim public key if not submitted.
+		if (!empty($this->dataRecord['dkim_private']) && empty( $this->dataRecord['dkim_public']) && function_exists('openssl_pkey_get_details')) {
+			$this->dataRecord['dkim_public'] = openssl_pkey_get_details(openssl_pkey_get_private($this->dataRecord['dkim_private']))['key'];
+		}
+
 		//* server_id must be > 0
 		if(isset($this->dataRecord["server_id"]) && $this->dataRecord["server_id"] < 1) $app->tform->errorMessage .= $app->lng("server_id_0_error_txt");
 
@@ -355,7 +367,7 @@ class page_action extends tform_actions {
 			// We create a new record
 			$insert_data = array(
 				"sys_userid" => $_SESSION["s"]["user"]["userid"],
-				"sys_groupid" => $tmp_domain["sys_groupid"],
+				"sys_groupid" => (isset($this->dataRecord["client_group_id"]))?$this->dataRecord["client_group_id"]:$tmp_domain["sys_groupid"],
 				"sys_perm_user" => 'riud',
 				"sys_perm_group" => 'riud',
 				"sys_perm_other" => '',
@@ -372,12 +384,8 @@ class page_action extends tform_actions {
 
 		//* create dns-record with dkim-values if the zone exists
 		if ( $this->dataRecord['active'] == 'y' && $this->dataRecord['dkim'] == 'y' ) {
-			$soaDomain = $this->dataRecord['domain'].'.';
- 			while ((!isset($soa) && (substr_count($soaDomain,'.') > 1))) {
-				$soa = $app->db->queryOneRecord("SELECT id AS zone, sys_userid, sys_groupid, sys_perm_user, sys_perm_group, sys_perm_other, server_id, ttl, serial FROM dns_soa WHERE active = 'Y' AND origin = ?", $soaDomain);
-				$soaDomain = preg_replace("/^[^\.]+\./","",$soaDomain);
-			}
-			if ( isset($soa) && !empty($soa) ) $this->update_dns($this->dataRecord, $soa);
+			$soa = $this->find_soa_domain($this->dataRecord['domain']);
+			if ( !empty($soa) ) $this->update_dns($this->dataRecord, $soa);
 		}
 
 	}
@@ -690,16 +698,12 @@ class page_action extends tform_actions {
 			$selector = @($this->dataRecord['dkim_selector'] != $this->oldDataRecord['dkim_selector']) ? true : false;
 			$dkim_private = @($this->dataRecord['dkim_private'] != $this->oldDataRecord['dkim_private']) ? true : false;
 
-			$soaDomain = $domain.'.';
-			while ((!isset($soa) && (substr_count($soaDomain,'.') > 1))) {
-				$soa = $app->db->queryOneRecord("SELECT id AS zone, sys_userid, sys_groupid, sys_perm_user, sys_perm_group, sys_perm_other, server_id, ttl, serial FROM dns_soa WHERE active = 'Y' AND origin = ?", $soaDomain);
-				$soaDomain = preg_replace("/^[^\.]+\./","",$soaDomain);
-			}
+			$soa = $this->find_soa_domain($this->dataRecord['domain']);
 
 			if ( ($selector || $dkim_private || $dkim_active) && $dkim_active )
 				//* create a new record only if the dns-zone exists
 				if ( isset($soa) && !empty($soa) ) {
-					$this->update_dns($this->dataRecord, $soa);
+					$this->update_dns($this->dataRecord, $soa, $this->oldDataRecord);
 				}
 			if (! $dkim_active) {
 				// updated existing dmarc-record to policy 'none'
@@ -718,24 +722,33 @@ class page_action extends tform_actions {
 
 	}
 
-	private function update_dns($dataRecord, $new_rr) {
+	/**
+	 * Lookup if we host a dns zone for this domain.
+	 */
+	private function find_soa_domain($domain) {
+		global $app;
+		$soaDomain = $domain . '.';
+		$soa = null;
+		while ((!isset($soa) && (substr_count($soaDomain,'.') > 1))) {
+			$soa = $app->db->queryOneRecord("SELECT `id` AS `zone`, `sys_userid`, `sys_groupid`, `sys_perm_user`, `sys_perm_group`, `sys_perm_other`, `server_id`, `ttl`, `serial` FROM `dns_soa` WHERE `active` = 'Y' AND `origin` = ?", $soaDomain);
+			$soaDomain = preg_replace("/^[^\.]+\./","",$soaDomain);
+		}
+		return $soa;
+	}
+
+	private function update_dns($dataRecord, $new_rr, $oldDataRecord = null) {
 		global $app, $conf;
 
-		// purge old rr-record(s)
-		$sql = "SELECT * FROM dns_rr WHERE name LIKE ? AND data LIKE 'v=DKIM1%' AND " . $app->tform->getAuthSQL('r') . " ORDER BY serial DESC";
-		$rec = $app->db->queryAllRecords($sql, '%._domainkey.'.$dataRecord['domain'].'.');
-		if(is_array($rec)) {
-			foreach($rec as $r) {
-				$app->db->datalogDelete('dns_rr', 'id', $r['id']);
+		// Purge old rr-record, incase the selector or domain changed.
+		if (!empty($oldDataRecord)) {
+			$sql = "SELECT * FROM dns_rr WHERE name LIKE ? AND data LIKE 'v=DKIM1%' AND " . $app->tform->getAuthSQL('r') . " ORDER BY serial DESC";
+			$rec = $app->db->queryAllRecords($sql, $oldDataRecord['dkim_selector'].'._domainkey.'.$oldDataRecord['domain'].'.');
+			if(is_array($rec)) {
+				foreach($rec as $r) {
+					$app->db->datalogDelete('dns_rr', 'id', $r['id']);
+				}
 			}
 		}
-
-		// also delete a dsn-records with same selector
-		$sql = "SELECT * from dns_rr WHERE name ? AND data LIKE 'v=DKIM1%' AND " . $app->tform->getAuthSQL('r');
-		$rec = $app->db->queryAllRecords($sql, '._domainkey.'.$dataRecord['dkim_selector'].'.', $dataRecord['domain']);
-		if (is_array($rec))
-			foreach ($rec as $del)
-				$app->db->datalogDelete('dns_rr', 'id', $del['id']);
 
 		$new_rr['name'] = $dataRecord['dkim_selector'].'._domainkey.'.$dataRecord['domain'].'.';
 		$new_rr['type'] = 'TXT';

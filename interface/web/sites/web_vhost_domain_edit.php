@@ -843,6 +843,15 @@ class page_action extends tform_actions {
 			$app->tpl->setVar('is_pagespeed_enabled', ($web_config['nginx_enable_pagespeed']));
 		}
 
+               $csrf_token = $app->auth->csrf_token_get('web_vhost_domain_del');
+               $app->tpl->setVar('_csrf_id', $csrf_token['csrf_id']);
+               $app->tpl->setVar('_csrf_key', $csrf_token['csrf_key']);
+
+               $global_config = $app->getconf->get_global_config();
+               $app->tpl->setVar('show_delete_on_forms', $global_config['misc']['show_delete_on_forms']);
+
+		$app->tpl->setVar('app_module', 'sites');
+
 		parent::onShowEnd();
 	}
 

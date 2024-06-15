@@ -63,6 +63,7 @@ EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 $form["title"]    = "Domain";
 $form["description"]  = "";
 $form["name"]    = "domain";
+$form["record_name_field"] = "domain";
 $form["action"]   = "domain_edit.php";
 $form["db_table"]  = "domain";
 $form["db_table_idx"] = "domain_id";
@@ -106,7 +107,8 @@ $form["tabs"]['domain'] = array (
 			'default' => '',
 			'value'  => '',
 			'width'  => '30',
-			'maxlength' => '255'
+			'maxlength' => '255',
+			'searchable' => 1,
 		),
 		//#################################
 		// END Datatable fields
