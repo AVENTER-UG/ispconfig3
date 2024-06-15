@@ -2,7 +2,7 @@
 
 class dashlet_quota {
 
-	function show() {
+	function show($limit_to_client_id = null) {
 		global $app;
 
 		//* Loading Template
@@ -24,35 +24,28 @@ class dashlet_quota {
 		if(is_file($lng_file)) include $lng_file;
 		$tpl->setVar($wb);
 
-		$sites = $app->quota_lib->get_quota_data( ($_SESSION["s"]["user"]["typ"] != 'admin') ? $_SESSION['s']['user']['client_id'] : null);
-		//print_r($sites);
+		$sites = $app->quota_lib->get_quota_data($limit_to_client_id);
 
 		$has_quota = false;
 		if(is_array($sites) && !empty($sites)){
 			foreach($sites as &$site) {
 				$site['domain'] = $app->functions->idn_decode($site['domain']);
 				$site['progressbar'] = $site['hd_quota'];
+				$site['used'] = $app->functions->formatBytes($site['used_raw'], 0);
+				$site['hard'] = $app->functions->formatBytesOrUnlimited($site['hard_raw'], 0);
+				$site['soft'] = $app->functions->formatBytesOrUnlimited($site['soft_raw'], 0);
+				$total_used += $site['used_raw'];
 			}
 			unset($site);
 
 			$sites = $app->functions->htmlentities($sites);
 			$tpl->setloop('quota', $sites);
 			$has_quota = isset($sites[0]['used']);
+
+			$tpl->setVar('has_quota', $has_quota);
+			$tpl->setVar('total_used', $app->functions->formatBytes($total_used, 0));
+
+			return $tpl->grab();
 		}
-		$tpl->setVar('has_quota', $has_quota);
-
-		return $tpl->grab();
-
-
 	}
-
 }
-
-
-
-
-
-
-
-
-?>
