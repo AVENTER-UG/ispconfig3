@@ -2,7 +2,7 @@
 
 if(!defined('INSTALLER_RUN')) die('Patch update file access violation.');
 
-class upd_0099 extends installer_patch_update {
+class upd_0100 extends installer_patch_update {
 
 	public function onAfterSQL() {
 		global $inst;
@@ -12,7 +12,6 @@ class upd_0099 extends installer_patch_update {
             unlink('/usr/local/ispconfig/server/plugins-available/nginx_reverseproxy_plugin.inc.php');
         if(!is_link('/usr/local/ispconfig/server/plugins-enabled/bind_dlz_plugin.inc.php'))
             unlink('/usr/local/ispconfig/server/plugins-available/bind_dlz_plugin.inc.php');
-		
 	}
 
 }
