@@ -2,7 +2,7 @@
 
 class dashlet_mailquota {
 
-	function show() {
+	function show($limit_to_client_id = null) {
 		global $app;
 
 		//* Loading Template
@@ -21,19 +21,30 @@ class dashlet_mailquota {
 		$mail_config = $app->getconf->get_global_config('mail');
 		$tpl->setVar('mailbox_show_last_access', $mail_config['mailbox_show_last_access']);
 
-		$emails = $app->quota_lib->get_mailquota_data( ($_SESSION["s"]["user"]["typ"] != 'admin') ? $_SESSION['s']['user']['client_id'] : null);
+		$emails = $app->quota_lib->get_mailquota_data($limit_to_client_id);
 
 		$has_mailquota = false;
+		$total_used = 0;
 		if(is_array($emails) && !empty($emails)){
 			foreach($emails as &$email) {
 				$email['email'] = $app->functions->idn_decode($email['email']);
+				$email['used'] = $app->functions->formatBytes($email['used_raw'], 0);
+				// Mail is the exception with 0 == unlimited, instead of -1
+				if ($email['quota_raw'] == 0) {
+					$email['quota_raw'] = -1;
+				}
+
+				$email['quota'] = $app->functions->formatBytesOrUnlimited($email['quota_raw'], 0);
+				$total_used += $email['used_raw'];
 			}
 			unset($email);
 			$tpl->setloop('mailquota', $emails);
 			$has_mailquota = isset($emails[0]['used']);
-		}
-		$tpl->setVar('has_mailquota', $has_mailquota);
 
-		return $tpl->grab();
+			$tpl->setVar('has_mailquota', $has_mailquota);
+			$tpl->setVar('total_used', $app->functions->formatBytes($total_used, 0));
+
+			return $tpl->grab();
+		}
 	}
 }

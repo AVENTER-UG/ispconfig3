@@ -46,7 +46,7 @@ $form["action"]   = "reseller_edit.php";
 $form["db_table"]  = "client";
 $form["db_table_idx"] = "client_id";
 $form["db_history"]  = "yes";
-$form["tab_default"] = "address";
+$form["tab_default"] = "info";
 $form["list_default"] = "reseller_list.php";
 $form["auth"]   = 'yes';
 
@@ -81,6 +81,12 @@ while ($file = @readdir($handle)) {
 	}
 }
 
+$form["tabs"]['info'] = array(
+	'title'  => "Info",
+	'width'  => 100,
+	'template'  => "templates/reseller_edit_info.htm",
+	'fields'  => array()
+);
 $form["tabs"]['address'] = array (
 	'title'  => "Address",
 	'width'  => 100,

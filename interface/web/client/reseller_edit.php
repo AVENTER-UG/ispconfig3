@@ -72,7 +72,42 @@ class page_action extends tform_actions {
 			}
 		}
 
+		// Hide the info tab when creating a new client.
+		unset($app->tform->formDef["tabs"]['info']);
+		$app->tform->formDef["tab_default"] = "address";
+
 		parent::onShowNew();
+	}
+
+
+	function onShowEdit() {
+		global $app, $conf;
+		chdir('../dashboard');
+
+		$dashlet_list = array();
+		$dashlets = array('quota.php', 'databasequota.php', 'mailquota.php', 'limits.php');
+		$current_client_id = $this->id;
+
+		foreach ($dashlets as $file) {
+			if ($file != '.' && $file != '..' && !is_dir(ISPC_WEB_PATH.'/dashboard/dashlets/'.$file)) {
+				$dashlet_name = substr($file, 0, -4);
+				$dashlet_class = 'dashlet_'.$dashlet_name;
+				include_once ISPC_WEB_PATH.'/dashboard/dashlets/'.$file;
+				$dashlet_list[$dashlet_name] = new $dashlet_class;
+				$dashlets_html .= $dashlet_list[$dashlet_name]->show($current_client_id);
+			}
+		}
+		$app->tpl->setVar('dashlets', $dashlets_html);
+
+		chdir('../client');
+
+		$tmp = $app->db->queryOneRecord("SELECT company_name, contact_firstname, contact_name, email FROM client WHERE client_id = ?", $current_client_id);
+
+		$app->tpl->setVar('company_name', $tmp['company_name']);
+		$app->tpl->setVar('contact_name', $tmp['contact_name']);
+		$app->tpl->setVar('email', $tmp['email']);
+
+		parent::onShowEdit();
 	}
 
 

@@ -42,7 +42,6 @@ class cronjob {
 	protected $_last_run = null;
 	protected $_next_run = null;
 	private $_running = false;
-    protected $_tools = null;
 
 	// services for delayed restart/reload
 	private $_delayed_restart_services = array();

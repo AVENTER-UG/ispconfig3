@@ -14,7 +14,10 @@ class quota_lib {
 		//print_r($monitor_data);
 
 		// select all websites or websites belonging to client
-		$sites = $app->db->queryAllRecords("SELECT * FROM web_domain WHERE active = 'y' AND type = 'vhost'".(($clientid != null)?" AND sys_groupid = (SELECT default_group FROM sys_user WHERE client_id=?)":'') . " ORDER BY domain", $clientid);
+		$q = "SELECT * FROM web_domain WHERE type = 'vhost' AND ";
+		$q .= $app->tform->getAuthSQL('r', '', '', $app->functions->clientid_to_groups_list($clientid));
+		$q .= " ORDER BY domain";
+		$sites = $app->db->queryAllRecords($q, $clientid);
 
 		//print_r($sites);
 		if(is_array($sites) && !empty($sites)){
@@ -36,9 +39,10 @@ class quota_lib {
 				if (!is_numeric($sites[$i]['hard'])) $sites[$i]['hard']=$sites[$i]['hard'][1];
 				if (!is_numeric($sites[$i]['files'])) $sites[$i]['files']=$sites[$i]['files'][1];
 
-				$sites[$i]['used_raw'] = $sites[$i]['used'];
-				$sites[$i]['soft_raw'] = $sites[$i]['soft'];
-				$sites[$i]['hard_raw'] = $sites[$i]['hard'];
+                               // Convert from kb to bytes, and use -1 for instead of 0 for Unlimited.
+				$sites[$i]['used_raw'] = $sites[$i]['used'] * 1024;
+                               $sites[$i]['soft_raw'] = ($sites[$i]['soft'] > 0) ? $sites[$i]['soft'] * 1024 : -1;
+                               $sites[$i]['hard_raw'] = ($sites[$i]['hard'] > 0) ? $sites[$i]['hard'] * 1024 : -1;
 				$sites[$i]['files_raw'] = $sites[$i]['files'];
 				$sites[$i]['used_percentage'] = ($sites[$i]['soft'] > 0 && $sites[$i]['used'] > 0 ? round($sites[$i]['used'] * 100 / $sites[$i]['soft']) : 0);
 
@@ -53,29 +57,6 @@ class quota_lib {
 					if($used_ratio >= 0.8) $sites[$i]['display_colour'] = '#fd934f';
 					if($used_ratio >= 1) $sites[$i]['display_colour'] = '#cc0000';
 
-					if($sites[$i]['used'] > 1024) {
-						$sites[$i]['used'] = round($sites[$i]['used'] / 1024, 1).' MB';
-					} else {
-						if ($sites[$i]['used'] != '') $sites[$i]['used'] .= ' KB';
-					}
-
-					if($sites[$i]['soft'] > 1024) {
-						$sites[$i]['soft'] = round($sites[$i]['soft'] / 1024, 1).' MB';
-					} else {
-						$sites[$i]['soft'] .= ' KB';
-					}
-
-					if($sites[$i]['hard'] > 1024) {
-						$sites[$i]['hard'] = round($sites[$i]['hard'] / 1024, 1).' MB';
-					} else {
-						$sites[$i]['hard'] .= ' KB';
-					}
-
-					if($sites[$i]['soft'] == " KB") $sites[$i]['soft'] = $app->lng('unlimited_txt');
-					if($sites[$i]['hard'] == " KB") $sites[$i]['hard'] = $app->lng('unlimited_txt');
-
-					if($sites[$i]['soft'] == '0 B' || $sites[$i]['soft'] == '0 KB' || $sites[$i]['soft'] == '0') $sites[$i]['soft'] = $app->lng('unlimited_txt');
-					if($sites[$i]['hard'] == '0 B' || $sites[$i]['hard'] == '0 KB' || $sites[$i]['hard'] == '0') $sites[$i]['hard'] = $app->lng('unlimited_txt');
 
 					/*
 					 if(!strstr($sites[$i]['used'],'M') && !strstr($sites[$i]['used'],'K')) $sites[$i]['used'].= ' B';
@@ -83,13 +64,7 @@ class quota_lib {
 					if(!strstr($sites[$i]['hard'],'M') && !strstr($sites[$i]['hard'],'K')) $sites[$i]['hard'].= ' B';
 					*/
 				}
-				else {
-					if (empty($sites[$i]['soft'])) $sites[$i]['soft'] = -1;
-					if (empty($sites[$i]['hard'])) $sites[$i]['hard'] = -1;
 
-					if($sites[$i]['soft'] == '0 B' || $sites[$i]['soft'] == '0 KB' || $sites[$i]['soft'] == '0') $sites[$i]['soft'] = -1;
-					if($sites[$i]['hard'] == '0 B' || $sites[$i]['hard'] == '0 KB' || $sites[$i]['hard'] == '0') $sites[$i]['hard'] = -1;
-				}
 			}
 		}
 
@@ -245,7 +220,10 @@ class quota_lib {
                        
                }
 		// select all email accounts or email accounts belonging to client
-		$emails = $app->db->queryAllRecords("SELECT * FROM mail_user".(($clientid != null)? " WHERE sys_groupid = (SELECT default_group FROM sys_user WHERE client_id=?)" : '') . " ORDER BY email", $clientid);
+		$q = "SELECT * FROM mail_user WHERE";
+		$q .= $app->tform->getAuthSQL('r', '', '', $app->functions->clientid_to_groups_list($clientid));
+		$q .= " ORDER BY email";
+		$emails = $app->db->queryAllRecords($q, $clientid);
 
 		//print_r($emails);
 		if(is_array($emails) && !empty($emails)) {
@@ -280,17 +258,8 @@ class quota_lib {
 					if($used_ratio >= 0.8) $emails[$i]['display_colour'] = '#fd934f';
 					if($used_ratio >= 1) $emails[$i]['display_colour'] = '#cc0000';
 
-					if($emails[$i]['quota'] == 0){
-						$emails[$i]['quota'] = $app->lng('unlimited_txt');
-					} else {
-                                               $emails[$i]['quota'] = round($emails[$i]['quota'] / 1048576, 1).' MB';
-					}
-
-
-					if($emails[$i]['used'] < 1544000) {
-                                               $emails[$i]['used'] = round($emails[$i]['used'] / 1024, 1).' KB';
-					} else {
-                                               $emails[$i]['used'] = round($emails[$i]['used'] / 1048576, 1).' MB';
+					if($emails[$i]['quota'] == 0) {
+						$emails[$i]['quota'] = -1;
 					}
 				}
 			}
@@ -317,18 +286,21 @@ class quota_lib {
 		//print_r($monitor_data);
 
 		// select all databases belonging to client
-		$databases = $app->db->queryAllRecords("SELECT * FROM web_database".(($clientid != null)? " WHERE sys_groupid = (SELECT default_group FROM sys_user WHERE client_id=?)" : '') . " ORDER BY database_name", $clientid);
+		$q = "SELECT * FROM web_database WHERE";
+		$q .= $app->tform->getAuthSQL('r', '', '', $app->functions->clientid_to_groups_list($clientid));
+		$q .= " ORDER BY database_name";
+		$databases = $app->db->queryAllRecords($q);
 
 		//print_r($databases);
 		if(is_array($databases) && !empty($databases)){
 			for($i=0;$i<sizeof($databases);$i++){
 				$databasename = $databases[$i]['database_name'];
 
-				$databases[$i]['used'] = isset($monitor_data[$databasename]['size']) ? $monitor_data[$databasename]['size'] : 0;
+				$size = isset($monitor_data[$databasename]['size']) ? $monitor_data[$databasename]['size'] : 0;
 
-				$databases[$i]['quota_raw'] = $databases[$i]['database_quota'];
-				$databases[$i]['used_raw'] = $databases[$i]['used'] / 1024 / 1024; //* quota is stored as MB - calculated bytes
-				$databases[$i]['used_percentage'] = (($databases[$i]['database_quota'] > 0) && ($databases[$i]['used'] > 0)) ? round($databases[$i]['used_raw'] * 100 / $databases[$i]['database_quota']) : 0;
+				$databases[$i]['database_quota_raw'] = ($databases[$i]['database_quota'] == -1) ? -1 : $databases[$i]['database_quota'] * 1000 * 1000;
+				$databases[$i]['used_raw'] = $size; // / 1024 / 1024; //* quota is stored as MB - calculated bytes
+				$databases[$i]['used_percentage'] = (($databases[$i]['database_quota'] > 0) && ($size > 0)) ? round($databases[$i]['used_raw'] * 100 / $databases[$i]['database_quota_raw']) : 0;
 
 				if ($readable) {
 					// colours
@@ -341,18 +313,8 @@ class quota_lib {
 					if($used_ratio >= 0.8) $databases[$i]['display_colour'] = '#fd934f';
 					if($used_ratio >= 1) $databases[$i]['display_colour'] = '#cc0000';
 
-					if($databases[$i]['database_quota'] == -1) {
-						$databases[$i]['database_quota'] = $app->lng('unlimited_txt');
-					} else {
-						$databases[$i]['database_quota'] = $databases[$i]['database_quota'] . ' MB';
-					}
 
 
-					if($databases[$i]['used'] < 1544000) {
-						$databases[$i]['used'] = round($databases[$i]['used'] / 1024, 1).' KB';
-					} else {
-						$databases[$i]['used'] = round($databases[$i]['used'] / 1048576, 1).' MB';
-					}
 				}
 			}
 		}

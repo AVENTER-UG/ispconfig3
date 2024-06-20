@@ -2,7 +2,7 @@
 
 class dashlet_limits
 {
-    public function show()
+    public function show($limit_to_client_id = 0)
     {
         global $app, $conf;
 
@@ -147,36 +147,35 @@ class dashlet_limits
         }
         $tpl->setVar($wb);
 
-        if ($app->auth->is_admin()) {
-            $user_is_admin = true;
-        } else {
-            $user_is_admin = false;
+        if ($limit_to_client_id != null) {
+          $client_id = $limit_to_client_id;
         }
-        $tpl->setVar('is_admin', $user_is_admin);
-
-        if ($user_is_admin == false) {
-            $client_group_id = $app->functions->intval($_SESSION["s"]["user"]["default_group"]);
-            $client = $app->db->queryOneRecord("SELECT * FROM sys_group, client WHERE sys_group.client_id = client.client_id and sys_group.groupid = ?", $client_group_id);
+        elseif ($limit_to_client_id == null && $app->auth->is_reseller()) {
+          $client_id = $_SESSION['s']['user']['client_id'];
         }
+        $client = $app->db->queryOneRecord("SELECT * FROM client WHERE client_id = ?", $client_id);
 
         $rows = array();
         foreach ($limits as $limit) {
             $field = $limit['field'];
-            if ($user_is_admin) {
-                $value = $wb['unlimited_txt'];
+            $value = $client[$field];
+            if ($app->auth->is_admin() && $limit_to_client_id == 0) {
+                $value = -1;
             } else {
                 $value = $client[$field];
             }
+
             if ($value != 0 || $value == $wb['unlimited_txt']) {
-                $value_formatted = ($value == '-1')?$wb['unlimited_txt']:$value;
+                $suffix = '';
                 if (isset($limit['q_type']) && $limit['q_type'] != '') {
-                    $usage = $this->_get_assigned_quota($limit) . " MB";
-                    $value_formatted = ($value == '-1')?$wb['unlimited_txt']:$value . " MB";
+                    $usage = $this->_get_assigned_quota($limit, $client_id);
+                    $suffix = ' MB';
                 } else {
-                    $usage = $this->_get_limit_usage($limit);
+                    $usage = $this->_get_limit_usage($limit, $client_id);
                 }
                 $percentage = ($value == '-1' || intval($value) == 0 || trim($value) == '' ? -1 : round(100 * (int)$usage / (int)$value));
                 $progressbar = $percentage > 100 ? 100 : $percentage;
+                $value_formatted = ($value == '-1') ? $wb['unlimited_txt'] : ($value . $suffix);
                 $rows[] = array('field' => $field,
                     'field_txt' => $wb[$field.'_txt'],
                     'value' => $value_formatted,
@@ -195,7 +194,7 @@ class dashlet_limits
         return $tpl->grab();
     }
 
-    public function _get_limit_usage($limit)
+    public function _get_limit_usage($limit, $limit_to_client_id)
     {
         global $app;
 
@@ -203,12 +202,13 @@ class dashlet_limits
         if ($limit['db_where'] != '') {
             $sql .= $limit['db_where']." AND ";
         }
-        $sql .= $app->tform->getAuthSQL('r');
+        $sql .= $app->tform->getAuthSQL('r', '', '', $app->functions->clientid_to_groups_list($limit_to_client_id));
+
         $rec = $app->db->queryOneRecord($sql, $limit['db_table']);
         return $rec['number'];
     }
-    
-    public function _get_assigned_quota($limit)
+
+    public function _get_assigned_quota($limit, $limit_to_client_id)
     {
         global $app;
 
@@ -216,14 +216,30 @@ class dashlet_limits
         if ($limit['db_where'] != '') {
             $sql .= $limit['db_where']." AND ";
         }
-        $sql .= $app->tform->getAuthSQL('r');
+        $sql .= $app->tform->getAuthSQL('r', '', '', $app->functions->clientid_to_groups_list($limit_to_client_id));
         $rec = $app->db->queryOneRecord($sql, $limit['q_type'], $limit['db_table']);
-        if ($limit['db_table']=='mail_user') {
+        if ($limit['db_table'] == 'mail_user') {
             $quotaMB = $rec['number'] / 1048576;
         } // Mail quota is in bytes, must be converted to MB
         else {
             $quotaMB = $app->functions->intval($rec['number']);
-        }
-        return $quotaMB;
+      }
+      return $quotaMB;
+    }
+
+    /**
+     * Lookup a client's group + all groups he is reselling.
+     *
+     * @return string Comma separated list of groupid's
+     */
+    function clientid_to_groups_list($client_id) {
+      global $app;
+
+      if ($client_id != null) {
+        // Get the clients groupid, and incase it's a reseller the groupid's of it's clients.
+        $group = $app->db->queryOneRecord("SELECT GROUP_CONCAT(groupid) AS groups FROM `sys_group` WHERE client_id IN (SELECT client_id FROM `client` WHERE client_id=? OR parent_client_id=?)", $client_id, $client_id);
+        return $group['groups'];
+      }
+      return null;
     }
 }
