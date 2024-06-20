@@ -1,5 +1,5 @@
 
-# Data returning from Amavis content filtering, defaults to incomming amavis port(10026) +1
+# Data returning from Amavis content filtering, defaults to incomming amavis port(10024) +1
 127.0.0.1:10025 inet n - n - - smtpd
         -o content_filter=
         -o local_recipient_maps=
