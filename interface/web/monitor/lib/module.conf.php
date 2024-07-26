@@ -186,7 +186,7 @@ $items[] = array( 'title'  => "Freshclam-Log",
 	'link' => 'monitor/show_log.php?log=log_freshclam',
 	'html_id' => 'log_freshclam');
 
-$items[] = array( 'title'  => "Let's Encrypt log",
+$items[] = array( 'title'  => "Lets-Encrypt-log",
 	'target'  => 'content',
 	'link' => 'monitor/show_log.php?log=log_letsencrypt',
 	'html_id' => 'log_letsencrypt');
