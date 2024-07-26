@@ -130,7 +130,7 @@ switch ($record['action']) {
 		foreach ($data['new'] as $key=>$value) {
 			$inserts[] = array(
 				'key' => $key,
-				'value' => nl2br($value),
+				'value' => nl2br($app->functions->htmlentities($value)),
 			);
 		}
 		$app->tpl->setLoop('inserts', $inserts);
@@ -145,8 +145,8 @@ switch ($record['action']) {
 				$updates[] = array(
 					'key' => $key,
 					'is_diff' => $changes['is_diff'],
-					'old' => nl2br($changes['old']),
-					'new' => nl2br($changes['new']),
+					'old' => nl2br($app->functions->htmlentities($changes['old'])),
+					'new' => nl2br($app->functions->htmlentities($changes['new'])),
 					'diff' => nl2br($changes['diff']),
 				);
 			}
@@ -162,7 +162,7 @@ switch ($record['action']) {
 		foreach ($data['old'] as $key=>$value) {
 			$deletes[] = array(
 				'key' => $key,
-				'value' => nl2br($value),
+				'value' => nl2br($app->functions->htmlentities($value)),
 			);
 		}
 		$app->tpl->setLoop('deletes', $deletes);
