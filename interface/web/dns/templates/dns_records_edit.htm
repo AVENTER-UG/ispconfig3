@@ -1,5 +1,17 @@
 <div class="panel panel_dns_soa">
 
+    <tmpl_if name="config_error_msg">
+        <div class="alert alert-danger">
+          <p>
+            <tmpl_var name="configuration_error_txt">
+              <div>
+                <div style="float:left;width:150px;">{tmpl_var name='config_error_tstamp'} :&nbsp;</div>
+                <div style="padding-left:150px;">{tmpl_var name='config_error_msg'}</div>
+              </div>
+          </p>
+        </div>
+    </tmpl_if>
+
     {tmpl_var name='dns_records'}
 
     <div class="pnl_formsarea">

@@ -22,4 +22,5 @@ $wb['ignore_record_not_class_in'] = '忽略DNS记录，不是IN类。';
 $wb['ignore_record_unknown_type'] = '忽略DNS记录，未知类型。';
 $wb['ignore_record_invalid_owner'] = '忽略DNS记录，无法验证所有者名称。';
 $wb['zone_file_import_fail'] = '区域文件未导入。';
+$wb['ignore_ns_records_txt'] = 'Ignore NS records';
 ?>

@@ -47,4 +47,9 @@ $wb['select_site_txt'] = '- Seleccionar sitio -';
 $wb['server_id_txt'] = 'Servidor';
 $wb['type_txt'] = 'Tipo';
 $wb['limit_database_quota_not_0_txt']= 'Database quota can not be 0';
+$wb['no_backup_txt'] = 'Sin copia de seguridad';
+$wb['daily_backup_txt'] = 'Diariamente';
+$wb['weekly_backup_txt'] = 'Semanalmente';
+$wb['monthly_backup_txt'] = 'Mensualmente';
+$wb['backup_interval_txt'] = 'Intervalo de copias de seguridad';
 ?>

@@ -54,6 +54,9 @@ if($type == 'globalsearch'){
 	// resellers
 	$result[] = _search('client', 'reseller', "AND limit_client != 0");
 
+	// client domains
+	$result[] = _search('client', 'domain');
+
 	// web sites
 	$result[] = _search('sites', 'web_vhost_domain', "AND type = 'vhost'");
 

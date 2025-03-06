@@ -9,15 +9,27 @@ $module['title']     = 'top_menu_help';
 //* The template file of the module. This is always module.tpl.htm if you do not have any special requirements like a 3 column layout.
 $module['template']  = 'module.tpl.htm';
 
+// read web config
+$app->uses('getconf');
+$global_config = $app->getconf->get_global_config('misc');
+
+// Get the FAQ sections
+$sql = "SELECT * FROM help_faq_sections";
+$faq_sections = $app->db->queryAllRecords($sql);
+
 //* The page that is displayed when the module is loaded. the path must is relative to the web directory
 if(isset($_GET['go2_faq_sections_list'])){
 	$module['startpage'] = 'help/faq_sections_list.php';
 } else {
 	if($_SESSION['s']['user']['typ'] == 'admin') {
 		$module['startpage'] = 'help/version.php';
-	} else {
+	} elseif ($global_config['show_support_messages'] == 'y') {
 		$module['startpage'] = 'help/support_message_list.php';
-	}
+    } elseif (!empty($faq_sections) && is_array($faq_sections) && count($faq_sections) > 0) {
+        $module['startpage'] = 'help/faq_list.php?hfs_id='.$faq_sections[0]['hfs_id'];
+	} else {
+        $module['startpage'] = 'help/index.php';
+    }
 }
 
 //* The width of the tab. Normally you should leave this empty and let the browser define the width automatically.
@@ -25,9 +37,6 @@ $module['tab_width'] = '';
 
 
 //*** Menu Definition *****************************************
-// read web config
-$app->uses('getconf');
-$global_config = $app->getconf->get_global_config('misc');
 if($global_config['show_support_messages'] == 'y') {
 	//* make sure that the items array is empty
 	$items = array();
@@ -66,11 +75,9 @@ if($_SESSION['s']['user']['typ'] == 'admin') {
 		'items' => $itemsfaq);
 }
 else { //* the user
-	$sql = "SELECT * FROM help_faq_sections";
-	$res = $app->db->queryAllRecords($sql);
 	//* all the content sections
-	if(is_array($res) && !empty($res)) {
-		foreach($res as $v) {
+	if(is_array($faq_sections) && !empty($faq_sections)) {
+		foreach($faq_sections as $v) {
 			$itemsfaq[] = array(  'title'  => $v['hfs_name'],
 				'target' => 'content',
 				'link'  => 'help/faq_list.php?hfs_id='.$v['hfs_id']);
@@ -101,4 +108,4 @@ if($_SESSION['s']['user']['typ'] == 'admin') {
 		'open'  => 1,
 		'items' => $items);
 }
-?>
+

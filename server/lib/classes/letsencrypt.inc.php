@@ -44,7 +44,7 @@ class letsencrypt {
 	}
 
 	public function get_acme_script() {
-		$acme = explode("\n", shell_exec('which acme.sh /usr/local/ispconfig/server/scripts/acme.sh /root/.acme.sh/acme.sh 2> /dev/null'));
+		$acme = explode("\n", shell_exec('which acme.sh /usr/local/ispconfig/server/scripts/acme.sh /root/.acme.sh/acme.sh 2> /dev/null') ?? '');
 		$acme = reset($acme);
 		if(is_executable($acme)) {
 			return $acme;
@@ -464,7 +464,7 @@ class letsencrypt {
 
 
 			$letsencrypt_cmd = $this->get_certbot_script() . " certificates " . $cli_domain_arg;
-			$output = explode("\n", shell_exec($letsencrypt_cmd . " 2>/dev/null | grep -v '^\$'"));
+			$output = explode("\n", shell_exec($letsencrypt_cmd . " 2>/dev/null | grep -v '^\$'") ?? '');
 			$le_path = '';
 			$skip_to_next = true;
 			$matches = null;

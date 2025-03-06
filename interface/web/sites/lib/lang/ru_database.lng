@@ -47,4 +47,9 @@ $wb['limit_database_quota_txt'] = 'Квота базы данных';
 $wb['limit_database_quota_error_notint'] = 'Лимит квоты базы данных должен быть числом.';
 $wb['limit_database_quota_free_txt'] = 'Макс. доступная квота базы данных.';
 $wb['limit_database_quota_not_0_txt']= 'Database quota can not be 0';
+$wb['no_backup_txt'] = 'Не резервировать';
+$wb['daily_backup_txt'] = 'Ежедневно';
+$wb['weekly_backup_txt'] = 'Еженедельно';
+$wb['monthly_backup_txt'] = 'Ежемесячно';
+$wb['backup_interval_txt'] = 'Интервал резервного копирования';
 ?>

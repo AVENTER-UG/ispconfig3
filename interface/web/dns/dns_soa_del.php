@@ -55,7 +55,9 @@ class page_action extends tform_actions {
 
 		if($app->tform->checkPerm($this->id, 'd') == false) $app->error($app->lng('error_no_delete_permission'));
 
-		// Delete all records that belog to this zone.
+               $app->db->datalogUpdate('dns_soa', array("active" => 'N'), 'id', $this->id);
+
+		// Delete all records that belong to this zone.
 		$records = $app->db->queryAllRecords("SELECT id FROM dns_rr WHERE zone = ?", $this->id);
 		foreach($records as $rec) {
 			$app->db->datalogDelete('dns_rr', 'id', $rec['id']);
