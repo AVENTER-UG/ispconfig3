@@ -287,11 +287,33 @@ class functions {
 	 * @return string - formated bytes
 	 */
 	public function formatBytes($size, $precision = 2) {
+		// 0 is a special as it would give NAN otehrwise.
+		if ($size == 0) {
+			return 0;
+		}
+
 		$base=log($size)/log(1024);
 		$suffixes=array('', ' kB', ' MB', ' GB', ' TB');
 		return round(pow(1024, $base-floor($base)), $precision).$suffixes[floor($base)];
 	}
 
+	/**
+	 * Function to change bytes to kB, MB, GB or TB or the translated string 'Unlimited' for -1
+	 * @param int $size - size in bytes
+	 * @param int precicion - after-comma-numbers (default: 2)
+	 * @return string - formated bytes
+	 */
+	public function formatBytesOrUnlimited($size, $precision = 2) {
+		global $app;
+
+		if ($size == -1) {
+			return $app->lng('unlimited_txt');
+		}
+		else {
+			return $this->formatBytes($size, $precision);
+		}
+
+	}
 
 	/**
 	 * Normalize a path and strip duplicate slashes from it
@@ -651,6 +673,22 @@ class functions {
 		}
 		return $result;
 	}	
+
+    /**
+     * Lookup a client's group + all groups he is reselling.
+     *
+     * @return string Comma separated list of groupid's
+     */
+    function clientid_to_groups_list($client_id) {
+      global $app;
+
+      if ($client_id != null) {
+        // Get the clients groupid, and incase it's a reseller the groupid's of it's clients.
+        $group = $app->db->queryOneRecord("SELECT GROUP_CONCAT(groupid) AS groups FROM `sys_group` WHERE client_id IN (SELECT client_id FROM `client` WHERE client_id=? OR parent_client_id=?)", $client_id, $client_id);
+        return $group['groups'];
+      }
+      return null;
+    }
 
 }
 

@@ -22,4 +22,5 @@ $wb['ignore_record_not_class_in'] = 'Ignoro record DNS non di tipo IN.';
 $wb['ignore_record_unknown_type'] = 'Ignoro record DNS record di tipo sconosciuto.';
 $wb['ignore_record_invalid_owner'] = 'Ignoro record DNS non essendo possibile di validare il nome del titolare.';
 $wb['zone_file_import_fail'] = 'Il file di zona non è stato importato.';
+$wb['ignore_ns_records_txt'] = 'Ignore NS records';
 ?>

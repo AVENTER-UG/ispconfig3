@@ -1,0 +1,7 @@
+rspamd_config.R_DUMMY = {
+        callback = function(task)
+                return true
+        end,
+        score = 0,
+        description = 'dummy symbol',
+}

@@ -28,6 +28,7 @@ NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
 EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
+
 class cronjob_monitor_mem_usage extends cronjob {
 
 	// job schedule
@@ -74,13 +75,17 @@ class cronjob_monitor_mem_usage extends cronjob {
 		$memInfo = explode("\n", $miData);
 
 		foreach ($memInfo as $line) {
-			$part = preg_split('/:/', $line);
-			$key = trim($part[0]);
-			$tmp = explode(' ', trim($part[1]));
-			$value = 0;
-			if (isset($tmp[1]) && $tmp[1] == 'kB')
-				$value = $tmp[0] * 1024;
-			$data[$key] = $value;
+			if (!empty($line) && strlen($line) >= 1){
+				$part = preg_split('/:/', $line);
+                if(is_array($part) && isset($part[0]) && isset($part[1])) {
+				    $key = trim($part[0]);
+				    $tmp = explode(' ', trim($part[1]));
+				    $value = 0;
+				    if (isset($tmp[1]) && $tmp[1] == 'kB')
+					    $value = $tmp[0] * 1024;
+				    $data[$key] = $value;
+                }
+			}
 		}
 
 		/*

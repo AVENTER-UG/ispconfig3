@@ -1,8 +1,8 @@
 <?php
-$wb['list_head_txt'] = 'E-Mail Konto';
-$wb['email_txt'] = 'E-Mail Adresse';
+$wb['list_head_txt'] = 'E-Mail-Konto';
+$wb['email_txt'] = 'E-Mail-Adresse';
 $wb['autoresponder_txt'] = 'Autoresponder';
-$wb['add_new_record_txt'] = 'Neues E-Mail Konto hinzufügen';
+$wb['add_new_record_txt'] = 'Neues E-Mail-Konto hinzufügen';
 $wb['name_txt'] = 'Name';
 $wb['login_txt'] = 'Anmelden';
 $wb['postfix_txt'] = 'Empfang';

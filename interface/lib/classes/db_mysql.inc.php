@@ -668,7 +668,7 @@ class db
 			$clientdb_user     = ($conf['db_user']) ? $conf['db_user'] : NULL;
 			$clientdb_password = ($conf['db_password']) ? $conf['db_password'] : NULL;
 			$clientdb_port     = ((int)$conf['db_port']) ? (int)$conf['db_port'] : NULL;
-			$clientdb_flags    = ($conf['db_flags'] !== NULL) ? $conf['db_flags'] : NULL;
+			$clientdb_flags    = (isset($conf['db_flags']) && $conf['db_flags'] !== NULL) ? $conf['db_flags'] : NULL;
 
 			require_once 'lib/mysql_clientdb.conf';
 
@@ -847,7 +847,7 @@ class db
 
 		$result = $this->queryAllRecords("SELECT COUNT( * ) AS cnt, sys_datalog.action, sys_datalog.dbtable
 				FROM sys_datalog, server
-				WHERE (server.server_id = sys_datalog.server_id or sys_datalog.server_id = 0) AND sys_datalog.user = ? AND sys_datalog.datalog_id > server.updated
+				WHERE (server.server_id = sys_datalog.server_id or sys_datalog.server_id = 0) AND sys_datalog.user = ? AND sys_datalog.datalog_id > server.updated AND server.active = 1
 				GROUP BY sys_datalog.dbtable, sys_datalog.action",
 			$login);
 		foreach($result as $row) {

@@ -202,3 +202,6 @@ $wb['tooltip_jailkit_chroot_app_programs_txt'] = 'Se vuota, usa la sezione Jailk
 $wb['delete_unused_jailkit_txt'] = 'Cancella jailkit chroot non usate';
 $wb['tooltip_delete_unused_jailkit_txt'] = 'Cancella l\'ambiente jailkit chroot quando non sono presenti utenti della shell o job cron che lo richiedono.';
 $wb['ssl_options_not_for_le_txt'] = 'Hai abilitato i certificati Let\'Encrypt per questo sito Web. Considera che tutte le opzioni di questa pagina si applicano a ai certificati non Let\'Encrypt solamente. Ricorda di deselezionare l\'opzione Let\'s Encrypt nella scheda principale se vuoi passare ad certificato differente.';
+$wb['disable_symlinknotowner_txt'] = 'Deactivate symlinks restriction of the web space';
+$wb['tooltip_disable_symlinknotowner_txt'] = 'WARNING: This function deactivates the restriction SymLinksIfOwnerMatch (Apache) and disable_symlinks if_not_owner (Nginx).';
+

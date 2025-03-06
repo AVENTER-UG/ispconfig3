@@ -19,7 +19,7 @@ $(which php) -q \
     -d disable_classes= \
     -d disable_functions= \
     -d open_basedir= \
-    /usr/local/ispconfig/server/server.php
+    /usr/local/ispconfig/server/server.php "$@"
 
 cd /usr/local/ispconfig/security
 $(which php) -q \

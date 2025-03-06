@@ -173,6 +173,10 @@
 <input type="hidden" name="id" value="{tmpl_var name='id'}">
 <input name="serial" type="hidden" value="{tmpl_var name='serial'}">
 <div class="clear">
+  <tmpl_if name='id'><tmpl_if name='show_delete_on_forms' op="==" value="y">
+    <a class="btn btn-default formbutton-danger formbutton-narrow" href="javascript: ISPConfig.confirm_action('dns/dns_soa_del.php?id={tmpl_var name='id'}&_csrf_id={tmpl_var name='_csrf_id'}&_csrf_key={tmpl_var name='_csrf_key'}&phpsessid={tmpl_var name='phpsessid'}','{tmpl_var name
+='delete_confirmation'}');"><span class="icon icon-delete"></span></a>
+  </tmpl_if></tmpl_if>
   <div class="right">
     <button class="btn btn-default formbutton-success" type="button" value="{tmpl_var name='btn_save_txt'}" data-submit-form="pageForm" data-form-action="dns/dns_soa_edit.php">{tmpl_var name='btn_save_txt'}</button>
     <button class="btn btn-default formbutton-default" type="button" value="{tmpl_var name='btn_cancel_txt'}" data-load-content="dns/dns_soa_list.php">{tmpl_var name='btn_cancel_txt'}</button>

@@ -136,12 +136,41 @@ class page_action extends tform_actions {
 			$app->tpl->setVar("enable_custom_login", 0);
 		}
 
+		$app->tpl->setVar('mailbox_show_last_access', $mail_config['mailbox_show_last_access']);
+		if (!empty($this->dataRecord['last_access'])) {
+			$app->tpl->setVar("last_access", date($app->lng('conf_format_dateshort'), $this->dataRecord['last_access']));
+		}
+		else {
+			$app->tpl->setVar("last_access", $app->lng('never_accessed_txt'));
+		}
+
 		$csrf_token = $app->auth->csrf_token_get('mail_user_del');
 		$app->tpl->setVar('_csrf_id', $csrf_token['csrf_id']);
 		$app->tpl->setVar('_csrf_key', $csrf_token['csrf_key']);
 
 		$global_config = $app->getconf->get_global_config();
 		$app->tpl->setVar('show_delete_on_forms', $global_config['misc']['show_delete_on_forms']);
+
+		if($this->id > 0) {
+
+			# Fetch current disk usage.
+			$app->uses('quota_lib');
+			$clientid = $app->db->queryOneRecord('SELECT `client_id` FROM `sys_group` WHERE `groupid` = ?', $this->dataRecord['sys_groupid']);
+			$monitor_data = $app->quota_lib->get_mailquota_data($clientid, FALSE, $this->dataRecord['email']);
+            if(!empty($monitor_data) && is_array($monitor_data)) {
+                if ($this->dataRecord['quota'] != 0 && isset($monitor_data['used'])) {
+                    $app->tpl->setVar("used_percentage", round($monitor_data['used'] * 100 / $this->dataRecord['quota']));
+                }
+                if(isset($monitor_data['used'])) {
+                    $app->tpl->setVar('used', $app->functions->formatBytes($monitor_data['used'], 0));
+                }
+            }
+
+			# Get addresses for this account.
+			$addresses = $app->db->queryAllRecords("SELECT source, type FROM mail_forwarding WHERE destination = ? AND ".$app->tform->getAuthSQL('r'), $email);
+			$app->tpl->setLoop("mail_addresses", $addresses);
+		}
+
 
 		parent::onShowEnd();
 	}
@@ -320,7 +349,6 @@ class page_action extends tform_actions {
 		$disablesmtp = ($this->dataRecord["disablesmtp"])?'y':'n';
 		$disabledeliver = ($this->dataRecord["disabledeliver"])?'y':'n';
 
-		$app->db->query($sql, $disableimap, $disableimap, $disablepop3, $disablesmtp, $disabledeliver, $disabledeliver, $this->id);
 		$sql = "UPDATE mail_user SET disableimap = ?, disablesieve = ?, disablepop3 = ?, disablesmtp = ?, disabledeliver = ?, disablelda = ?, disablelmtp = ? WHERE mailuser_id = ?";
 		$app->db->query($sql, $disableimap, $disableimap, $disablepop3, $disablesmtp, $disabledeliver, $disabledeliver, $disabledeliver, $this->id);
 	}

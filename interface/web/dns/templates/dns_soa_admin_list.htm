@@ -57,7 +57,7 @@
             <tbody>
                 <tmpl_loop name="records">
                     <tr>
-                        <td><a href="#" data-load-content="dns/dns_soa_edit.php?id={tmpl_var name='id'}&next_tab=dns_records">{tmpl_var name="active"}<tmpl_if name="dnssec_initialized" op="==" value="Y"> <i class="fa fa-key" aria-hidden="true"></i></tmpl_if></td>
+                        <td><a href="#" data-load-content="dns/dns_soa_edit.php?id={tmpl_var name='id'}&next_tab=dns_records">{tmpl_var name="active"}<tmpl_if name="dnssec_wanted" op="==" value="Y"><tmpl_if name="dnssec_initialized" op="==" value="Y"><i class="fa fa-key" aria-hidden="true"></i></tmpl_if></tmpl_if></td>
 						<td><a href="#" data-load-content="dns/dns_soa_edit.php?id={tmpl_var name='id'}&next_tab=dns_records">{tmpl_var name="sys_groupid"}</a></td>
                         <td><a href="#" data-load-content="dns/dns_soa_edit.php?id={tmpl_var name='id'}&next_tab=dns_records" data-toggle="tooltip" data-placement="bottom" title="{tmpl_var name='server_id'}">{tmpl_var name="server_id"}</a></td>
                         <td><a href="#" data-load-content="dns/dns_soa_edit.php?id={tmpl_var name='id'}&next_tab=dns_records" data-toggle="tooltip" data-placement="bottom" title="{tmpl_var name='origin'}">{tmpl_var name="origin"}</a></td>
